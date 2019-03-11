@@ -1,0 +1,2 @@
+# Ignore the generated Angular application for WAR packaging
+src/main/webapp/ng

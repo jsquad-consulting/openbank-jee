@@ -1,0 +1,21 @@
+openapi: 3.0.0
+info:
+  title: Jsquad OpenBank API
+  description: Bank OpenAPI
+  version: 0.0.1
+servers:
+  - url: http://localhost:8080/restful-webservice/api/openbank
+    description: Local OpenBank server
+paths:
+  /hello/world:
+    get:
+      summary: Returns a string with 'hello world'
+      description: Returns a hello world string
+      responses:
+        '200':
+          description: Returns a JSON string with hello world
+          content:
+            application/json:
+              schema:
+                example: 'Hello world'
+                type: string
