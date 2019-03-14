@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:tns="http://jsquad.se/client/info"
+           targetNamespace="http://jsquad.se/client/info" version="1.0">
+
+    <xs:complexType name="ClientApi">
+        <xs:sequence>
+            <xs:element name="person" type="tns:PersonApi"/>
+            <xs:element name="accountSet" type="tns:AccountApi" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="PersonApi">
+        <xs:sequence>
+            <xs:element name="personIdentification" type="xs:string"/>
+            <xs:element name="firstName" type="xs:string"/>
+            <xs:element name="lastName" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="AccountApi">
+        <xs:sequence>
+            <xs:element name="balance" type="xs:long"/>
+            <xs:element name="accountTransactionSet" type="tns:AccountTransactionApi" minOccurs="0"
+                        maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="AccountTransactionApi">
+        <xs:sequence>
+            <xs:element name="transactionType" type="tns:TransactionTypeApi"/>
+            <xs:element name="message" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:simpleType name="TransactionTypeApi" final="restriction">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="DEPOSIT"/>
+            <xs:enumeration value="WITHDRAWAL"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+</xs:schema>

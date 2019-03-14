@@ -23,7 +23,7 @@
     <dependencies>
         <dependency>
             <groupId>javax</groupId>
-            <artifactId>javaee-api</artifactId>
+            <artifactId>javaee-web-api</artifactId>
             <version>8.0</version>
             <scope>provided</scope>
         </dependency>
@@ -31,7 +31,11 @@
             <groupId>se.jsquad</groupId>
             <artifactId>business</artifactId>
             <version>1.0-SNAPSHOT</version>
-            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>se.jsquad</groupId>
+            <artifactId>schema</artifactId>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>

@@ -2,11 +2,9 @@ package se.jsquad;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.logging.Level;
@@ -14,8 +12,7 @@ import java.util.logging.Logger;
 
 @Stateless
 @Path("/openbank")
-@ApplicationPath("/api")
-public class OpenBankRest extends Application {
+public class OpenBankRest {
     static Logger logger = Logger.getLogger(OpenBankRest.class.getName());
 
     @EJB

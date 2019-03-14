@@ -1,13 +1,37 @@
 openapi: 3.0.0
+
 info:
   title: Jsquad OpenBank API
   description: Bank OpenAPI
-  version: 0.0.1
+  version: 0.0.2
+
 servers:
-  - url: http://localhost:8080/restful-webservice/api/openbank
+  - url: http://localhost:8080/restful-webservice/api
     description: Local OpenBank server
+
 paths:
-  /hello/world:
+  /client/info/{personIdentification}:
+    parameters:
+      - in: path
+        name: personIdentification
+        schema:
+          type: string
+        required: true
+        description: Client's identification number
+    get:
+      summary: Returns a Client object with all related list of account data
+      description: Returns
+      responses:
+        '200':
+          description: Returns a JSON Client object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Client'
+        '5XX':
+          description: Unexpected system error.
+
+  /openbank/hello/world:
     get:
       summary: Returns a string with 'hello world'
       description: Returns a hello world string
@@ -19,3 +43,50 @@ paths:
               schema:
                 example: 'Hello world'
                 type: string
+        '5XX':
+          description: Unexpected system error.
+
+components:
+  schemas:
+    Client:
+      type: object
+      properties:
+        person:
+          $ref: '#/components/schemas/Person'
+        account:
+          $ref: '#/components/schemas/Account'
+
+    Person:
+      type: object
+      properties:
+        personIdentification:
+          type: integer
+          example: 197501011234
+        firstName:
+          type: string
+          example: John
+        lastName:
+          type: string
+          example: Doe
+
+    Account:
+      type: object
+      properties:
+        balance:
+          type: number
+          example: 59765.098785
+        accountTransaction:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountTransaction'
+
+    AccountTransaction:
+      type: object
+      properties:
+        transactionType:
+          type: string
+          enum: [DEPOSIT, WITHDRAWAL]
+          example: 'DEPOSIT'
+        message:
+          type: string
+          example: 'Deposit 500$'
