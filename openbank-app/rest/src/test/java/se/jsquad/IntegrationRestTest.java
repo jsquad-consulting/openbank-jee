@@ -9,6 +9,7 @@ import org.mockito.MockitoAnnotations;
 import se.jsquad.adapter.ClientAdapter;
 import se.jsquad.client.info.ClientApi;
 import se.jsquad.repository.ClientRepository;
+import se.jsquad.repository.EntityManagerProducer;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -26,7 +27,7 @@ public class IntegrationRestTest {
     private EntityManagerFactory entityManagerFactory;
 
     OpenBankRest openBankRest;
-    ClientInformationRest clientInformationRESTful;
+    ClientInformationRest clientInformationRest;
 
     @BeforeEach
     void init() throws NoSuchFieldException, IllegalAccessException {
@@ -38,13 +39,14 @@ public class IntegrationRestTest {
 
         ClientAdapter clientAdapter = Mockito.spy(new ClientAdapter());
         ClientRepository clientRepository = Mockito.spy(new ClientRepository());
-        clientInformationRESTful = Mockito.spy(new ClientInformationRest());
+        EntityManagerProducer entityManagerProducer = Mockito.spy(new EntityManagerProducer());
+        clientInformationRest = Mockito.spy(new ClientInformationRest());
 
         Field field = ClientInformationRest.class.getDeclaredField("clientAdapter");
         field.setAccessible(true);
 
         // Set value
-        field.set(clientInformationRESTful, clientAdapter);
+        field.set(clientInformationRest, clientAdapter);
 
         field = ClientAdapter.class.getDeclaredField("clientRepository");
         field.setAccessible(true);
@@ -52,11 +54,17 @@ public class IntegrationRestTest {
         // Set value
         field.set(clientAdapter, clientRepository);
 
-        field = ClientRepository.class.getDeclaredField("entityManager");
+        field = ClientRepository.class.getDeclaredField("entityManagerProducer");
         field.setAccessible(true);
 
         // Set value
-        field.set(clientRepository, entityManager);
+        field.set(clientRepository, entityManagerProducer);
+
+        field = EntityManagerProducer.class.getDeclaredField("entityManager");
+        field.setAccessible(true);
+
+        // Set value
+        field.set(entityManagerProducer, entityManager);
 
         openBankRest = Mockito.spy(new OpenBankRest());
         OpenBankBusiness openBankBusiness = Mockito.spy(new OpenBankBusiness());
@@ -88,7 +96,7 @@ public class IntegrationRestTest {
         String personIdentification = "191212121212";
 
         // When
-        Response response = clientInformationRESTful.getClientInformtion(personIdentification);
+        Response response = clientInformationRest.getClientInformtion(personIdentification);
 
         // Then
         assertEquals(Response.Status.OK, Response.Status.fromStatusCode(response.getStatus()));

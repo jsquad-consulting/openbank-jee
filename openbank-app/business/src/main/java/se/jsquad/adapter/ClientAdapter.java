@@ -10,8 +10,8 @@ import se.jsquad.client.info.PersonApi;
 import se.jsquad.client.info.TransactionTypeApi;
 import se.jsquad.repository.ClientRepository;
 
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
@@ -21,7 +21,7 @@ import java.util.logging.Logger;
 public class ClientAdapter {
     Logger logger = Logger.getLogger(ClientAdapter.class.getName());
 
-    @EJB
+    @Inject
     private ClientRepository clientRepository;
 
     public ClientApi getClient(String personIdentification) {

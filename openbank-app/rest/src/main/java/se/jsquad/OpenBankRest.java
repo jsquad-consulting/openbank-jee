@@ -1,7 +1,7 @@
 package se.jsquad;
 
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 public class OpenBankRest {
     static Logger logger = Logger.getLogger(OpenBankRest.class.getName());
 
-    @EJB
+    @Inject
     OpenBankBusiness openBankBusiness;
 
     @GET

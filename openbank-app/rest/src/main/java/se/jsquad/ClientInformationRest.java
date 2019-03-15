@@ -3,8 +3,8 @@ package se.jsquad;
 import se.jsquad.adapter.ClientAdapter;
 import se.jsquad.client.info.ClientApi;
 
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.NoResultException;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -20,7 +20,7 @@ import java.util.logging.Logger;
 public class ClientInformationRest {
     private static Logger logger = Logger.getLogger(ClientInformationRest.class.getName());
 
-    @EJB
+    @Inject
     private ClientAdapter clientAdapter;
 
     @GET

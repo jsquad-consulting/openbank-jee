@@ -3,8 +3,7 @@ package se.jsquad.repository;
 import se.jsquad.Client;
 
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import javax.inject.Inject;
 import javax.persistence.TypedQuery;
 import java.util.List;
 import java.util.logging.Level;
@@ -14,14 +13,15 @@ import java.util.logging.Logger;
 public class ClientRepository {
     Logger logger = Logger.getLogger(ClientRepository.class.getName());
 
-    @PersistenceContext(unitName = "openBankPU")
-    private EntityManager entityManager;
+    @Inject
+    private EntityManagerProducer entityManagerProducer;
 
     public Client getClientByPersonIdentification(String personIdentification) {
         logger.log(Level.FINE, "getClientByPersonIdentification({0})",
                 new Object[]{"secret person identification parameter"});
 
-        TypedQuery<Client> query = entityManager.createNamedQuery(Client.PERSON_IDENTIFICATION, Client.class);
+        TypedQuery<Client> query = entityManagerProducer.getEntityManager().createNamedQuery(Client.PERSON_IDENTIFICATION,
+                Client.class);
         query.setParameter(Client.PARAM_PERSON_IDENTIFICATION, personIdentification);
 
         List<Client> clientList = query.getResultList();
