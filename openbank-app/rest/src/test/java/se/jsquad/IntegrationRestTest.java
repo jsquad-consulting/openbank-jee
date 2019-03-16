@@ -54,17 +54,11 @@ public class IntegrationRestTest {
         // Set value
         field.set(clientAdapter, clientRepository);
 
-        field = ClientRepository.class.getDeclaredField("entityManagerProducer");
-        field.setAccessible(true);
-
-        // Set value
-        field.set(clientRepository, entityManagerProducer);
-
         field = EntityManagerProducer.class.getDeclaredField("entityManager");
         field.setAccessible(true);
 
         // Set value
-        field.set(entityManagerProducer, entityManager);
+        field.set(clientRepository, entityManager);
 
         openBankRest = Mockito.spy(new OpenBankRest());
         OpenBankBusiness openBankBusiness = Mockito.spy(new OpenBankBusiness());

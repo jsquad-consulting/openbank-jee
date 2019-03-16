@@ -3,24 +3,20 @@ package se.jsquad.repository;
 import se.jsquad.Client;
 
 import javax.ejb.Stateless;
-import javax.inject.Inject;
 import javax.persistence.TypedQuery;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Stateless
-public class ClientRepository {
+public class ClientRepository extends EntityManagerProducer {
     Logger logger = Logger.getLogger(ClientRepository.class.getName());
-
-    @Inject
-    private EntityManagerProducer entityManagerProducer;
 
     public Client getClientByPersonIdentification(String personIdentification) {
         logger.log(Level.FINE, "getClientByPersonIdentification({0})",
                 new Object[]{"secret person identification parameter"});
 
-        TypedQuery<Client> query = entityManagerProducer.getEntityManager().createNamedQuery(Client.PERSON_IDENTIFICATION,
+        TypedQuery<Client> query = getEntityManager().createNamedQuery(Client.PERSON_IDENTIFICATION,
                 Client.class);
         query.setParameter(Client.PARAM_PERSON_IDENTIFICATION, personIdentification);
 

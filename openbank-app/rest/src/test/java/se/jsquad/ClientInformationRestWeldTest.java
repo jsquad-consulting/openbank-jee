@@ -9,7 +9,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import se.jsquad.adapter.ClientAdapter;
 import se.jsquad.client.info.ClientApi;
 import se.jsquad.repository.ClientRepository;
-import se.jsquad.repository.EntityManagerProducer;
 
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Inject;
@@ -28,7 +27,7 @@ public class ClientInformationRestWeldTest {
 
     @WeldSetup
     WeldInitiator weld = WeldInitiator.from(ClientInformationRest.class, ClientAdapter.class,
-            ClientRepository.class, EntityManagerProducer.class).activate(TransactionScoped.class)
+            ClientRepository.class).activate(TransactionScoped.class)
             .setPersistenceContextFactory(getEntityManagerFactory())
             .setPersistenceContextFactory(getEntityManager()).build();
 
