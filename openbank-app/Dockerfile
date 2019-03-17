@@ -6,6 +6,8 @@ RUN mvn -f /usr/openbank/pom.xml clean install
 ENV WILDFLY_VERSION 16.0.0.Final
 ENV WILDFLY_HOME /usr
 
+RUN rm -fr /usr/wildfly
+
 RUN cd $WILDFLY_HOME && curl http://download.jboss.org/wildfly/$WILDFLY_VERSION/wildfly-$WILDFLY_VERSION.tar.gz \
 | tar zx && mv $WILDFLY_HOME/wildfly-$WILDFLY_VERSION $WILDFLY_HOME/wildfly
 
