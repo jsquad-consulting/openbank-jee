@@ -28,6 +28,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Client'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/definitions/NotFound'
         '5XX':
           description: Unexpected system error.
 
@@ -90,3 +96,18 @@ components:
         message:
           type: string
           example: 'Deposit 500$'
+
+definitions:
+  NotFound:
+    type: object
+    properties:
+      status:
+        type: integer
+        example: 404
+      type:
+        type: string
+        example: 'ClientNotFound'
+      message:
+        type: string
+        example: 'Client not found.'
+
