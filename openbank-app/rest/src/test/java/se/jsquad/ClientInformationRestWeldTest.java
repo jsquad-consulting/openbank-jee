@@ -28,22 +28,16 @@ public class ClientInformationRestWeldTest {
     @WeldSetup
     WeldInitiator weld = WeldInitiator.from(ClientInformationRest.class, ClientAdapter.class,
             ClientRepository.class).activate(TransactionScoped.class)
-            .setPersistenceContextFactory(getEntityManagerFactory())
             .setPersistenceContextFactory(getEntityManager()).build();
 
     @Inject
     private ClientInformationRest clientInformationRest;
 
-    static Function<InjectionPoint, Object> getEntityManagerFactory() {
+    static Function<InjectionPoint, Object> getEntityManager() {
         Properties properties = new Properties();
         properties.setProperty(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML, "META-INF/persistence.xml");
 
         entityManagerFactory = Persistence.createEntityManagerFactory("openBankPU", properties);
-
-        return injectionPoint -> entityManagerFactory;
-    }
-
-    static Function<InjectionPoint, Object> getEntityManager() {
 
         return injectionPoint -> entityManagerFactory.createEntityManager();
     }
