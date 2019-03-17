@@ -12,7 +12,6 @@ import se.jsquad.repository.ClientRepository;
 
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Inject;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.transaction.TransactionScoped;
 import javax.ws.rs.core.Response;
@@ -23,7 +22,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(WeldJunit5Extension.class)
 public class ClientInformationRestWeldTest {
-    static EntityManagerFactory entityManagerFactory = null;
 
     @WeldSetup
     WeldInitiator weld = WeldInitiator.from(ClientInformationRest.class, ClientAdapter.class,
@@ -37,9 +35,8 @@ public class ClientInformationRestWeldTest {
         Properties properties = new Properties();
         properties.setProperty(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML, "META-INF/persistence.xml");
 
-        entityManagerFactory = Persistence.createEntityManagerFactory("openBankPU", properties);
-
-        return injectionPoint -> entityManagerFactory.createEntityManager();
+        return injectionPoint -> Persistence.createEntityManagerFactory("openBankPU", properties)
+                .createEntityManager();
     }
 
     @Test
