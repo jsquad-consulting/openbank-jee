@@ -60,6 +60,7 @@
                     </xjbSources>-->
                     <sources>
                         <source>${project.basedir}/src/main/resources/xsd/dummy.xsd</source>
+                        <source>${project.basedir}/src/main/resources/xsd/batch-status.xsd</source>
                         <source>${project.basedir}/src/main/resources/xsd/client-information.xsd</source>
                     </sources>
                     <outputDirectory>${basedir}/src/main/java</outputDirectory>

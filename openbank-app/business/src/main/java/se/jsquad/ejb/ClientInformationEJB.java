@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 
 @Stateless
 public class ClientInformationEJB {
-    private static Logger logger = Logger.getLogger(ClientInformationEJB.class.getName());
+    private static final Logger logger = Logger.getLogger(ClientInformationEJB.class.getName());
 
     @Inject
     private ClientAdapter clientAdapter;
@@ -22,7 +22,7 @@ public class ClientInformationEJB {
 
     public ClientApi getClient(String personIdentification) {
         logger.log(Level.FINE, "getClient(personIdentification: {0})",
-                new Object[] {"Secret person identification number parameter"});
+                new Object[] {"hidden"});
 
         Client client = clientRepository.getClientByPersonIdentification(personIdentification);
 

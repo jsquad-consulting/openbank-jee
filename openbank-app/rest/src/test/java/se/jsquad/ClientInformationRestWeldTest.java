@@ -25,14 +25,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class ClientInformationRestWeldTest {
 
     @WeldSetup
-    WeldInitiator weld = WeldInitiator.from(ClientInformationRest.class, ClientInformationEJB.class,
+    private WeldInitiator weld = WeldInitiator.from(ClientInformationRest.class, ClientInformationEJB.class,
             ClientRepository.class, ClientAdapter.class).activate(TransactionScoped.class)
             .setPersistenceContextFactory(getEntityManager()).build();
 
     @Inject
     private ClientInformationRest clientInformationRest;
 
-    static Function<InjectionPoint, Object> getEntityManager() {
+    private static Function<InjectionPoint, Object> getEntityManager() {
         Properties properties = new Properties();
         properties.setProperty(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML, "META-INF/persistence.xml");
 

@@ -32,10 +32,10 @@ class SystemPropertyRepositoryWeldTest {
     private SystemPropertyRepository systemPropertyRepository;
 
     @WeldSetup
-    WeldInitiator weld = WeldInitiator.from(SystemPropertyRepository.class).activate(TransactionScoped.class)
+    private WeldInitiator weld = WeldInitiator.from(SystemPropertyRepository.class).activate(TransactionScoped.class)
                 .setPersistenceContextFactory(getEntityManager()).build();
 
-    static Function<InjectionPoint, Object> getEntityManager() {
+    private static Function<InjectionPoint, Object> getEntityManager() {
         Properties properties = new Properties();
         properties.setProperty(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML, "META-INF/persistence.xml");
 

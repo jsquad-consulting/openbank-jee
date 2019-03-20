@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:tns="http://jsquad.se/batch/status"
+           targetNamespace="http://jsquad.se/batch/status" version="1.0">
+
+    <xs:complexType name="BatchStatus">
+        <xs:sequence>
+            <xs:element name="status" type="tns:Status"/>
+            <xs:element name="message" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:simpleType name="Status" final="restriction">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="SUCCESS"/>
+            <xs:enumeration value="FAIL"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+</xs:schema>

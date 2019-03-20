@@ -71,7 +71,7 @@ public class IntegrationRestTest {
         openBankRest = Mockito.spy(new OpenBankRest());
         OpenBankBusinessEJB openBankBusiness = Mockito.spy(new OpenBankBusinessEJB());
 
-        field = OpenBankRest.class.getDeclaredField("openBankBusiness");
+        field = OpenBankRest.class.getDeclaredField("openBankBusinessEJB");
         field.setAccessible(true);
 
         // Set value

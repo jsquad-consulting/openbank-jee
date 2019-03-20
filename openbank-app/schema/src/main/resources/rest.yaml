@@ -33,7 +33,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/definitions/NotFound'
+                $ref: '#/components/schemas/NotFound'
         '5XX':
           description: Unexpected system error.
 
@@ -52,8 +52,33 @@ paths:
         '5XX':
           description: Unexpected system error.
 
+  /openbank/start/slow/batch/mock:
+    get:
+      summary: Returns a BatchStatus object with status enum and message string.
+      description: Returns a BatchStatus object
+      responses:
+        '200':
+          description: Returns a BatchStatus JSON string.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchStatus'
+        '5XX':
+          description: Unexpected system error.
+
 components:
   schemas:
+    BatchStatus:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [SUCCESS, FAIL]
+          example: 'SUCCESS'
+        message:
+          type: string
+          example: 'Batch job went well.'
+
     Client:
       type: object
       properties:
@@ -97,17 +122,16 @@ components:
           type: string
           example: 'Deposit 500$'
 
-definitions:
-  NotFound:
-    type: object
-    properties:
-      status:
-        type: integer
-        example: 404
-      type:
-        type: string
-        example: 'ClientNotFound'
-      message:
-        type: string
-        example: 'Client not found.'
+    NotFound:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 404
+        type:
+          type: string
+          example: 'ClientNotFound'
+        message:
+          type: string
+          example: 'Client not found.'
 

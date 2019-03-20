@@ -2,19 +2,17 @@ package se.jsquad.repository;
 
 import se.jsquad.Client;
 
-import javax.ejb.Stateless;
 import javax.persistence.TypedQuery;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-@Stateless
 public class ClientRepository extends EntityManagerProducer {
-    private static Logger logger = Logger.getLogger(ClientRepository.class.getName());
+    private static final Logger logger = Logger.getLogger(ClientRepository.class.getName());
 
     public Client getClientByPersonIdentification(String personIdentification) {
         logger.log(Level.FINE, "getClientByPersonIdentification({0})",
-                new Object[]{"secret person identification parameter"});
+                new Object[] {"hidden"});
 
         TypedQuery<Client> query = getEntityManager().createNamedQuery(Client.PERSON_IDENTIFICATION,
                 Client.class);

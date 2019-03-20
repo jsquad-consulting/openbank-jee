@@ -27,9 +27,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Execution(ExecutionMode.SAME_THREAD)
 class SystemStartupEjbWeldTest {
     @WeldSetup
-    WeldInitiator weld =
-            WeldInitiator.from(SystemStartupEjb.class, SystemPropertyRepository.class).activate(TransactionScoped.class)
-            .setPersistenceContextFactory(getEntityManager()).build();
+    private WeldInitiator weld =
+            WeldInitiator.from(SystemStartupEjb.class, SystemPropertyRepository.class).activate(TransactionScoped
+                    .class).setPersistenceContextFactory(getEntityManager()).build();
 
     private static Function<InjectionPoint, Object> getEntityManager() {
         Properties properties = new Properties();

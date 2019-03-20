@@ -18,7 +18,7 @@ import java.util.logging.Logger;
 @Stateless
 @Path("/client/info")
 public class ClientInformationRest {
-    private static Logger logger = Logger.getLogger(ClientInformationRest.class.getName());
+    private static final Logger logger = Logger.getLogger(ClientInformationRest.class.getName());
 
     @Inject
     private ClientInformationEJB clientInformationEJB;

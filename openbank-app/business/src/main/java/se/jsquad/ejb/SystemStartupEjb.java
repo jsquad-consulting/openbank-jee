@@ -32,7 +32,7 @@ public class SystemStartupEjb {
     @Schedule(minute = "*/5", hour = "*")
     public void refreshTheSecondaryLevelCache() {
         logger.log(Level.FINE, "refreshTheSecondaryLevelCache() method is being called to refresh the secondary level"
-                + " cache for SystemProperty entities");
+                + " cache for SystemProperty entities.");
         lock.lock();
         NumberOfLocks.increaseNumberOfLocks();
 
