@@ -24,9 +24,6 @@ public class SystemStartupEjb {
     public SystemStartupEjb() {
         logger.log(Level.FINE, "Starting up the application and caching the system properties to the secondary level "
                 + "cache.");
-        if (systemPropertyRepository != null) {
-            systemPropertyRepository.refreshSecondaryLevelCache();
-        }
     }
 
     @Schedule(minute = "*/5", hour = "*")

@@ -25,6 +25,11 @@
         <failOnMissingWebXml>false</failOnMissingWebXml>
         <junit.jupiter.version>5.4.0</junit.jupiter.version>
         <mockito.version>2.25.0</mockito.version>
+        <!-- Sonar -->
+        <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
+        <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
+        <sonar.jacoco.reportPaths>${project.basedir}/../target/jacoco.exec</sonar.jacoco.reportPaths>
+        <sonar.language>java</sonar.language>
     </properties>
 
     <build>
@@ -135,6 +140,60 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.jacoco</groupId>
+            <artifactId>jacoco-maven-plugin</artifactId>
+            <version>0.8.3</version>
+        </dependency>
     </dependencies>
 
+    <profiles>
+        <profile>
+            <id>coverage</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <version>0.8.3</version>
+                        <executions>
+                            <execution>
+                                <id>prepare-agent</id>
+                                <goals>
+                                    <goal>prepare-agent</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>report</id>
+                                <phase>prepare-package</phase>
+                                <goals>
+                                    <goal>report</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>post-unit-test</id>
+                                <phase>test</phase>
+                                <goals>
+                                    <goal>report</goal>
+                                </goals>
+                                <configuration>
+                                    <!-- Sets the path to the file which contains the execution data. -->
+                                    <dataFile>target/jacoco.exec</dataFile>
+                                    <!-- Sets the output directory for the code coverage report. -->
+                                    <outputDirectory>target/jacoco-ut</outputDirectory>
+                                </configuration>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <destFile>${sonar.jacoco.reportPaths}</destFile>
+                            <append>true</append>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
