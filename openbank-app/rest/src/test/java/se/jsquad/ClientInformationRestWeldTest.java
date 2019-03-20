@@ -56,13 +56,15 @@ public class ClientInformationRestWeldTest {
         assertEquals(personIdentification, clientApi.getPerson().getPersonIdentification());
         assertEquals("John", clientApi.getPerson().getFirstName());
         assertEquals("Doe", clientApi.getPerson().getLastName());
+        assertEquals(personIdentification, clientApi.getPerson().getPersonIdentification());
+        assertEquals("john.doe@test.se", clientApi.getPerson().getMail());
 
         assertEquals(1, clientApi.getAccountSet().size());
         assertEquals(500.0, clientApi.getAccountSet().get(0).getBalance());
 
         assertEquals(1, clientApi.getAccountSet().get(0).getAccountTransactionSet().size());
-        assertEquals("DEPOSIT", clientApi.getAccountSet().get(0).getAccountTransactionSet().get(0).getTransactionType()
-                .name());
+        assertEquals("DEPOSIT", clientApi.getAccountSet().get(0).getAccountTransactionSet().get(0)
+                .getTransactionType().name());
         assertEquals("500$ in deposit", clientApi.getAccountSet().get(0).getAccountTransactionSet().get(0)
                 .getMessage());
     }

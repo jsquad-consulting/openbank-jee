@@ -99,6 +99,9 @@ components:
         lastName:
           type: string
           example: Doe
+        mail:
+          type: string
+          example: 'john.doe@test.se'
 
     Account:
       type: object

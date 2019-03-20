@@ -20,6 +20,7 @@ public class ClientAdapter {
         personApi.setFirstName(client.getPerson().getFirstName());
         personApi.setLastName(client.getPerson().getLastName());
         personApi.setPersonIdentification(client.getPerson().getPersonIdentification());
+        personApi.setMail(client.getPerson().getMail());
 
         Set<AccountApi> accountApiSet = new HashSet<>();
 
@@ -33,7 +34,8 @@ public class ClientAdapter {
 
                 accountTransactionApi.setMessage(accountTransaction.getMessage());
 
-                TransactionTypeApi transactionTypeApi = TransactionTypeApi.valueOf(accountTransaction.getTransactionType().name());
+                TransactionTypeApi transactionTypeApi = TransactionTypeApi.valueOf(accountTransaction
+                        .getTransactionType().name());
 
                 accountTransactionApi.setTransactionType(transactionTypeApi);
 

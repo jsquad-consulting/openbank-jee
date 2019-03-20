@@ -15,6 +15,7 @@
             <xs:element name="personIdentification" type="xs:string"/>
             <xs:element name="firstName" type="xs:string"/>
             <xs:element name="lastName" type="xs:string"/>
+            <xs:element name="mail" type="xs:string"/>
         </xs:sequence>
     </xs:complexType>
 
