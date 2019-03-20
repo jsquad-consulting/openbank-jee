@@ -1,7 +1,7 @@
 package se.jsquad;
 
-import se.jsquad.adapter.ClientAdapter;
 import se.jsquad.client.info.ClientApi;
+import se.jsquad.ejb.ClientInformationEJB;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -21,7 +21,7 @@ public class ClientInformationRest {
     private static Logger logger = Logger.getLogger(ClientInformationRest.class.getName());
 
     @Inject
-    private ClientAdapter clientAdapter;
+    private ClientInformationEJB clientInformationEJB;
 
     @GET
     @Path("/{personIdentification}")
@@ -31,17 +31,19 @@ public class ClientInformationRest {
                 new Object[]{"secret person identification parameter"});
 
         try {
-            ClientApi clientApi = clientAdapter.getClient(personIdentification);
+            ClientApi clientApi = clientInformationEJB.getClient(personIdentification);
 
             if (clientApi != null) {
                 return Response.ok().entity(clientApi).build();
             } else {
-                return Response.status(Response.Status.NOT_FOUND).entity("Client not found.").type(MediaType.TEXT_PLAIN).build();
+                return Response.status(Response.Status.NOT_FOUND).entity("Client not found.").type(MediaType
+                        .TEXT_PLAIN).build();
             }
         } catch (NoResultException e) {
             logger.log(Level.FINE, e.getMessage(), e);
 
-            return Response.status(Response.Status.NOT_FOUND).entity("Client not found.").type(MediaType.TEXT_PLAIN).build();
+            return Response.status(Response.Status.NOT_FOUND).entity("Client not found.").type(MediaType.TEXT_PLAIN)
+                    .build();
 
         } catch (Exception e) {
             logger.log(Level.SEVERE, e.getMessage(), e);

@@ -8,32 +8,12 @@ import se.jsquad.client.info.AccountTransactionApi;
 import se.jsquad.client.info.ClientApi;
 import se.jsquad.client.info.PersonApi;
 import se.jsquad.client.info.TransactionTypeApi;
-import se.jsquad.repository.ClientRepository;
 
-import javax.ejb.Stateless;
-import javax.inject.Inject;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-@Stateless
 public class ClientAdapter {
-    Logger logger = Logger.getLogger(ClientAdapter.class.getName());
-
-    @Inject
-    private ClientRepository clientRepository;
-
-    public ClientApi getClient(String personIdentification) {
-        logger.log(Level.FINE, "getClient(personIdentification: {0})",
-                new Object[]{"Secret person identification number parameter"});
-
-        Client client = clientRepository.getClientByPersonIdentification(personIdentification);
-
-        if (client == null) {
-            return null;
-        }
-
+    public ClientApi translateClientToClientApi(Client client) {
         ClientApi clientApi = new ClientApi();
         PersonApi personApi = new PersonApi();
 

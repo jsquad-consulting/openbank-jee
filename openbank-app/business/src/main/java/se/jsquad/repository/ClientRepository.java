@@ -10,7 +10,7 @@ import java.util.logging.Logger;
 
 @Stateless
 public class ClientRepository extends EntityManagerProducer {
-    Logger logger = Logger.getLogger(ClientRepository.class.getName());
+    private static Logger logger = Logger.getLogger(ClientRepository.class.getName());
 
     public Client getClientByPersonIdentification(String personIdentification) {
         logger.log(Level.FINE, "getClientByPersonIdentification({0})",

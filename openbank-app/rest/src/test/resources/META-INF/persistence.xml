@@ -7,8 +7,9 @@
         <class>se.jsquad.Account</class>
         <class>se.jsquad.AccountTransaction</class>
         <class>se.jsquad.Person</class>
+        <class>se.jsquad.SystemProperty</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
-        <shared-cache-mode>NONE</shared-cache-mode>
+        <shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
         <properties>
             <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>
             <property name="javax.persistence.sql-load-script-source" value="META-INF/sql/import_data.sql"/>

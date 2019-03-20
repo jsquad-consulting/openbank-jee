@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import se.jsquad.adapter.ClientAdapter;
 import se.jsquad.client.info.ClientApi;
+import se.jsquad.ejb.ClientInformationEJB;
 import se.jsquad.repository.ClientRepository;
 
 import javax.enterprise.inject.spi.InjectionPoint;
@@ -24,8 +25,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class ClientInformationRestWeldTest {
 
     @WeldSetup
-    WeldInitiator weld = WeldInitiator.from(ClientInformationRest.class, ClientAdapter.class,
-            ClientRepository.class).activate(TransactionScoped.class)
+    WeldInitiator weld = WeldInitiator.from(ClientInformationRest.class, ClientInformationEJB.class,
+            ClientRepository.class, ClientAdapter.class).activate(TransactionScoped.class)
             .setPersistenceContextFactory(getEntityManager()).build();
 
     @Inject
@@ -60,7 +61,9 @@ public class ClientInformationRestWeldTest {
         assertEquals(500.0, clientApi.getAccountSet().get(0).getBalance());
 
         assertEquals(1, clientApi.getAccountSet().get(0).getAccountTransactionSet().size());
-        assertEquals("DEPOSIT", clientApi.getAccountSet().get(0).getAccountTransactionSet().get(0).getTransactionType().name());
-        assertEquals("500$ in deposit", clientApi.getAccountSet().get(0).getAccountTransactionSet().get(0).getMessage());
+        assertEquals("DEPOSIT", clientApi.getAccountSet().get(0).getAccountTransactionSet().get(0).getTransactionType()
+                .name());
+        assertEquals("500$ in deposit", clientApi.getAccountSet().get(0).getAccountTransactionSet().get(0)
+                .getMessage());
     }
 }

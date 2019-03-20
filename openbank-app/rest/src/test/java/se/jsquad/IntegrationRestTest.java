@@ -8,6 +8,8 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import se.jsquad.adapter.ClientAdapter;
 import se.jsquad.client.info.ClientApi;
+import se.jsquad.ejb.ClientInformationEJB;
+import se.jsquad.ejb.OpenBankBusinessEJB;
 import se.jsquad.repository.ClientRepository;
 import se.jsquad.repository.EntityManagerProducer;
 
@@ -26,8 +28,8 @@ public class IntegrationRestTest {
     private EntityManager entityManager;
     private EntityManagerFactory entityManagerFactory;
 
-    OpenBankRest openBankRest;
-    ClientInformationRest clientInformationRest;
+    private OpenBankRest openBankRest;
+    private ClientInformationRest clientInformationRest;
 
     @BeforeEach
     void init() throws NoSuchFieldException, IllegalAccessException {
@@ -37,22 +39,28 @@ public class IntegrationRestTest {
         entityManagerFactory = Persistence.createEntityManagerFactory("openBankPU", properties);
         entityManager = entityManagerFactory.createEntityManager();
 
+        ClientInformationEJB clientInformationEJB = Mockito.spy(new ClientInformationEJB());
         ClientAdapter clientAdapter = Mockito.spy(new ClientAdapter());
         ClientRepository clientRepository = Mockito.spy(new ClientRepository());
-        EntityManagerProducer entityManagerProducer = Mockito.spy(new EntityManagerProducer());
         clientInformationRest = Mockito.spy(new ClientInformationRest());
 
-        Field field = ClientInformationRest.class.getDeclaredField("clientAdapter");
+        Field field = ClientInformationRest.class.getDeclaredField("clientInformationEJB");
         field.setAccessible(true);
 
         // Set value
-        field.set(clientInformationRest, clientAdapter);
+        field.set(clientInformationRest, clientInformationEJB);
 
-        field = ClientAdapter.class.getDeclaredField("clientRepository");
+        field = ClientInformationEJB.class.getDeclaredField("clientAdapter");
         field.setAccessible(true);
 
         // Set value
-        field.set(clientAdapter, clientRepository);
+        field.set(clientInformationEJB, clientAdapter);
+
+        field = ClientInformationEJB.class.getDeclaredField("clientRepository");
+        field.setAccessible(true);
+
+        // Set value
+        field.set(clientInformationEJB, clientRepository);
 
         field = EntityManagerProducer.class.getDeclaredField("entityManager");
         field.setAccessible(true);
@@ -61,7 +69,7 @@ public class IntegrationRestTest {
         field.set(clientRepository, entityManager);
 
         openBankRest = Mockito.spy(new OpenBankRest());
-        OpenBankBusiness openBankBusiness = Mockito.spy(new OpenBankBusiness());
+        OpenBankBusinessEJB openBankBusiness = Mockito.spy(new OpenBankBusinessEJB());
 
         field = OpenBankRest.class.getDeclaredField("openBankBusiness");
         field.setAccessible(true);
@@ -105,8 +113,10 @@ public class IntegrationRestTest {
         assertEquals(500.0, clientApi.getAccountSet().get(0).getBalance());
 
         assertEquals(1, clientApi.getAccountSet().get(0).getAccountTransactionSet().size());
-        assertEquals("DEPOSIT", clientApi.getAccountSet().get(0).getAccountTransactionSet().get(0).getTransactionType().name());
-        assertEquals("500$ in deposit", clientApi.getAccountSet().get(0).getAccountTransactionSet().get(0).getMessage());
+        assertEquals("DEPOSIT", clientApi.getAccountSet().get(0).getAccountTransactionSet().get(0).getTransactionType()
+                .name());
+        assertEquals("500$ in deposit", clientApi.getAccountSet().get(0).getAccountTransactionSet().get(0)
+                .getMessage());
     }
 
     @Test

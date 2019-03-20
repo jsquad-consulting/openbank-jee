@@ -1,5 +1,7 @@
 package se.jsquad;
 
+import se.jsquad.ejb.OpenBankBusinessEJB;
+
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -13,10 +15,10 @@ import java.util.logging.Logger;
 @Stateless
 @Path("/openbank")
 public class OpenBankRest {
-    static Logger logger = Logger.getLogger(OpenBankRest.class.getName());
+    private static Logger logger = Logger.getLogger(OpenBankRest.class.getName());
 
     @Inject
-    OpenBankBusiness openBankBusiness;
+    OpenBankBusinessEJB openBankBusiness;
 
     @GET
     @Path("/hello/world")
@@ -27,7 +29,8 @@ public class OpenBankRest {
         try {
             return Response.ok().entity(openBankBusiness.getHelloWorld()).build();
         } catch (Exception e) {
-            return Response.serverError().entity("Severe system failure has occured!").type(MediaType.TEXT_PLAIN).build();
+            return Response.serverError().entity("Severe system failure has occured!").type(MediaType.TEXT_PLAIN)
+                    .build();
         }
     }
 
