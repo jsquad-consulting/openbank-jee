@@ -70,4 +70,17 @@ public class ClientInformationRestWeldTest {
         assertEquals("500$ in deposit", clientApi.getAccountList().get(0).getAccountTransactionList().get(0)
                 .getMessage());
     }
+
+    @Test
+    public void testGetClientNotFound() {
+        // Given
+        String personIdentification = "191212121213";
+
+        // When
+        Response response = clientInformationRest.getClientInformtion(personIdentification);
+
+        // Then
+        assertEquals(Response.Status.NOT_FOUND, Response.Status.fromStatusCode(response.getStatus()));
+        assertEquals("Client not found.", (String) response.getEntity());
+    }
 }

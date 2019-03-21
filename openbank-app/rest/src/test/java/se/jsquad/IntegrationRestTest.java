@@ -8,8 +8,10 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import se.jsquad.adapter.ClientAdapter;
 import se.jsquad.client.info.AccountApi;
+import se.jsquad.client.info.AccountTransactionApi;
 import se.jsquad.client.info.ClientApi;
 import se.jsquad.client.info.PersonApi;
+import se.jsquad.client.info.TransactionTypeApi;
 import se.jsquad.ejb.ClientInformationEJB;
 import se.jsquad.ejb.OpenBankBusinessEJB;
 import se.jsquad.generator.MessageGenerator;
@@ -35,6 +37,7 @@ public class IntegrationRestTest {
 
     private OpenBankRest openBankRest;
     private ClientInformationRest clientInformationRest;
+    private ClientInformationEJB clientInformationEJB;
 
     @BeforeEach
     void init() throws NoSuchFieldException, IllegalAccessException {
@@ -44,7 +47,7 @@ public class IntegrationRestTest {
         entityManagerFactory = Persistence.createEntityManagerFactory("openBankPU", properties);
         entityManager = entityManagerFactory.createEntityManager();
 
-        ClientInformationEJB clientInformationEJB = Mockito.spy(new ClientInformationEJB());
+        clientInformationEJB = Mockito.spy(new ClientInformationEJB());
         ClientAdapter clientAdapter = Mockito.spy(new ClientAdapter());
         ClientRepository clientRepository = Mockito.spy(new ClientRepository());
         clientInformationRest = Mockito.spy(new ClientInformationRest());
@@ -190,6 +193,11 @@ public class IntegrationRestTest {
         accountApi.setBalance(Long.valueOf(1050));
         accountApi.getAccountTransactionList().clear();
 
+        AccountTransactionApi accountTransactionApi = new AccountTransactionApi();
+        accountTransactionApi.setTransactionType(TransactionTypeApi.DEPOSIT);
+        accountTransactionApi.setMessage("Deposit 500$");
+        accountApi.getAccountTransactionList().add(accountTransactionApi);
+
         clientApi.getAccountList().add(accountApi);
 
         // When
@@ -240,6 +248,21 @@ public class IntegrationRestTest {
                 .getTransactionType().name());
         assertEquals("500$ in deposit", clientApi.getAccountList().get(0).getAccountTransactionList().get(0)
                 .getMessage());
+    }
+
+    @Test
+    public void testGetClientException() {
+        // Given
+        String personIdentification = "191212121212";
+
+        // When
+        Mockito.when(clientInformationEJB.getClient(personIdentification)).thenThrow(new RuntimeException(
+                "Severe system failure has occured!"));
+        Response response = clientInformationRest.getClientInformtion(personIdentification);
+
+        // Then
+        assertEquals(Response.Status.INTERNAL_SERVER_ERROR, Response.Status.fromStatusCode(response.getStatus()));
+        assertEquals("Severe system failure has occured!", (String) response.getEntity());
     }
 
     @Test
