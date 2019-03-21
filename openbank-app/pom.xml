@@ -52,7 +52,7 @@
     </build>
 
     <dependencies>
-        <!-- Java EE 8 (Jakarta) -->
+        <!-- Java EE 8 -->
         <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-web-api</artifactId>

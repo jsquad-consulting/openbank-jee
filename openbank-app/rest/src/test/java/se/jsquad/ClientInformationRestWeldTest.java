@@ -9,7 +9,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import se.jsquad.adapter.ClientAdapter;
 import se.jsquad.client.info.ClientApi;
 import se.jsquad.ejb.ClientInformationEJB;
+import se.jsquad.generator.MessageGenerator;
 import se.jsquad.repository.ClientRepository;
+import se.jsquad.validator.ClientValidator;
 
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Inject;
@@ -23,10 +25,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(WeldJunit5Extension.class)
 public class ClientInformationRestWeldTest {
-
     @WeldSetup
     private WeldInitiator weld = WeldInitiator.from(ClientInformationRest.class, ClientInformationEJB.class,
-            ClientRepository.class, ClientAdapter.class).activate(TransactionScoped.class)
+            ClientRepository.class, ClientAdapter.class, ClientValidator.class, MessageGenerator.class)
+            .activate(TransactionScoped.class)
             .setPersistenceContextFactory(getEntityManager()).build();
 
     @Inject
@@ -59,13 +61,13 @@ public class ClientInformationRestWeldTest {
         assertEquals(personIdentification, clientApi.getPerson().getPersonIdentification());
         assertEquals("john.doe@test.se", clientApi.getPerson().getMail());
 
-        assertEquals(1, clientApi.getAccountSet().size());
-        assertEquals(500.0, clientApi.getAccountSet().get(0).getBalance());
+        assertEquals(1, clientApi.getAccountList().size());
+        assertEquals(500.0, clientApi.getAccountList().get(0).getBalance());
 
-        assertEquals(1, clientApi.getAccountSet().get(0).getAccountTransactionSet().size());
-        assertEquals("DEPOSIT", clientApi.getAccountSet().get(0).getAccountTransactionSet().get(0)
+        assertEquals(1, clientApi.getAccountList().get(0).getAccountTransactionList().size());
+        assertEquals("DEPOSIT", clientApi.getAccountList().get(0).getAccountTransactionList().get(0)
                 .getTransactionType().name());
-        assertEquals("500$ in deposit", clientApi.getAccountSet().get(0).getAccountTransactionSet().get(0)
+        assertEquals("500$ in deposit", clientApi.getAccountList().get(0).getAccountTransactionList().get(0)
                 .getMessage());
     }
 }

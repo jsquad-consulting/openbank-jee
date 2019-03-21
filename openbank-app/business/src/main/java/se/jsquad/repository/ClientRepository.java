@@ -11,7 +11,7 @@ public class ClientRepository extends EntityManagerProducer {
     private static final Logger logger = Logger.getLogger(ClientRepository.class.getName());
 
     public Client getClientByPersonIdentification(String personIdentification) {
-        logger.log(Level.FINE, "getClientByPersonIdentification({0})",
+        logger.log(Level.FINE, "getClientByPersonIdentification(personIdentification: {0})",
                 new Object[] {"hidden"});
 
         TypedQuery<Client> query = getEntityManager().createNamedQuery(Client.PERSON_IDENTIFICATION,
@@ -25,5 +25,13 @@ public class ClientRepository extends EntityManagerProducer {
         } else {
             return clientList.get(0);
         }
+    }
+
+    public void createClient(Client client) {
+        logger.log(Level.FINE, "createClient(client: {0})",
+                new Object[] {"hidden"});
+
+        client.getAccountSet().clear();
+        getEntityManager().persist(client);
     }
 }

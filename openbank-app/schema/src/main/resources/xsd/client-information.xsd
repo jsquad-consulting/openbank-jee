@@ -6,7 +6,7 @@
     <xs:complexType name="ClientApi">
         <xs:sequence>
             <xs:element name="person" type="tns:PersonApi"/>
-            <xs:element name="accountSet" type="tns:AccountApi" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="accountList" type="tns:AccountApi" minOccurs="0" maxOccurs="unbounded"/>
         </xs:sequence>
     </xs:complexType>
 
@@ -22,7 +22,7 @@
     <xs:complexType name="AccountApi">
         <xs:sequence>
             <xs:element name="balance" type="xs:long"/>
-            <xs:element name="accountTransactionSet" type="tns:AccountTransactionApi" minOccurs="0"
+            <xs:element name="accountTransactionList" type="tns:AccountTransactionApi" minOccurs="0"
                         maxOccurs="unbounded"/>
         </xs:sequence>
     </xs:complexType>

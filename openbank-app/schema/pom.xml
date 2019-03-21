@@ -55,9 +55,6 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <!--<xjbSources>
-                        <xjbSource>src/main/resources/global.xjb</xjbSource>
-                    </xjbSources>-->
                     <sources>
                         <source>${project.basedir}/src/main/resources/xsd/dummy.xsd</source>
                         <source>${project.basedir}/src/main/resources/xsd/batch-status.xsd</source>

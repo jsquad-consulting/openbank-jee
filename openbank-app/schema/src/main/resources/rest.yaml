@@ -10,6 +10,34 @@ servers:
     description: Local OpenBank server
 
 paths:
+  /client/create/:
+    post:
+      summary: Create client
+      requestBody:
+        description: Client model as request body
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Client'
+      responses:
+        '200':
+          description: Returns an ok and message string
+          content:
+            application/json:
+              schema:
+                example: 'Client successfully crated'
+                type: string
+        '400':
+          description: Client data has not valid format
+          content:
+            application/json:
+              schema:
+                example: 'Client with personIdentificaton is wrong format\n and firstName is in wrong format'
+                type: string
+        '5XX':
+          description: Unexpected system error
+
   /client/info/{personIdentification}:
     parameters:
       - in: path
@@ -84,14 +112,16 @@ components:
       properties:
         person:
           $ref: '#/components/schemas/Person'
-        account:
-          $ref: '#/components/schemas/Account'
+        accountList:
+          type: array
+          items:
+            $ref: '#/components/schemas/Account'
 
     Person:
       type: object
       properties:
         personIdentification:
-          type: integer
+          type: string
           example: 197501011234
         firstName:
           type: string
@@ -107,9 +137,9 @@ components:
       type: object
       properties:
         balance:
-          type: number
-          example: 59765.098785
-        accountTransaction:
+          type: integer
+          example: 59765
+        accountTransactionList:
           type: array
           items:
             $ref: '#/components/schemas/AccountTransaction'
