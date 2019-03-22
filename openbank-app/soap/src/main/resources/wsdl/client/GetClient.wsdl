@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+                  xmlns:tns="http://jsquad.se/GetClientService/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+                  xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="GetClientService"
+                  targetNamespace="http://jsquad.se/GetClientService/">
+    <wsdl:documentation>Definition for a web service called GetClientService,
+        that retrieves the Client information by specifing the personIdentificationNumber.
+    </wsdl:documentation>
+
+    <wsdl:types>
+        <xsd:schema targetNamespace="http://jsquad.se/GetClientService/">
+            <xsd:element name="GetClientRequest">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="personIdentification" type="xsd:string" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="GetClientResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="client" type="tns:ClientType"/>
+                        <xsd:element name="status" type="tns:StatusType"/>
+                        <xsd:element name="message" type="xsd:string"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+
+            <!-- XSD definitions -->
+            <xsd:complexType name="ClientType">
+                <xsd:sequence>
+                    <xsd:element name="person" type="tns:PersonType"/>
+                    <xsd:element name="accountList" type="tns:AccountType" minOccurs="0" maxOccurs="unbounded"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <xsd:complexType name="PersonType">
+                <xsd:sequence>
+                    <xsd:element name="personIdentification" type="xsd:string"/>
+                    <xsd:element name="firstName" type="xsd:string"/>
+                    <xsd:element name="lastName" type="xsd:string"/>
+                    <xsd:element name="mail" type="xsd:string"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <xsd:complexType name="AccountType">
+                <xsd:sequence>
+                    <xsd:element name="balance" type="xsd:long"/>
+                    <xsd:element name="accountTransactionList" type="tns:AccountTransactionType" minOccurs="0"
+                                maxOccurs="unbounded"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <xsd:complexType name="AccountTransactionType">
+                <xsd:sequence>
+                    <xsd:element name="transactionType" type="tns:TransactionType"/>
+                    <xsd:element name="message" type="xsd:string"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <xsd:simpleType name="TransactionType" final="restriction">
+                <xsd:restriction base="xsd:string">
+                    <xsd:enumeration value="DEPOSIT"/>
+                    <xsd:enumeration value="WITHDRAWAL"/>
+                </xsd:restriction>
+            </xsd:simpleType>
+
+            <xsd:simpleType name="StatusType" final="restriction">
+                <xsd:restriction base="xsd:string">
+                    <xsd:enumeration value="OK"/>
+                    <xsd:enumeration value="WARNING"/>
+                    <xsd:enumeration value="ERROR"/>
+                </xsd:restriction>
+            </xsd:simpleType>
+        </xsd:schema>
+    </wsdl:types>
+
+    <wsdl:message name="GetClientRequest">
+        <wsdl:part element="tns:GetClientRequest" name="request" />
+    </wsdl:message>
+    <wsdl:message name="GetClientResponse">
+        <wsdl:part element="tns:GetClientResponse" name="response" />
+    </wsdl:message>
+
+    <wsdl:portType name="GetClientServicePort">
+        <wsdl:operation name="GetClient">
+            <wsdl:input  message="tns:GetClientRequest" />
+            <wsdl:output message="tns:GetClientResponse" />
+        </wsdl:operation>
+    </wsdl:portType>
+
+    <wsdl:binding name="GetClientServiceSOAP" type="tns:GetClientServicePort">
+        <soap:binding style="document"
+                      transport="http://schemas.xmlsoap.org/soap/http" />
+        <wsdl:operation name="GetClient">
+            <soap:operation soapAction="http://jsquad.se/ClientService/GetClient" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+
+    <wsdl:service name="GetClientService">
+        <wsdl:port binding="tns:GetClientServiceSOAP" name="GetClientServiceSOAP">
+            <soap:address location="http://localhost/GetClientService" />
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>
+

@@ -40,5 +40,4 @@
             <xs:enumeration value="WITHDRAWAL"/>
         </xs:restriction>
     </xs:simpleType>
-
 </xs:schema>

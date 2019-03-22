@@ -18,6 +18,7 @@
         <module>schema</module>
         <module>persistence</module>
         <module>common</module>
+        <module>soap</module>
     </modules>
 
     <properties>
