@@ -7,8 +7,27 @@
         <xs:sequence>
             <xs:element name="person" type="tns:PersonApi"/>
             <xs:element name="accountList" type="tns:AccountApi" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="clientType" type="tns:ClientTypeApi"/>
         </xs:sequence>
     </xs:complexType>
+
+    <xs:complexType name="ClientTypeApi">
+        <xs:sequence>
+            <xs:element name="type" type="tns:TypeApi"/>
+            <xs:element name="specialOffers" type="xs:string"/>
+            <xs:element name="rating" type="xs:long"/>
+            <xs:element name="premiumRating" type="xs:long"/>
+            <xs:element name="country" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:simpleType name="TypeApi">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="REGULAR"/>
+            <xs:enumeration value="PREMIUM"/>
+            <xs:enumeration value="FOREIGN"/>
+        </xs:restriction>
+    </xs:simpleType>
 
     <xs:complexType name="PersonApi">
         <xs:sequence>

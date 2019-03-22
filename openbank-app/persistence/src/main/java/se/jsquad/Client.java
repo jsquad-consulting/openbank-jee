@@ -30,6 +30,9 @@ public class Client implements Serializable {
             cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
     private Person person;
 
+    @OneToOne(mappedBy = "client", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
+    private ClientType clientType;
+
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
     @JoinTable(name = "CLIENT_JOIN_ACCOUNT", joinColumns = {@JoinColumn(name = "CLIENT_FK", referencedColumnName = "id")},
             inverseJoinColumns = {@JoinColumn(name = "ACCOUNT_FK", referencedColumnName = "id")})
@@ -57,5 +60,13 @@ public class Client implements Serializable {
 
     public void setPerson(Person person) {
         this.person = person;
+    }
+
+    public ClientType getClientType() {
+        return clientType;
+    }
+
+    public void setClientType(ClientType clientType) {
+        this.clientType = clientType;
     }
 }

@@ -116,6 +116,28 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Account'
+        clientType:
+          $ref: '#/components/schemas/ClientType'
+
+    ClientType:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [REGULAR, PREUMIUM, FOREIGN]
+          example: 'REGULAR'
+        specialOffers:
+          type: string
+          example: 'Don Vito has an offer we can not refuse.'
+        rating:
+          type: integer
+          example: 10000
+        premiumRating:
+          type: integer
+          example: 99999
+        country:
+          type: string
+          example: 'Italy'
 
     Person:
       type: object

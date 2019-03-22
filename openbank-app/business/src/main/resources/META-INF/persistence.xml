@@ -8,6 +8,10 @@
         <class>se.jsquad.AccountTransaction</class>
         <class>se.jsquad.Person</class>
         <class>se.jsquad.SystemProperty</class>
+        <class>se.jsquad.ClientType</class>
+        <class>se.jsquad.RegularClient</class>
+        <class>se.jsquad.PremiumClient</class>
+        <class>se.jsquad.ForeignClient</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
         <properties>

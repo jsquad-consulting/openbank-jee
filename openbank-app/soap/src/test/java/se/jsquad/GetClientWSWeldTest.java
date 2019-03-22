@@ -10,6 +10,7 @@ import se.jsquad.getclientservice.GetClientRequest;
 import se.jsquad.getclientservice.GetClientResponse;
 import se.jsquad.getclientservice.StatusType;
 import se.jsquad.getclientservice.TransactionType;
+import se.jsquad.getclientservice.Type;
 import se.jsquad.repository.ClientRepository;
 
 import javax.enterprise.inject.spi.InjectionPoint;
@@ -66,5 +67,8 @@ class GetClientWSWeldTest {
                         .getTransactionType());
         assertEquals("500$ in deposit", getClientResponse.getClient().getAccountList().get(0)
                 .getAccountTransactionList().get(0).getMessage());
+
+        assertEquals(Type.REGULAR, getClientResponse.getClient().getClientType().getType());
+        assertEquals(500, getClientResponse.getClient().getClientType().getRating());
     }
 }

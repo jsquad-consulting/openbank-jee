@@ -3,13 +3,18 @@ package se.jsquad.adapter;
 import se.jsquad.Account;
 import se.jsquad.AccountTransaction;
 import se.jsquad.Client;
+import se.jsquad.ForeignClient;
 import se.jsquad.Person;
+import se.jsquad.PremiumClient;
+import se.jsquad.RegularClient;
 import se.jsquad.TransactionType;
 import se.jsquad.client.info.AccountApi;
 import se.jsquad.client.info.AccountTransactionApi;
 import se.jsquad.client.info.ClientApi;
+import se.jsquad.client.info.ClientTypeApi;
 import se.jsquad.client.info.PersonApi;
 import se.jsquad.client.info.TransactionTypeApi;
+import se.jsquad.client.info.TypeApi;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -25,6 +30,21 @@ public class ClientAdapter {
 
         ClientApi clientApi = new ClientApi();
         PersonApi personApi = new PersonApi();
+        ClientTypeApi clientTypeApi = new ClientTypeApi();
+
+        if (client.getClientType() instanceof RegularClient) {
+            clientTypeApi.setRating(((RegularClient) client.getClientType()).getRating());
+            clientTypeApi.setType(TypeApi.REGULAR);
+        } else if (client.getClientType() instanceof PremiumClient) {
+            clientTypeApi.setPremiumRating(((PremiumClient) client.getClientType()).getPremiumRating());
+            clientTypeApi.setSpecialOffers(((PremiumClient) client.getClientType()).getSpecialOffers());
+            clientTypeApi.setType(TypeApi.PREMIUM);
+        } else {
+            clientTypeApi.setCountry(((ForeignClient) client.getClientType()).getCountry());
+            clientTypeApi.setType(TypeApi.FOREIGN);
+        }
+
+        clientApi.setClientType(clientTypeApi);
 
         personApi.setFirstName(client.getPerson().getFirstName());
         personApi.setLastName(client.getPerson().getLastName());
@@ -73,6 +93,20 @@ public class ClientAdapter {
         client.getPerson().setPersonIdentification(clientApi.getPerson().getPersonIdentification());
         client.getPerson().setMail(clientApi.getPerson().getMail());
         client.getPerson().setClient(client);
+
+        if (TypeApi.REGULAR.equals(clientApi.getClientType().getType())) {
+            client.setClientType(new RegularClient());
+            ((RegularClient)client.getClientType()).setRating(clientApi.getClientType().getRating());
+        } else if (TypeApi.PREMIUM.equals(clientApi.getClientType().getType())) {
+            client.setClientType(new PremiumClient());
+            ((PremiumClient) client.getClientType()).setPremiumRating(clientApi.getClientType().getPremiumRating());
+            ((PremiumClient) client.getClientType()).setSpecialOffers(clientApi.getClientType().getSpecialOffers());
+        } else {
+            client.setClientType(new ForeignClient());
+            ((ForeignClient) client.getClientType()).setCountry(clientApi.getClientType().getCountry());
+        }
+
+        client.getClientType().setClient(client);
 
         Set<Account> accountSet = new HashSet<>();
 

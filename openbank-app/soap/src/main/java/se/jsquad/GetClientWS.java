@@ -3,12 +3,14 @@ package se.jsquad;
 import se.jsquad.getclientservice.AccountTransactionType;
 import se.jsquad.getclientservice.AccountType;
 import se.jsquad.getclientservice.ClientType;
+import se.jsquad.getclientservice.ClientTypeType;
 import se.jsquad.getclientservice.GetClientRequest;
 import se.jsquad.getclientservice.GetClientResponse;
 import se.jsquad.getclientservice.GetClientServicePort;
 import se.jsquad.getclientservice.PersonType;
 import se.jsquad.getclientservice.StatusType;
 import se.jsquad.getclientservice.TransactionType;
+import se.jsquad.getclientservice.Type;
 import se.jsquad.repository.ClientRepository;
 
 import javax.ejb.Stateless;
@@ -64,6 +66,20 @@ public class GetClientWS implements GetClientServicePort {
         clientType.getPerson().setLastName(client.getPerson().getLastName());
         clientType.getPerson().setMail(client.getPerson().getMail());
         clientType.getPerson().setPersonIdentification(client.getPerson().getPersonIdentification());
+
+        clientType.setClientType(new ClientTypeType());
+
+        if (client.getClientType() instanceof RegularClient) {
+            clientType.getClientType().setRating(((RegularClient) client.getClientType()).getRating());
+            clientType.getClientType().setType(Type.REGULAR);
+        } else if (client.getClientType() instanceof PremiumClient) {
+            clientType.getClientType().setPremiumRating(((PremiumClient) client.getClientType()).getPremiumRating());
+            clientType.getClientType().setSpecialOffers(((PremiumClient) client.getClientType()).getSpecialOffers());
+            clientType.getClientType().setType(Type.PREMIUM);
+        } else {
+            clientType.getClientType().setCountry(((ForeignClient) client.getClientType()).getCountry());
+            clientType.getClientType().setType(Type.FOREIGN);
+        }
 
         if (client.getAccountSet() != null) {
             Iterator<Account> accountIterator = client.getAccountSet().iterator();
