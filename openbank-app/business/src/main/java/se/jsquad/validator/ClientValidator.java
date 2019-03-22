@@ -28,6 +28,7 @@ public class ClientValidator {
 
         constraintViolations.addAll(validator.validate(client));
         constraintViolations.addAll(validator.validate(client.getPerson()));
+        constraintViolations.addAll(validator.validate(client.getClientType()));
 
         Iterator<Account> accountIterator = client.getAccountSet().iterator();
 
