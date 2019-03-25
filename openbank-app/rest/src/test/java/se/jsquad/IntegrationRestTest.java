@@ -17,10 +17,12 @@ import se.jsquad.client.info.TypeApi;
 import se.jsquad.ejb.ClientInformationEJB;
 import se.jsquad.ejb.OpenBankBusinessEJB;
 import se.jsquad.generator.MessageGenerator;
+import se.jsquad.jms.MessageSenderSessionJMS;
 import se.jsquad.repository.ClientRepository;
 import se.jsquad.repository.EntityManagerProducer;
 import se.jsquad.validator.ClientValidator;
 
+import javax.jms.JMSException;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
@@ -55,6 +57,7 @@ public class IntegrationRestTest {
         clientInformationRest = Mockito.spy(new ClientInformationRest());
         ClientValidator clientValidator = Mockito.spy(new ClientValidator());
         MessageGenerator messageGenerator = Mockito.spy(new MessageGenerator());
+        MessageSenderSessionJMS messageSenderSessionJMS = Mockito.mock(MessageSenderSessionJMS.class);
 
 
         Field field = ClientInformationRest.class.getDeclaredField("clientInformationEJB");
@@ -74,6 +77,12 @@ public class IntegrationRestTest {
 
         // Set value
         field.set(clientInformationEJB, clientAdapter);
+
+        field = ClientInformationEJB.class.getDeclaredField("messageSenderSessionJMS");
+        field.setAccessible(true);
+
+        // Set value
+        field.set(clientInformationEJB, messageSenderSessionJMS);
 
         field = ClientInformationEJB.class.getDeclaredField("clientValidator");
         field.setAccessible(true);
@@ -346,7 +355,7 @@ public class IntegrationRestTest {
     }
 
     @Test
-    public void testGetClientException() {
+    public void testGetClientException() throws JMSException {
         // Given
         String personIdentification = "191212121212";
 

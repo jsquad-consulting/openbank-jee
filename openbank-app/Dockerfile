@@ -11,6 +11,8 @@ RUN rm -fr /usr/wildfly
 RUN cd $WILDFLY_HOME && curl http://download.jboss.org/wildfly/$WILDFLY_VERSION/wildfly-$WILDFLY_VERSION.tar.gz \
 | tar zx && mv $WILDFLY_HOME/wildfly-$WILDFLY_VERSION $WILDFLY_HOME/wildfly
 
+RUN cp /usr/openbank/configuration/jboss/standalone.xml $WILDFLY_HOME/wildfly/standalone/configuration/.
+
 RUN cp /usr/openbank/ear/target/openbank-1.0-SNAPSHOT.ear $WILDFLY_HOME/wildfly/standalone/deployments/.
 
 RUN /usr/wildfly/bin/add-user.sh admin admin1234 --silent

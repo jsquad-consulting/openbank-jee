@@ -1,35 +1,65 @@
 package se.jsquad;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.jboss.weld.junit.MockBean;
 import org.jboss.weld.junit5.WeldInitiator;
 import org.jboss.weld.junit5.WeldJunit5Extension;
 import org.jboss.weld.junit5.WeldSetup;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 import se.jsquad.adapter.ClientAdapter;
 import se.jsquad.client.info.ClientApi;
 import se.jsquad.ejb.ClientInformationEJB;
 import se.jsquad.generator.MessageGenerator;
+import se.jsquad.jms.MessageSenderSessionJMS;
 import se.jsquad.repository.ClientRepository;
 import se.jsquad.validator.ClientValidator;
 
+import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Inject;
+import javax.jms.JMSContext;
+import javax.jms.JMSException;
+import javax.jms.JMSProducer;
+import javax.jms.ObjectMessage;
+import javax.jms.Queue;
 import javax.persistence.Persistence;
 import javax.transaction.TransactionScoped;
 import javax.ws.rs.core.Response;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Properties;
 import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyObject;
 
 @ExtendWith(WeldJunit5Extension.class)
 public class ClientInformationRestWeldTest {
     @WeldSetup
     private WeldInitiator weld = WeldInitiator.from(ClientInformationRest.class, ClientInformationEJB.class,
-            ClientRepository.class, ClientAdapter.class, ClientValidator.class, MessageGenerator.class)
+            MessageSenderSessionJMS.class, ClientRepository.class, ClientAdapter.class, ClientValidator.class,
+            MessageGenerator.class).addBeans(createJMSContextBean())
+            .bindResource("java:openBank/jms/callQ", Mockito.mock(Queue.class))
             .activate(TransactionScoped.class)
             .setPersistenceContextFactory(getEntityManager()).build();
+
+    public ClientInformationRestWeldTest() throws JMSException {
+    }
+
+    private static Bean<?> createJMSContextBean() throws JMSException {
+        JMSContext jmsContext = Mockito.mock(JMSContext.class);
+        JMSProducer jmsProducer = Mockito.mock(JMSProducer.class);
+        ObjectMessage objectMessage = Mockito.mock(ObjectMessage.class);
+        Mockito.doNothing().when(objectMessage).setJMSCorrelationID(anyObject());
+        Mockito.doNothing().when(objectMessage).setJMSTimestamp(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
+        Mockito.when(jmsContext.createObjectMessage(anyObject())).thenReturn(objectMessage);
+        Mockito.when(jmsContext.createProducer()).thenReturn(jmsProducer);
+        return MockBean.builder().types(JMSContext.class)
+                .creating(jmsContext).build();
+    }
+
 
     @Inject
     private ClientInformationRest clientInformationRest;
