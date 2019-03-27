@@ -1,5 +1,6 @@
 package se.jsquad;
 
+import se.jsquad.authorization.Authorization;
 import se.jsquad.client.info.ClientApi;
 import se.jsquad.ejb.ClientInformationEJB;
 import se.jsquad.generator.MessageGenerator;
@@ -9,8 +10,6 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 import javax.persistence.NoResultException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolationException;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.GET;
@@ -18,7 +17,6 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.logging.Level;
@@ -35,24 +33,18 @@ public class ClientInformationRest {
     @Inject
     private MessageGenerator messageGenerator;
 
-    @Context
-    private HttpServletRequest request;
-
-    @Context
-    private HttpServletResponse response;
+    @Inject
+    private Authorization authorization;
 
     @GET
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     @Path("/login")
     @Produces(MediaType.APPLICATION_JSON)
     public Response login() {
-        logger.log(Level.FINE, "login(), request: {0}, response: {1}",
-                new Object[]{request, response});
+        logger.log(Level.FINE, "login()");
 
         try {
-            boolean authenticated = request.authenticate(response);
-
-            if (authenticated) {
+            if (authorization.isAuthorized()) {
                 logger.log(Level.FINE, "Authorization ok.");
                 return Response.ok().entity("Authorization ok").type(MediaType.TEXT_PLAIN).build();
             } else {
@@ -73,11 +65,10 @@ public class ClientInformationRest {
     @Path("/logout")
     @Produces(MediaType.APPLICATION_JSON)
     public Response logout() {
-        logger.log(Level.FINE, "logout(), request: {0}, response: {1}",
-                new Object[]{request, response});
+        logger.log(Level.FINE, "logout()");
 
         try {
-            request.logout();
+            authorization.logout();
             return Response.ok().entity("Logout successful.").entity(MediaType.TEXT_PLAIN).build();
         } catch (Exception e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
@@ -96,7 +87,7 @@ public class ClientInformationRest {
                 new Object[]{"secret person identification parameter"});
 
         try {
-            if (!request.authenticate(response)) {
+            if (!authorization.isAuthorized()) {
                 return Response.status(Response.Status.UNAUTHORIZED).entity("Unauthorized request.").type(MediaType
                         .TEXT_PLAIN).build();
             }
@@ -139,7 +130,7 @@ public class ClientInformationRest {
         }
 
         try {
-            if (!request.isUserInRole(RoleConstants.ADMIN)) {
+            if (!authorization.isUserInRole(RoleConstants.ADMIN)) {
                 return Response.status(Response.Status.UNAUTHORIZED).entity("Unauthorized request.").type(MediaType
                         .TEXT_PLAIN).build();
             }

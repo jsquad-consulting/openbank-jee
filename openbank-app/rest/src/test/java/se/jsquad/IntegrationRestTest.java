@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import se.jsquad.adapter.ClientAdapter;
+import se.jsquad.authorization.Authorization;
 import se.jsquad.client.info.AccountApi;
 import se.jsquad.client.info.AccountTransactionApi;
 import se.jsquad.client.info.ClientApi;
@@ -68,6 +69,7 @@ public class IntegrationRestTest {
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         Mockito.when(request.authenticate(null)).thenReturn(true);
         Mockito.when(request.isUserInRole(anyObject())).thenReturn(true);
+        Authorization authorization = Mockito.spy(new Authorization());
 
         Mockito.when(sessionContext.isCallerInRole(RoleConstants.ADMIN)).thenReturn(true);
 
@@ -83,11 +85,17 @@ public class IntegrationRestTest {
         // Set value
         field.set(clientInformationRest, messageGenerator);
 
-        field = ClientInformationRest.class.getDeclaredField("request");
+        field = ClientInformationRest.class.getDeclaredField("authorization");
         field.setAccessible(true);
 
         // Set value
-        field.set(clientInformationRest, request);
+        field.set(clientInformationRest, authorization);
+
+        field = Authorization.class.getDeclaredField("request");
+        field.setAccessible(true);
+
+        // Set value
+        field.set(authorization, request);
 
         field = ClientInformationEJB.class.getDeclaredField("clientAdapter");
         field.setAccessible(true);
