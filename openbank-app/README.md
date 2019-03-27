@@ -19,6 +19,10 @@ flag to use the RESTful operations successfully.
 SOAP contracts (Service) is tested through 
 http://localhost:8080/soap-webservice endpoint with SoapUI utility.
 
-LOGON TO SITE
--------------
-http://0.0.0.0:8080/console
+LOGON TO JBoss CONSOLE
+----------------------
+http://localhost:8080/console
+
+ACCESS THE ANGULAR 7+ CLIENT
+----------------------------
+http://localhost:8080/client/openbank
