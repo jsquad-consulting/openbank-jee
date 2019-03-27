@@ -23,6 +23,7 @@ import se.jsquad.repository.ClientRepository;
 import se.jsquad.repository.EntityManagerProducer;
 import se.jsquad.validator.ClientValidator;
 
+import javax.ejb.SessionContext;
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSContext;
 import javax.jms.JMSException;
@@ -34,11 +35,13 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 import java.lang.reflect.Field;
 import java.util.Properties;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.anyObject;
 
 public class JmsMDBRestTest {
 
@@ -108,6 +111,12 @@ public class JmsMDBRestTest {
         ClientValidator clientValidator = Mockito.spy(new ClientValidator());
         MessageGenerator messageGenerator = Mockito.spy(new MessageGenerator());
         MessageSenderSessionJMS messageSenderSessionJMS = Mockito.spy(new MessageSenderSessionJMS());
+        SessionContext sessionContext = Mockito.mock(SessionContext.class);
+        Mockito.when(sessionContext.isCallerInRole(RoleConstants.ADMIN)).thenReturn(true);
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        Mockito.when(request.authenticate(null)).thenReturn(true);
+        Mockito.when(request.isUserInRole(anyObject())).thenReturn(true);
+
 
         Field field = ClientInformationRest.class.getDeclaredField("clientInformationEJB");
         field.setAccessible(true);
@@ -121,11 +130,23 @@ public class JmsMDBRestTest {
         // Set value
         field.set(clientInformationRest, messageGenerator);
 
+        field = ClientInformationRest.class.getDeclaredField("request");
+        field.setAccessible(true);
+
+        // Set value
+        field.set(clientInformationRest, request);
+
         field = ClientInformationEJB.class.getDeclaredField("clientAdapter");
         field.setAccessible(true);
 
         // Set value
         field.set(clientInformationEJB, clientAdapter);
+
+        field = ClientAdapter.class.getDeclaredField("sessionContext");
+        field.setAccessible(true);
+
+        // Set value
+        field.set(clientAdapter, sessionContext);
 
         field = ClientInformationEJB.class.getDeclaredField("messageSenderSessionJMS");
         field.setAccessible(true);

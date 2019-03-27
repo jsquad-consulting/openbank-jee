@@ -15,5 +15,7 @@ RUN cp /usr/openbank/configuration/jboss/standalone.xml $WILDFLY_HOME/wildfly/st
 
 RUN cp /usr/openbank/ear/target/openbank-1.0-SNAPSHOT.ear $WILDFLY_HOME/wildfly/standalone/deployments/.
 
-RUN /usr/wildfly/bin/add-user.sh admin admin1234 --silent
+RUN /usr/wildfly/bin/add-user.sh --silent admin admin1234
+RUN /usr/wildfly/bin/add-user.sh -a -g admin --silent root root
+RUN /usr/wildfly/bin/add-user.sh -a  -g customer --silent john doe
 CMD ["/usr/wildfly/bin/standalone.sh", "-b", "0.0.0.0", "-bmanagement", "0.0.0.0"]

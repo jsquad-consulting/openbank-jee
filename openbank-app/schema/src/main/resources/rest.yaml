@@ -35,8 +35,68 @@ paths:
               schema:
                 example: 'Client with personIdentificaton is wrong format\n and firstName is in wrong format'
                 type: string
+        '401':
+          description: Returns a unauthorized message
+          content:
+            application/json:
+              schema:
+                type: string
+                example: 'Authorization failed.'
         '5XX':
-          description: Unexpected system error
+          description: Unexpected system error.
+          content:
+            application/json:
+              schema:
+                example: 'System failure.'
+                type: string
+
+  /client/login:
+    get:
+      summary: Returns a ok status that login was successful
+      description: Returns status messages if login went successful or not
+      responses:
+        '200':
+          description: Returns a ok JSON message
+          content:
+            application/json:
+              schema:
+                type: string
+                example: 'Authorization ok.'
+        '401':
+          description: Returns a unauthorized message
+          content:
+            application/json:
+              schema:
+                type: string
+                example: 'Authorization failed.'
+        '5XX':
+          description: Returns a server failure
+          content:
+            application/json:
+              schema:
+                type: string
+                example: 'Severe system error has occured.'
+
+  /client/logout:
+    get:
+      summary: Returns a ok status that login was successful
+      description: Returns status messages if login went successful or not
+      responses:
+        '200':
+          description: Returns a ok JSON message
+          content:
+            application/json:
+              schema:
+                type: string
+                example: 'Logout successful.'
+        '5XX':
+          description: Returns a server failure
+          content:
+            application/json:
+              schema:
+                type: string
+                example: 'Severe system error has occured.'
+
 
   /client/info/{personIdentification}:
     parameters:
@@ -47,8 +107,8 @@ paths:
         required: true
         description: Client's identification number
     get:
-      summary: Returns a Client object with all related list of account data
-      description: Returns
+      summary: Returns a Client object with all related list of account data if you are admin
+      description: Returns a client object
       responses:
         '200':
           description: Returns a JSON Client object
@@ -56,6 +116,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Client'
+        '401':
+          description: Returns a unauthorized message
+          content:
+            application/json:
+              schema:
+                type: string
+                example: 'Authorization failed.'
         '404':
           description: Not found
           content:
@@ -64,6 +131,11 @@ paths:
                 $ref: '#/components/schemas/NotFound'
         '5XX':
           description: Unexpected system error.
+          content:
+            application/json:
+              schema:
+                example: 'System failure.'
+                type: string
 
   /openbank/hello/world:
     get:
@@ -79,6 +151,11 @@ paths:
                 type: string
         '5XX':
           description: Unexpected system error.
+          content:
+            application/json:
+              schema:
+                example: 'System failure.'
+                type: string
 
   /openbank/start/slow/batch/mock:
     get:
@@ -93,6 +170,11 @@ paths:
                 $ref: '#/components/schemas/BatchStatus'
         '5XX':
           description: Unexpected system error.
+          content:
+            application/json:
+              schema:
+                example: 'System failure.'
+                type: string
 
 components:
   schemas:

@@ -3,8 +3,7 @@ package se.jsquad;
 import se.jsquad.batch.status.BatchStatus;
 import se.jsquad.ejb.OpenBankBusinessEJB;
 
-import javax.ejb.Stateless;
-import javax.inject.Inject;
+import javax.ejb.EJB;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -14,12 +13,11 @@ import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-@Stateless
 @Path("/openbank")
 public class OpenBankRest {
     private static final Logger logger = Logger.getLogger(OpenBankRest.class.getName());
 
-    @Inject
+    @EJB
     private OpenBankBusinessEJB openBankBusinessEJB;
 
     @GET

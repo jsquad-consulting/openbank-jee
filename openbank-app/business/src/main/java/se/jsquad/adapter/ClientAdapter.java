@@ -7,6 +7,7 @@ import se.jsquad.ForeignClient;
 import se.jsquad.Person;
 import se.jsquad.PremiumClient;
 import se.jsquad.RegularClient;
+import se.jsquad.RoleConstants;
 import se.jsquad.TransactionType;
 import se.jsquad.client.info.AccountApi;
 import se.jsquad.client.info.AccountTransactionApi;
@@ -16,6 +17,8 @@ import se.jsquad.client.info.PersonApi;
 import se.jsquad.client.info.TransactionTypeApi;
 import se.jsquad.client.info.TypeApi;
 
+import javax.annotation.Resource;
+import javax.ejb.SessionContext;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
@@ -23,6 +26,9 @@ import java.util.logging.Logger;
 
 public class ClientAdapter {
     private static final Logger logger = Logger.getLogger(ClientAdapter.class.getName());
+
+    @Resource
+    private SessionContext sessionContext;
 
     public ClientApi translateClientToClientApi(Client client) {
         logger.log(Level.FINE, "translateClientToClientApi: {0})",
@@ -53,25 +59,27 @@ public class ClientAdapter {
 
         Set<AccountApi> accountApiSet = new HashSet<>();
 
-        for (Account account : client.getAccountSet()) {
-            AccountApi accountApi = new AccountApi();
+        if (sessionContext.isCallerInRole(RoleConstants.ADMIN)) {
+            for (Account account : client.getAccountSet()) {
+                AccountApi accountApi = new AccountApi();
 
-            accountApi.setBalance(account.getBalance());
+                accountApi.setBalance(account.getBalance());
 
-            for (AccountTransaction accountTransaction : account.getAccountTransactionSet()) {
-                AccountTransactionApi accountTransactionApi = new AccountTransactionApi();
+                for (AccountTransaction accountTransaction : account.getAccountTransactionSet()) {
+                    AccountTransactionApi accountTransactionApi = new AccountTransactionApi();
 
-                accountTransactionApi.setMessage(accountTransaction.getMessage());
+                    accountTransactionApi.setMessage(accountTransaction.getMessage());
 
-                TransactionTypeApi transactionTypeApi = TransactionTypeApi.valueOf(accountTransaction
-                        .getTransactionType().name());
+                    TransactionTypeApi transactionTypeApi = TransactionTypeApi.valueOf(accountTransaction
+                            .getTransactionType().name());
 
-                accountTransactionApi.setTransactionType(transactionTypeApi);
+                    accountTransactionApi.setTransactionType(transactionTypeApi);
 
-                accountApi.getAccountTransactionList().add(accountTransactionApi);
+                    accountApi.getAccountTransactionList().add(accountTransactionApi);
+                }
+
+                accountApiSet.add(accountApi);
             }
-
-            accountApiSet.add(accountApi);
         }
 
 

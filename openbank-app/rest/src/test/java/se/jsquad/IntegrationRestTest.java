@@ -22,17 +22,22 @@ import se.jsquad.repository.ClientRepository;
 import se.jsquad.repository.EntityManagerProducer;
 import se.jsquad.validator.ClientValidator;
 
+import javax.ejb.SessionContext;
 import javax.jms.JMSException;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyObject;
 
 public class IntegrationRestTest {
 
@@ -42,9 +47,10 @@ public class IntegrationRestTest {
     private OpenBankRest openBankRest;
     private ClientInformationRest clientInformationRest;
     private ClientInformationEJB clientInformationEJB;
+    private SessionContext sessionContext;
 
     @BeforeEach
-    void init() throws NoSuchFieldException, IllegalAccessException {
+    void init() throws NoSuchFieldException, IllegalAccessException, IOException, ServletException {
         Properties properties = new Properties();
         properties.setProperty(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML, "META-INF/persistence.xml");
 
@@ -58,7 +64,12 @@ public class IntegrationRestTest {
         ClientValidator clientValidator = Mockito.spy(new ClientValidator());
         MessageGenerator messageGenerator = Mockito.spy(new MessageGenerator());
         MessageSenderSessionJMS messageSenderSessionJMS = Mockito.mock(MessageSenderSessionJMS.class);
+        sessionContext = Mockito.mock(SessionContext.class);
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        Mockito.when(request.authenticate(null)).thenReturn(true);
+        Mockito.when(request.isUserInRole(anyObject())).thenReturn(true);
 
+        Mockito.when(sessionContext.isCallerInRole(RoleConstants.ADMIN)).thenReturn(true);
 
         Field field = ClientInformationRest.class.getDeclaredField("clientInformationEJB");
         field.setAccessible(true);
@@ -72,11 +83,23 @@ public class IntegrationRestTest {
         // Set value
         field.set(clientInformationRest, messageGenerator);
 
+        field = ClientInformationRest.class.getDeclaredField("request");
+        field.setAccessible(true);
+
+        // Set value
+        field.set(clientInformationRest, request);
+
         field = ClientInformationEJB.class.getDeclaredField("clientAdapter");
         field.setAccessible(true);
 
         // Set value
         field.set(clientInformationEJB, clientAdapter);
+
+        field = ClientAdapter.class.getDeclaredField("sessionContext");
+        field.setAccessible(true);
+
+        // Set value
+        field.set(clientAdapter, sessionContext);
 
         field = ClientInformationEJB.class.getDeclaredField("messageSenderSessionJMS");
         field.setAccessible(true);
@@ -323,6 +346,29 @@ public class IntegrationRestTest {
     }
 
     @Test
+    public void testGetClientWithoutAccountInformationAsCustomer() {
+        // Given
+        String personIdentification = "191212121212";
+
+        // When
+        Mockito.when(sessionContext.isCallerInRole(RoleConstants.ADMIN)).thenReturn(false);
+        Response response = clientInformationRest.getClientInformtion(personIdentification);
+
+        // Then
+        assertEquals(Response.Status.OK, Response.Status.fromStatusCode(response.getStatus()));
+
+        ClientApi clientApi = (ClientApi) response.getEntity();
+
+        assertEquals(personIdentification, clientApi.getPerson().getPersonIdentification());
+        assertEquals("John", clientApi.getPerson().getFirstName());
+        assertEquals("Doe", clientApi.getPerson().getLastName());
+        assertEquals(personIdentification, clientApi.getPerson().getPersonIdentification());
+        assertEquals("john.doe@test.se", clientApi.getPerson().getMail());
+
+        assertEquals(0, clientApi.getAccountList().size());
+    }
+
+    @Test
     public void testGetClient() {
         // Given
         String personIdentification = "191212121212";
@@ -367,6 +413,36 @@ public class IntegrationRestTest {
         // Then
         assertEquals(Response.Status.INTERNAL_SERVER_ERROR, Response.Status.fromStatusCode(response.getStatus()));
         assertEquals("Severe system failure has occured!", (String) response.getEntity());
+    }
+
+    @Test
+    public void testGetClientInformationWithAccountIsAdminRole() {
+        // Given
+        String personIdentification = "191212121212";
+
+        // When
+        Mockito.when(sessionContext.isCallerInRole(RoleConstants.ADMIN)).thenReturn(true);
+        Response response = clientInformationRest.getClientInformtion(personIdentification);
+
+        // Then
+        assertEquals(Response.Status.OK, Response.Status.fromStatusCode(response.getStatus()));
+
+        ClientApi clientApi = (ClientApi) response.getEntity();
+
+        assertEquals(personIdentification, clientApi.getPerson().getPersonIdentification());
+        assertEquals("John", clientApi.getPerson().getFirstName());
+        assertEquals("Doe", clientApi.getPerson().getLastName());
+        assertEquals(personIdentification, clientApi.getPerson().getPersonIdentification());
+        assertEquals("john.doe@test.se", clientApi.getPerson().getMail());
+
+        assertEquals(1, clientApi.getAccountList().size());
+        assertEquals(500.0, clientApi.getAccountList().get(0).getBalance());
+
+        assertEquals(1, clientApi.getAccountList().get(0).getAccountTransactionList().size());
+        assertEquals("DEPOSIT", clientApi.getAccountList().get(0).getAccountTransactionList().get(0)
+                .getTransactionType().name());
+        assertEquals("500$ in deposit", clientApi.getAccountList().get(0).getAccountTransactionList().get(0)
+                .getMessage());
     }
 
     @Test

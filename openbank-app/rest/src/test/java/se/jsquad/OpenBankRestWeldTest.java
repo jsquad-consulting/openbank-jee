@@ -22,7 +22,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class OpenBankRestWeldTest {
     @WeldSetup
     private WeldInitiator weld =
-            WeldInitiator.from(OpenBankRest.class, OpenBankBusinessEJB.class, SlowMockBatch.class).build();
+            WeldInitiator.from(OpenBankRest.class, OpenBankBusinessEJB.class, SlowMockBatch.class)
+                    .setEjbFactory(injectionPoint -> new OpenBankBusinessEJB()).build();
 
     @Inject
     private OpenBankRest openBankRest;
