@@ -14,7 +14,7 @@ TEST THE RESTful/SOAP CONTRACTS
 Load the schema/src/main/resources/rest.yaml file with the 
 http://editor.swagger.io/ editor to easily test the RESTful 
 contracts. Be sure to use basic authorization with --user <user:pass>
-flag to be use the RESTful operations.
+flag to use the RESTful operations successfully.
 
 SOAP contracts (Service) is tested through 
 http://localhost:8080/soap-webservice endpoint with SoapUI utility.
