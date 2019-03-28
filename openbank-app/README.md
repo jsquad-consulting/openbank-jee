@@ -4,6 +4,10 @@ INSTALLATION
 ------------
 docker build -t openbank .
 
+# Sometimes it's nessesary to clean up the images and containers to 
+# clean up old caches and to free up hardisk space before installing
+# openbank
+docker rm -vf $(docker ps -a -q) && docker rmi -f $(docker images -a -q)
 
 START THE DOCKER CONTAINER TO TEST RESTFUL/SOAP CONTRACTS
 ---------------------------------------------------------
