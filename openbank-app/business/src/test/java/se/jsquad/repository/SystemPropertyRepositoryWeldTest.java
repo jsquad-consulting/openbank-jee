@@ -3,6 +3,7 @@ package se.jsquad.repository;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -29,6 +30,9 @@ public class SystemPropertyRepositoryWeldTest {
     private static EntityManager entityManager;
     private static EntityManagerFactory entityManagerFactory;
 
+    private static Weld weld;
+    private static WeldContainer weldContainer;
+
     @BeforeAll
     static void initSystemPropertyRepository() throws IllegalAccessException, NoSuchFieldException {
         Properties properties = new Properties();
@@ -37,10 +41,10 @@ public class SystemPropertyRepositoryWeldTest {
         entityManagerFactory = Persistence.createEntityManagerFactory("openBankPU", properties);
         entityManager = entityManagerFactory.createEntityManager();
 
-        Weld weld = new Weld();
+        weld = new Weld();
         weld.disableDiscovery();
 
-        WeldContainer weldContainer = weld.beanClasses(SystemPropertyRepository.class)
+        weldContainer = weld.beanClasses(SystemPropertyRepository.class)
                 .addBeanClass(LoggerProducer.class).addBeanClass(EntityManagerProducer.class).initialize();
         systemPropertyRepository = weldContainer.select(SystemPropertyRepository.class).get();
 
@@ -49,6 +53,11 @@ public class SystemPropertyRepositoryWeldTest {
 
         // Set value
         field.set(systemPropertyRepository, entityManager);
+    }
+
+    @AfterAll
+    static void shutDownAfterTests() {
+        weldContainer.close();
     }
 
     @Test

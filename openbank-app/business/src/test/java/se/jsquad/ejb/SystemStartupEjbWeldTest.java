@@ -51,5 +51,7 @@ public class SystemStartupEjbWeldTest {
         }
 
        assertTrue(numberOfLockList.stream().noneMatch(n -> n.intValue() < 0 || n.intValue() > 1));
+
+        weldContainer.close();
     }
 }
