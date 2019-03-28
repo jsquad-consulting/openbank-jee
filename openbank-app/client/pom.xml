@@ -47,6 +47,7 @@
                             <executable>ng</executable>
                             <arguments>
                                 <argument>build</argument>
+                                <argument>--source-map=false</argument>
                                 <argument>--base-href=/openbank</argument>
                             </arguments>
                         </configuration>

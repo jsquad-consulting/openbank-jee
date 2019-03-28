@@ -42,7 +42,7 @@ RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
 RUN npm install -g @angular/cli
 
 ADD . /usr/openbank
-RUN mvn -f /usr/openbank/pom.xml clean install
+RUN mvn -f /usr/openbank/pom.xml clean install -T 1C
 
 ENV WILDFLY_VERSION 16.0.0.Final
 ENV WILDFLY_HOME /usr
