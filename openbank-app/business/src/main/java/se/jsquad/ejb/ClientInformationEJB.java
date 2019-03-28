@@ -3,6 +3,7 @@ package se.jsquad.ejb;
 import se.jsquad.Client;
 import se.jsquad.adapter.ClientAdapter;
 import se.jsquad.client.info.ClientApi;
+import se.jsquad.interceptor.LoggingExceptionInterceptor;
 import se.jsquad.jms.MessageSenderSessionJMS;
 import se.jsquad.qualifier.Log;
 import se.jsquad.repository.ClientRepository;
@@ -10,6 +11,7 @@ import se.jsquad.validator.ClientValidator;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.interceptor.Interceptors;
 import javax.jms.JMSException;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
@@ -51,6 +53,7 @@ public class ClientInformationEJB {
         return clientAdapter.translateClientToClientApi(client);
     }
 
+    @Interceptors({LoggingExceptionInterceptor.class})
     public void createClient(ClientApi clientApi) {
         if (clientRepository.getClientByPersonIdentification(clientApi.getPerson().getPersonIdentification())
                 != null) {
