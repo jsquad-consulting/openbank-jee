@@ -11,6 +11,7 @@ import se.jsquad.getclientservice.PersonType;
 import se.jsquad.getclientservice.StatusType;
 import se.jsquad.getclientservice.TransactionType;
 import se.jsquad.getclientservice.Type;
+import se.jsquad.qualifier.Log;
 import se.jsquad.repository.ClientRepository;
 
 import javax.ejb.Stateless;
@@ -23,7 +24,8 @@ import java.util.logging.Logger;
 @Stateless
 @WebService(name = "GetClientService")
 public class GetClientWS implements GetClientServicePort {
-    private static final Logger logger = Logger.getLogger(GetClientWS.class.getName());
+    @Inject @Log
+    private Logger logger;
 
     @Inject
     private ClientRepository clientRepository;
@@ -103,7 +105,7 @@ public class GetClientWS implements GetClientServicePort {
                         accountType.getAccountTransactionList().add(accountTransactionType);
                     }
                 }
-               clientType.getAccountList().add(accountType);
+                clientType.getAccountList().add(accountType);
             }
         }
     }

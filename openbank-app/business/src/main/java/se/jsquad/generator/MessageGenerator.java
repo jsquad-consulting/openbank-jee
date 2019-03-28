@@ -1,5 +1,8 @@
 package se.jsquad.generator;
 
+import se.jsquad.qualifier.Log;
+
+import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
 import java.util.Iterator;
 import java.util.Set;
@@ -7,7 +10,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class MessageGenerator {
-    private static final Logger logger = Logger.getLogger(MessageGenerator.class.getName());
+    @Inject @Log
+    private Logger logger;
 
 
     public String generateClientValidationMessage(Set<ConstraintViolation<?>> constraintViolationSet) {

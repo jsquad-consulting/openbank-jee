@@ -1,5 +1,8 @@
 package se.jsquad;
 
+import se.jsquad.qualifier.Log;
+
+import javax.inject.Inject;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,12 +12,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Authentication {
-    private static final Logger logger = Logger.getLogger(Authentication.class.getName());
+    @Inject @Log
+    private Logger logger;
 
     private Authentication() {
     }
 
-    public static List<String> getUserNameAndPassword(String authorization) {
+    public final List<String> getUserNameAndPassword(String authorization) {
         logger.log(Level.FINE, "getUserName(authorization: {0})", new Object[]{authorization});
 
         if (authorization != null && authorization.toLowerCase().startsWith("basic")) {

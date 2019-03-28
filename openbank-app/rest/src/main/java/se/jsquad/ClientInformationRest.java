@@ -4,6 +4,7 @@ import se.jsquad.authorization.Authorization;
 import se.jsquad.client.info.ClientApi;
 import se.jsquad.ejb.ClientInformationEJB;
 import se.jsquad.generator.MessageGenerator;
+import se.jsquad.qualifier.Log;
 
 import javax.ejb.EJB;
 import javax.ejb.TransactionAttribute;
@@ -24,7 +25,9 @@ import java.util.logging.Logger;
 
 @Path("/client")
 public class ClientInformationRest {
-    private static final Logger logger = Logger.getLogger(ClientInformationRest.class.getName());
+    @Inject @Log
+    private Logger logger;
+
     private static final String AUTHORIZATION_FAILED = "Authorization failed.";
 
     @EJB

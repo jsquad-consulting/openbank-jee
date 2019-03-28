@@ -35,6 +35,7 @@ import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -70,6 +71,15 @@ public class IntegrationRestTest {
         Mockito.when(request.authenticate(null)).thenReturn(true);
         Mockito.when(request.isUserInRole(anyObject())).thenReturn(true);
         Authorization authorization = Mockito.spy(new Authorization());
+        Logger loggerClientInformationRest = Logger.getLogger(ClientInformationRest.class.getName());
+        Logger loggerAuthorization = Logger.getLogger(Authorization.class.getName());
+        Logger loggerClientInformationEJB = Logger.getLogger(ClientInformationEJB.class.getName());
+        Logger loggerClientRepository = Logger.getLogger(ClientRepository.class.getName());
+        Logger loggerClientAdapter = Logger.getLogger(ClientAdapter.class.getName());
+        Logger loggerClientValidator = Logger.getLogger(ClientValidator.class.getName());
+        Logger loggerMessageGenerator = Logger.getLogger(MessageGenerator.class.getName());
+        Logger loggerOpenBankRest = Logger.getLogger(OpenBankRest.class.getName());
+        Logger loggerOpenBankBusinessEJB = Logger.getLogger(OpenBankBusinessEJB.class.getName());
 
         Mockito.when(sessionContext.isCallerInRole(RoleConstants.ADMIN)).thenReturn(true);
 
@@ -79,11 +89,23 @@ public class IntegrationRestTest {
         // Set value
         field.set(clientInformationRest, clientInformationEJB);
 
+        field = ClientInformationRest.class.getDeclaredField("logger");
+        field.setAccessible(true);
+
+        // Set value
+        field.set(clientInformationRest, loggerClientInformationRest);
+
         field = ClientInformationRest.class.getDeclaredField("messageGenerator");
         field.setAccessible(true);
 
         // Set value
         field.set(clientInformationRest, messageGenerator);
+
+        field = MessageGenerator.class.getDeclaredField("logger");
+        field.setAccessible(true);
+
+        // Set value
+        field.set(messageGenerator, loggerMessageGenerator);
 
         field = ClientInformationRest.class.getDeclaredField("authorization");
         field.setAccessible(true);
@@ -97,17 +119,35 @@ public class IntegrationRestTest {
         // Set value
         field.set(authorization, request);
 
+        field = Authorization.class.getDeclaredField("logger");
+        field.setAccessible(true);
+
+        // Set value
+        field.set(authorization, loggerAuthorization);
+
         field = ClientInformationEJB.class.getDeclaredField("clientAdapter");
         field.setAccessible(true);
 
         // Set value
         field.set(clientInformationEJB, clientAdapter);
 
+        field = ClientInformationEJB.class.getDeclaredField("logger");
+        field.setAccessible(true);
+
+        // Set value
+        field.set(clientInformationEJB, loggerClientInformationEJB);
+
         field = ClientAdapter.class.getDeclaredField("sessionContext");
         field.setAccessible(true);
 
         // Set value
         field.set(clientAdapter, sessionContext);
+
+        field = ClientAdapter.class.getDeclaredField("logger");
+        field.setAccessible(true);
+
+        // Set value
+        field.set(clientAdapter, loggerClientAdapter);
 
         field = ClientInformationEJB.class.getDeclaredField("messageSenderSessionJMS");
         field.setAccessible(true);
@@ -121,6 +161,12 @@ public class IntegrationRestTest {
         // Set value
         field.set(clientInformationEJB, clientValidator);
 
+        field = ClientValidator.class.getDeclaredField("logger");
+        field.setAccessible(true);
+
+        // Set value
+        field.set(clientValidator, loggerClientValidator);
+
         field = ClientInformationEJB.class.getDeclaredField("clientRepository");
         field.setAccessible(true);
 
@@ -133,14 +179,32 @@ public class IntegrationRestTest {
         // Set value
         field.set(clientRepository, entityManager);
 
+        field = ClientRepository.class.getDeclaredField("logger");
+        field.setAccessible(true);
+
+        // Set value
+        field.set(clientRepository, loggerClientRepository);
+
         openBankRest = Mockito.spy(new OpenBankRest());
-        OpenBankBusinessEJB openBankBusiness = Mockito.spy(new OpenBankBusinessEJB());
+        OpenBankBusinessEJB openBankBusinessEJB = Mockito.spy(new OpenBankBusinessEJB());
 
         field = OpenBankRest.class.getDeclaredField("openBankBusinessEJB");
         field.setAccessible(true);
 
         // Set value
-        field.set(openBankRest, openBankBusiness);
+        field.set(openBankRest, openBankBusinessEJB);
+
+        field = OpenBankBusinessEJB.class.getDeclaredField("logger");
+        field.setAccessible(true);
+
+        // Set value
+        field.set(openBankBusinessEJB, loggerOpenBankBusinessEJB);
+
+        field = OpenBankRest.class.getDeclaredField("logger");
+        field.setAccessible(true);
+
+        // Set value
+        field.set(openBankRest, loggerOpenBankRest);
 
         MockitoAnnotations.initMocks(this);
 

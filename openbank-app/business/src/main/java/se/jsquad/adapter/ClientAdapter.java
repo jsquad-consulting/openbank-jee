@@ -16,16 +16,19 @@ import se.jsquad.client.info.ClientTypeApi;
 import se.jsquad.client.info.PersonApi;
 import se.jsquad.client.info.TransactionTypeApi;
 import se.jsquad.client.info.TypeApi;
+import se.jsquad.qualifier.Log;
 
 import javax.annotation.Resource;
 import javax.ejb.SessionContext;
+import javax.inject.Inject;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ClientAdapter {
-    private static final Logger logger = Logger.getLogger(ClientAdapter.class.getName());
+    @Inject @Log
+    private Logger logger;
 
     @Resource
     private SessionContext sessionContext;

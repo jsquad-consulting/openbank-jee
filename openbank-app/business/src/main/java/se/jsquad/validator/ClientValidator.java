@@ -3,7 +3,9 @@ package se.jsquad.validator;
 import se.jsquad.Account;
 import se.jsquad.AccountTransaction;
 import se.jsquad.Client;
+import se.jsquad.qualifier.Log;
 
+import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
@@ -15,7 +17,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ClientValidator {
-    private static final Logger logger = Logger.getLogger(ClientValidator.class.getName());
+    @Inject @Log
+    private Logger logger;
 
     public Set<ConstraintViolation<Object>> createConstraintViolationSet(Client client) {
         logger.log(Level.FINE, "clientValidator(client: {0})",

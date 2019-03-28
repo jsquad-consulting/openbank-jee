@@ -40,6 +40,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 import java.lang.reflect.Field;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyObject;
@@ -109,6 +110,13 @@ public class JmsMDBRestTest {
         ClientAdapter clientAdapter = Mockito.spy(new ClientAdapter());
         ClientRepository clientRepository = Mockito.spy(new ClientRepository());
         clientInformationRest = Mockito.spy(new ClientInformationRest());
+        Logger loggerClientInformationRest = Logger.getLogger(ClientInformationRest.class.getName());
+        Logger loggerAuthorization = Logger.getLogger(Authorization.class.getName());
+        Logger loggerClientInformationEJB = Logger.getLogger(ClientInformationEJB.class.getName());
+        Logger loggerMessageSenderSessionJMS = Logger.getLogger(MessageSenderSessionJMS.class.getName());
+        Logger loggerClientRepository = Logger.getLogger(ClientRepository.class.getName());
+        Logger loggerClientAdapter = Logger.getLogger(ClientAdapter.class.getName());
+
         ClientValidator clientValidator = Mockito.spy(new ClientValidator());
         MessageGenerator messageGenerator = Mockito.spy(new MessageGenerator());
         MessageSenderSessionJMS messageSenderSessionJMS = Mockito.spy(new MessageSenderSessionJMS());
@@ -125,6 +133,12 @@ public class JmsMDBRestTest {
 
         // Set value
         field.set(clientInformationRest, clientInformationEJB);
+
+        field = ClientInformationRest.class.getDeclaredField("logger");
+        field.setAccessible(true);
+
+        // Set value
+        field.set(clientInformationRest, loggerClientInformationRest);
 
         field = ClientInformationRest.class.getDeclaredField("messageGenerator");
         field.setAccessible(true);
@@ -144,17 +158,35 @@ public class JmsMDBRestTest {
         // Set value
         field.set(authorization, request);
 
+        field = Authorization.class.getDeclaredField("logger");
+        field.setAccessible(true);
+
+        // Set value
+        field.set(authorization, loggerAuthorization);
+
         field = ClientInformationEJB.class.getDeclaredField("clientAdapter");
         field.setAccessible(true);
 
         // Set value
         field.set(clientInformationEJB, clientAdapter);
 
+        field = ClientInformationEJB.class.getDeclaredField("logger");
+        field.setAccessible(true);
+
+        // Set value
+        field.set(clientInformationEJB, loggerClientInformationEJB);
+
         field = ClientAdapter.class.getDeclaredField("sessionContext");
         field.setAccessible(true);
 
         // Set value
         field.set(clientAdapter, sessionContext);
+
+        field = ClientAdapter.class.getDeclaredField("logger");
+        field.setAccessible(true);
+
+        // Set value
+        field.set(clientAdapter, loggerClientAdapter);
 
         field = ClientInformationEJB.class.getDeclaredField("messageSenderSessionJMS");
         field.setAccessible(true);
@@ -174,6 +206,12 @@ public class JmsMDBRestTest {
         // Set value
         field.set(messageSenderSessionJMS, jmsProducer);
 
+        field = MessageSenderSessionJMS.class.getDeclaredField("logger");
+        field.setAccessible(true);
+
+        // Set value
+        field.set(messageSenderSessionJMS, loggerMessageSenderSessionJMS);
+
         field = ClientInformationEJB.class.getDeclaredField("clientValidator");
         field.setAccessible(true);
 
@@ -191,6 +229,12 @@ public class JmsMDBRestTest {
 
         // Set value
         field.set(clientRepository, entityManager);
+
+        field = ClientRepository.class.getDeclaredField("logger");
+        field.setAccessible(true);
+
+        // Set value
+        field.set(clientRepository, loggerClientRepository);
 
         openBankRest = Mockito.spy(new OpenBankRest());
         OpenBankBusinessEJB openBankBusiness = Mockito.spy(new OpenBankBusinessEJB());

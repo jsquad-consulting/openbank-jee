@@ -1,5 +1,8 @@
 package se.jsquad.authorization;
 
+import se.jsquad.qualifier.Log;
+
+import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -11,7 +14,8 @@ import java.util.logging.Logger;
 
 @Path("")
 public class Authorization {
-    private static final Logger logger = Logger.getLogger(Authorization.class.getName());
+    @Inject @Log
+    private Logger logger;
 
     @Context
     private HttpServletRequest request;

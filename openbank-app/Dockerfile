@@ -43,7 +43,7 @@ RUN npm install -g @angular/cli
 
 ADD . /usr/openbank
 RUN cd /usr/openbank/client/src/main/openbank-app && npm rebuild node-sass
-RUN mvn -f /usr/openbank/pom.xml install -T C1
+RUN mvn -f /usr/openbank/pom.xml clean install
 
 ENV WILDFLY_VERSION 16.0.0.Final
 ENV WILDFLY_HOME /usr

@@ -1,46 +1,63 @@
 package se.jsquad;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.jboss.weld.junit5.WeldInitiator;
-import org.jboss.weld.junit5.WeldJunit5Extension;
-import org.jboss.weld.junit5.WeldSetup;
+import org.jboss.weld.environment.se.Weld;
+import org.jboss.weld.environment.se.WeldContainer;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import se.jsquad.getclientservice.GetClientRequest;
 import se.jsquad.getclientservice.GetClientResponse;
 import se.jsquad.getclientservice.StatusType;
 import se.jsquad.getclientservice.TransactionType;
 import se.jsquad.getclientservice.Type;
+import se.jsquad.producer.LoggerProducer;
 import se.jsquad.repository.ClientRepository;
+import se.jsquad.repository.EntityManagerProducer;
 
-import javax.enterprise.inject.spi.InjectionPoint;
-import javax.inject.Inject;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import java.lang.reflect.Field;
 import java.util.Properties;
-import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@ExtendWith(WeldJunit5Extension.class)
-class GetClientWSWeldTest {
-    @WeldSetup
-    private WeldInitiator weld = WeldInitiator.from(GetClientWS.class, ClientRepository.class)
-            .setPersistenceContextFactory(getEntityManager()).build();
+public class GetClientWSWeldTest {
 
-    @Inject
-    private GetClientWS getClientWS;
+    private EntityManager entityManager;
 
-    private static Function<InjectionPoint, Object> getEntityManager() {
+    @BeforeEach
+    void initEntityManager() {
         Properties properties = new Properties();
         properties.setProperty(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML, "META-INF/persistence.xml");
 
-        return injectionPoint -> Persistence.createEntityManagerFactory("openBankPU", properties)
-                .createEntityManager();
+        EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory(
+                "openBankPU", properties);
+        entityManager = entityManagerFactory.createEntityManager();
     }
 
     @Test
-    public void testGetClientWs() {
+    public void testGetClientWs() throws NoSuchFieldException, IllegalAccessException {
         // Given
+        Weld weld = new Weld();
+        WeldContainer weldContainer = weld.beanClasses(GetClientWS.class, ClientRepository.class).disableDiscovery()
+                .addBeanClass(LoggerProducer.class).initialize();
+
+        GetClientWS getClientWS = weldContainer.select(GetClientWS.class).get();
+        ClientRepository clientRepository = weldContainer.select(ClientRepository.class).get();
+
+        Field field = EntityManagerProducer.class.getDeclaredField("entityManager");
+        field.setAccessible(true);
+
+        // Set value
+        field.set(clientRepository, entityManager);
+
+        field = GetClientWS.class.getDeclaredField("clientRepository");
+        field.setAccessible(true);
+
+        // Set value
+        field.set(getClientWS, clientRepository);
+
         String personIdentification = "191212121212";
         GetClientRequest clientRequest = new GetClientRequest();
         clientRequest.setPersonIdentification(personIdentification);

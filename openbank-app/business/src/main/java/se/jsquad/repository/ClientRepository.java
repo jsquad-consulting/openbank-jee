@@ -1,14 +1,17 @@
 package se.jsquad.repository;
 
 import se.jsquad.Client;
+import se.jsquad.qualifier.Log;
 
+import javax.inject.Inject;
 import javax.persistence.TypedQuery;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ClientRepository extends EntityManagerProducer {
-    private static final Logger logger = Logger.getLogger(ClientRepository.class.getName());
+    @Inject @Log
+    private Logger logger;
 
     public Client getClientByPersonIdentification(String personIdentification) {
         logger.log(Level.FINE, "getClientByPersonIdentification(personIdentification: {0})",

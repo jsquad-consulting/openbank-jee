@@ -1,5 +1,7 @@
 package se.jsquad.jms;
 
+import se.jsquad.qualifier.Log;
+
 import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.jms.JMSConnectionFactory;
@@ -15,7 +17,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class MessageSenderSessionJMS {
-    private static final Logger logger = Logger.getLogger(MessageSenderSessionJMS.class.getName());
+    @Inject @Log
+    private Logger logger;
 
     @Resource(mappedName = "java:/jms/queue/callQ")
     private Queue queue;

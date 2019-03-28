@@ -1,51 +1,34 @@
 package se.jsquad.ejb;
 
-import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.jboss.weld.junit5.WeldInitiator;
-import org.jboss.weld.junit5.WeldJunit5Extension;
-import org.jboss.weld.junit5.WeldSetup;
+import org.jboss.weld.environment.se.Weld;
+import org.jboss.weld.environment.se.WeldContainer;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
+import se.jsquad.producer.LoggerProducer;
 import se.jsquad.repository.SystemPropertyRepository;
 import se.jsquad.thread.NumberOfLocks;
 
-import javax.enterprise.inject.spi.InjectionPoint;
-import javax.inject.Inject;
-import javax.persistence.Persistence;
-import javax.transaction.TransactionScoped;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 import java.util.concurrent.Executors;
-import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@ExtendWith(WeldJunit5Extension.class)
 @Execution(ExecutionMode.SAME_THREAD)
-class SystemStartupEjbWeldTest {
-    @WeldSetup
-    private WeldInitiator weld =
-            WeldInitiator.from(SystemStartupEjb.class, SystemPropertyRepository.class).activate(TransactionScoped
-                    .class).setPersistenceContextFactory(getEntityManager()).build();
-
-    private static Function<InjectionPoint, Object> getEntityManager() {
-        Properties properties = new Properties();
-        properties.setProperty(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML, "META-INF/persistence.xml");
-
-        return injectionPoint -> Persistence.createEntityManagerFactory("openBankPU", properties)
-                .createEntityManager();
-    }
-
-    @Inject
-    private SystemStartupEjb systemStartupEjb;
-
+public class SystemStartupEjbWeldTest {
     private boolean runningThreads = true;
 
     @Test
     public void testConcurrentRefreshTheSecondaryLevelCache() {
+        Weld weld = new Weld();
+        weld.disableDiscovery();
+
+        WeldContainer weldContainer = weld.beanClasses(SystemStartupEjb.class, SystemPropertyRepository.class)
+                .addBeanClass(LoggerProducer.class).initialize();
+
+        SystemStartupEjb systemStartupEjb = weldContainer.select(SystemStartupEjb.class).get();
+
         List<Integer> numberOfLockList = new ArrayList<>();
         var executorService = Executors.newFixedThreadPool(1001);
 

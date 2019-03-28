@@ -1,14 +1,17 @@
 package se.jsquad.repository;
 
 import se.jsquad.SystemProperty;
+import se.jsquad.qualifier.Log;
 
+import javax.inject.Inject;
 import javax.persistence.TypedQuery;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class SystemPropertyRepository extends EntityManagerProducer {
-    private static final Logger logger = Logger.getLogger(SystemProperty.class.getName());
+    @Inject @Log
+    private Logger logger;
 
     List<SystemProperty> findAllUniqueSystemProperties() {
         logger.log(Level.FINE, "findAllUniqueSystemProperties() is being called and caching the secondary cache level"

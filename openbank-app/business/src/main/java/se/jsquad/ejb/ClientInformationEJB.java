@@ -4,6 +4,7 @@ import se.jsquad.Client;
 import se.jsquad.adapter.ClientAdapter;
 import se.jsquad.client.info.ClientApi;
 import se.jsquad.jms.MessageSenderSessionJMS;
+import se.jsquad.qualifier.Log;
 import se.jsquad.repository.ClientRepository;
 import se.jsquad.validator.ClientValidator;
 
@@ -19,7 +20,8 @@ import java.util.logging.Logger;
 
 @Stateless
 public class ClientInformationEJB {
-    private static final Logger logger = Logger.getLogger(ClientInformationEJB.class.getName());
+    @Inject @Log
+    private Logger logger;
 
     @Inject
     private ClientAdapter clientAdapter;

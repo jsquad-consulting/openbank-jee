@@ -1,15 +1,18 @@
 package se.jsquad.authorization;
 
 import se.jsquad.RoleConstants;
+import se.jsquad.qualifier.Log;
 
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.SessionContext;
+import javax.inject.Inject;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class SecurityOpenBank {
-    private static Logger logger = Logger.getLogger(SecurityOpenBank.class.getName());
+    @Inject @Log
+    private Logger logger;
 
     @Resource
     SessionContext sessionContext;

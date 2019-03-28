@@ -2,8 +2,10 @@ package se.jsquad;
 
 import se.jsquad.batch.status.BatchStatus;
 import se.jsquad.ejb.OpenBankBusinessEJB;
+import se.jsquad.qualifier.Log;
 
 import javax.ejb.EJB;
+import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -15,7 +17,8 @@ import java.util.logging.Logger;
 
 @Path("/openbank")
 public class OpenBankRest {
-    private static final Logger logger = Logger.getLogger(OpenBankRest.class.getName());
+    @Inject @Log
+    private Logger logger;
 
     @EJB
     private OpenBankBusinessEJB openBankBusinessEJB;

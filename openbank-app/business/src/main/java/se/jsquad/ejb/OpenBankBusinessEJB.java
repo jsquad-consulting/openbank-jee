@@ -2,6 +2,7 @@ package se.jsquad.ejb;
 
 import se.jsquad.batch.SlowMockBatch;
 import se.jsquad.batch.status.BatchStatus;
+import se.jsquad.qualifier.Log;
 
 import javax.ejb.AsyncResult;
 import javax.ejb.Asynchronous;
@@ -13,7 +14,8 @@ import java.util.logging.Logger;
 
 @Stateless
 public class OpenBankBusinessEJB {
-    private static final Logger logger = Logger.getLogger(OpenBankBusinessEJB.class.getName());
+    @Inject @Log
+    private Logger logger;
 
     @Inject
     private SlowMockBatch slowMockBatch;
