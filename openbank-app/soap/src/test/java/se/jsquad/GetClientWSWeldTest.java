@@ -5,6 +5,7 @@ import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import se.jsquad.getclientservice.GetClientRequest;
 import se.jsquad.getclientservice.GetClientResponse;
 import se.jsquad.getclientservice.StatusType;
@@ -17,6 +18,7 @@ import se.jsquad.repository.EntityManagerProducer;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.xml.ws.WebServiceContext;
 import java.lang.reflect.Field;
 import java.util.Properties;
 
@@ -40,11 +42,17 @@ public class GetClientWSWeldTest {
     public void testGetClientWs() throws NoSuchFieldException, IllegalAccessException {
         // Given
         Weld weld = new Weld();
-        WeldContainer weldContainer = weld.beanClasses(GetClientWS.class, ClientRepository.class).disableDiscovery()
+        WeldContainer weldContainer =
+                weld.beanClasses(GetClientWS.class, ClientRepository.class, GetClientWsBusiness.class)
+                        .disableDiscovery()
                 .addBeanClass(LoggerProducer.class).initialize();
 
         GetClientWS getClientWS = weldContainer.select(GetClientWS.class).get();
         ClientRepository clientRepository = weldContainer.select(ClientRepository.class).get();
+        GetClientWsBusiness getClientWsBusiness = weldContainer.select(GetClientWsBusiness.class).get();
+        WebServiceContext webServiceContext = Mockito.mock(WebServiceContext.class);
+        Mockito.when(webServiceContext.isUserInRole(RoleConstants.ADMIN)).thenReturn(true);
+        Mockito.when(webServiceContext.isUserInRole(RoleConstants.CUSTOMER)).thenReturn(false);
 
         Field field = EntityManagerProducer.class.getDeclaredField("entityManager");
         field.setAccessible(true);
@@ -52,11 +60,23 @@ public class GetClientWSWeldTest {
         // Set value
         field.set(clientRepository, entityManager);
 
-        field = GetClientWS.class.getDeclaredField("clientRepository");
+        field = GetClientWS.class.getDeclaredField("getClientWsBusiness");
         field.setAccessible(true);
 
         // Set value
-        field.set(getClientWS, clientRepository);
+        field.set(getClientWS, getClientWsBusiness);
+
+        field = GetClientWsBusiness.class.getDeclaredField("clientRepository");
+        field.setAccessible(true);
+
+        // Set value
+        field.set(getClientWsBusiness, clientRepository);
+
+        field = GetClientWsBusiness.class.getDeclaredField("webServiceContext");
+        field.setAccessible(true);
+
+        // Set value
+        field.set(getClientWsBusiness, webServiceContext);
 
         String personIdentification = "191212121212";
         GetClientRequest clientRequest = new GetClientRequest();

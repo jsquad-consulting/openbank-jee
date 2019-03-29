@@ -5,10 +5,11 @@ import org.apache.activemq.artemis.jms.client.ActiveMQJMSConnectionFactory;
 import org.apache.activemq.artemis.jms.client.ActiveMQQueue;
 import org.apache.activemq.artemis.junit.EmbeddedJMSResource;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import se.jsquad.adapter.ClientAdapter;
@@ -45,10 +46,9 @@ import java.util.logging.Logger;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyObject;
 
+@Execution(ExecutionMode.SAME_THREAD)
 public class JmsMDBRestTest {
-
-    @Rule
-    public EmbeddedJMSResource jmsServer = new EmbeddedJMSResource();
+    public EmbeddedJMSResource jmsServer;
 
     private EntityManager entityManager;
     private EntityManagerFactory entityManagerFactory;
@@ -65,8 +65,11 @@ public class JmsMDBRestTest {
     private Queue jmsProducer;
     private Queue mdbConsumer;
 
-    @Before
+    @BeforeEach
     public void init() throws Exception {
+        jmsServer = new EmbeddedJMSResource();
+        jmsServer.getJmsServer().start();
+
         jmsServer.getJmsServer().getJMSServerManager().createQueue(true, "jmsProducer", null, true);
 
         queueProducer =
@@ -251,13 +254,15 @@ public class JmsMDBRestTest {
         tx.begin();
     }
 
-    @After
+    @AfterEach
     public void tearDownAfterUnitTest() throws Exception {
         EntityTransaction tx = entityManager.getTransaction();
         tx.commit();
 
         entityManager.close();
         entityManagerFactory.close();
+
+        jmsServer.stop();
     }
 
     @Test
@@ -319,7 +324,7 @@ public class JmsMDBRestTest {
     }
 
     @Test
-    public void testGetClientJMSTransactedWithNoCommit() throws JMSException {
+    public void testGetClientJMSTransactedWithNoCommit() {
         // Given
         String personIdentification = "191212121212";
 
