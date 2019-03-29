@@ -48,7 +48,7 @@
                             <arguments>
                                 <argument>build</argument>
                                 <argument>--source-map=false</argument>
-                                <argument>--base-href=/openbank</argument>
+                                <argument>--prod</argument>
                             </arguments>
                         </configuration>
                         <goals>
