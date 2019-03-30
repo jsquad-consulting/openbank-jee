@@ -32,3 +32,5 @@ http://localhost:8080/console
 ACCESS THE ANGULAR 7+ CLIENT
 ----------------------------
 http://localhost:8080/client/openbank
+
+Basic authorization is simplest to test with the Chrome browser.
