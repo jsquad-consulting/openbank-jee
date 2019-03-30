@@ -1,0 +1,30 @@
+<h2>Get Client information</h2>
+<p>Person identification <input type="text" [(ngModel)]="personIdentification"></p>
+<button (click)="getClientInformation()">Get client information</button>
+
+<div *ngIf="client">
+  <h2>Client information</h2>
+  <h3>Person</h3>
+  <p>firstName: {{client.person.firstName}}</p>
+  <p>lastName: {{client.person.lastName}}</p>
+  <p>mail: {{client.person.mail}}</p>
+
+  <div *ngIf="client.accountList">
+    <h3>AccountList</h3>
+    <div *ngFor="let account of client.accountList">
+      <p>balance: {{account.balance}}</p>
+      <div *ngIf="account.accountTransactionList">
+      <div *ngFor="let accountTransaction of account.accountTransactionList">
+        <p>transaction: {{accountTransaction.transactionType}}</p>
+        <p>message: {{accountTransaction.message}}</p>
+      </div>
+      </div>
+    </div>
+  </div>
+  <h3>Client type</h3>
+  <p>type: {{client.clientType.type}}</p>
+  <p>country: {{client.clientType.country}}</p>
+  <p>premiumRating: {{client.clientType.premiumRating}}</p>
+  <p>special offers: {{client.clientType.specialOffers}}</p>
+  <p>rating: {{client.clientType.rating}}</p>
+</div>
