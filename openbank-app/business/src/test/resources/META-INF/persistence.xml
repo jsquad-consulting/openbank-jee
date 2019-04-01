@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence
+        http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd" version="2.1">
+    <persistence-unit name="openBankPU" transaction-type="RESOURCE_LOCAL">
+        <class>se.jsquad.Client</class>
+        <class>se.jsquad.Account</class>
+        <class>se.jsquad.AccountTransaction</class>
+        <class>se.jsquad.Person</class>
+        <class>se.jsquad.SystemProperty</class>
+        <class>se.jsquad.ClientType</class>
+        <class>se.jsquad.RegularClient</class>
+        <class>se.jsquad.PremiumClient</class>
+        <class>se.jsquad.ForeignClient</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
+        <properties>
+            <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>
+            <property name="javax.persistence.sql-load-script-source" value="META-INF/sql/import_data.sql"/>
+
+            <property name="javax.persistence.jdbc.driver" value="org.h2.Driver"/>
+            <property name="javax.persistence.jdbc.url" value="jdbc:h2:mem:dbtest"/>
+        </properties>
+    </persistence-unit>
+</persistence>

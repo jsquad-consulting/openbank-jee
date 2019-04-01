@@ -3,14 +3,8 @@ package se.jsquad.repository;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
-import org.junit.jupiter.api.parallel.Execution;
-import org.junit.jupiter.api.parallel.ExecutionMode;
 import se.jsquad.SystemProperty;
 import se.jsquad.producer.LoggerProducer;
 
@@ -23,8 +17,6 @@ import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@Execution(ExecutionMode.SAME_THREAD)
 public class SystemPropertyRepositoryWeldTest {
     private static SystemPropertyRepository systemPropertyRepository;
     private static EntityManager entityManager;
@@ -33,8 +25,8 @@ public class SystemPropertyRepositoryWeldTest {
     private static Weld weld;
     private static WeldContainer weldContainer;
 
-    @BeforeAll
-    static void initSystemPropertyRepository() throws IllegalAccessException, NoSuchFieldException {
+    @BeforeEach
+    void initSystemPropertyRepositoryForEachUnitTest() throws IllegalAccessException, NoSuchFieldException {
         Properties properties = new Properties();
         properties.setProperty(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML, "META-INF/persistence.xml");
 
@@ -55,13 +47,7 @@ public class SystemPropertyRepositoryWeldTest {
         field.set(systemPropertyRepository, entityManager);
     }
 
-    @AfterAll
-    static void shutDownAfterTests() {
-        weldContainer.close();
-    }
-
     @Test
-    @Order(2)
     public void testFindAllUniqueSystemPropertiesAndSecondaryCacheLevel() {
         // When
         List<SystemProperty> systemPropertyList = systemPropertyRepository.findAllUniqueSystemProperties();
@@ -79,43 +65,6 @@ public class SystemPropertyRepositoryWeldTest {
     }
 
     @Test
-    @Order(1)
-    public void testSecondaryCacheLevelIsEmpty() throws NoSuchFieldException, IllegalAccessException {
-        // Given
-        SystemProperty systemProperty = new SystemProperty();
-
-        Field field = SystemProperty.class.getDeclaredField("id");
-        field.setAccessible(true);
-
-        // Set value
-        field.set(systemProperty, Long.valueOf(1000));
-
-        // Then
-        assertEquals(false,
-                systemPropertyRepository.getEntityManager().getEntityManagerFactory().getCache().contains(
-                        SystemProperty.class, systemProperty.getId()));
-    }
-
-    @Test
-    @Order(3)
-    public void testSecondaryCacheLevelIsCached() throws NoSuchFieldException, IllegalAccessException {
-        // Given
-        SystemProperty systemProperty = new SystemProperty();
-
-        Field field = SystemProperty.class.getDeclaredField("id");
-        field.setAccessible(true);
-
-        // Set value
-        field.set(systemProperty, Long.valueOf(1000));
-
-        // Then
-        assertEquals(true,
-                systemPropertyRepository.getEntityManager().getEntityManagerFactory().getCache().contains(
-                        SystemProperty.class, systemProperty.getId()));
-    }
-
-    @Test
-    @Order(4)
     public void testSecondaryCacheLevelAfterClearAndRefresh() throws NoSuchFieldException,
             IllegalAccessException {
         // Given
@@ -134,14 +83,42 @@ public class SystemPropertyRepositoryWeldTest {
         assertEquals(false,
                 systemPropertyRepository.getEntityManager().getEntityManagerFactory().getCache().contains(
                         SystemProperty.class, systemProperty.getId()));
-
         // When
         systemPropertyRepository.findAllUniqueSystemProperties();
 
+
         // Then
-        // TODO: Somehow this will not work nomore when using JBoss Weld implementation
-        /*assertEquals(true,
+        assertEquals(true,
                 systemPropertyRepository.getEntityManager().getEntityManagerFactory().getCache().contains(
-                        SystemProperty.class, systemProperty.getId()));*/
+                        SystemProperty.class, systemProperty.getId()));
+    }
+
+    @Test
+    public void testSecondaryCacheLevelAfterClearAndRefreshSecondaryLevelCache() throws NoSuchFieldException,
+            IllegalAccessException {
+        // Given
+        SystemProperty systemProperty = new SystemProperty();
+
+        Field field = SystemProperty.class.getDeclaredField("id");
+        field.setAccessible(true);
+
+        // Set value
+        field.set(systemProperty, Long.valueOf(1000));
+
+        // When
+        systemPropertyRepository.clearSecondaryLevelCache();
+
+        // Then
+        assertEquals(false,
+                systemPropertyRepository.getEntityManager().getEntityManagerFactory().getCache().contains(
+                        SystemProperty.class, systemProperty.getId()));
+        // When
+        systemPropertyRepository.refreshSecondaryLevelCache();
+
+
+        // Then
+        assertEquals(true,
+                systemPropertyRepository.getEntityManager().getEntityManagerFactory().getCache().contains(
+                        SystemProperty.class, systemProperty.getId()));
     }
 }
