@@ -1,4 +1,4 @@
-package se.jsquad;
+package se.jsquad.authorization;
 
 import se.jsquad.qualifier.Log;
 
