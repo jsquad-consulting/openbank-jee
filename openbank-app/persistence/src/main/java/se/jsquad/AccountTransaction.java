@@ -6,8 +6,6 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.io.Serializable;
@@ -27,11 +25,6 @@ public class AccountTransaction implements Serializable {
     private String message;
 
     @ManyToOne
-    @JoinTable(name = "ACCOUNT_JOIN_ACCOUNTTRANSACTION",
-            joinColumns = {@JoinColumn(name = "ACCOUNTTRANSACTION_FK",
-                    referencedColumnName = "id")},
-            inverseJoinColumns = {@JoinColumn(name = "ACCOUNT_FK",
-                    referencedColumnName = "id")})
     private Account account;
 
     public Long getId() {

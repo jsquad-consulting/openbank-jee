@@ -7,7 +7,7 @@ public class EntityManagerProducer {
     @PersistenceContext(unitName = "openBankPU")
     private EntityManager entityManager;
 
-    EntityManager getEntityManager() {
+    public EntityManager getEntityManager() {
         return entityManager;
     }
 }

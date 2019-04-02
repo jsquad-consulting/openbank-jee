@@ -6,6 +6,7 @@ import org.jboss.weld.environment.se.WeldContainer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import se.jsquad.generator.DatabaseGenerator;
 import se.jsquad.getclientservice.GetClientRequest;
 import se.jsquad.getclientservice.GetClientResponse;
 import se.jsquad.getclientservice.StatusType;
@@ -17,6 +18,7 @@ import se.jsquad.repository.EntityManagerProducer;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 import javax.xml.ws.WebServiceContext;
 import java.lang.reflect.Field;
@@ -36,6 +38,23 @@ public class GetClientWSWeldTest {
         EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory(
                 "openBankPU", properties);
         entityManager = entityManagerFactory.createEntityManager();
+
+        DatabaseGenerator databaseGenerator = new DatabaseGenerator();
+
+        EntityTransaction entityTransaction = entityManager.getTransaction();
+        entityTransaction.begin();
+
+        for (Client client : databaseGenerator.populateDatabase()) {
+            entityManager.persist(client);
+        }
+
+        SystemProperty systemProperty = new SystemProperty();
+        systemProperty.setName("VERSION");
+        systemProperty.setValue("1.0.1");
+
+        entityManager.persist(systemProperty);
+
+        entityTransaction.commit();
     }
 
     @Test

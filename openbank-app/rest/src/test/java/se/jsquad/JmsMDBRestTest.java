@@ -18,6 +18,7 @@ import se.jsquad.client.info.ClientApi;
 import se.jsquad.client.info.TypeApi;
 import se.jsquad.ejb.ClientInformationEJB;
 import se.jsquad.ejb.OpenBankBusinessEJB;
+import se.jsquad.generator.DatabaseGenerator;
 import se.jsquad.generator.MessageGenerator;
 import se.jsquad.jms.MessageMDB;
 import se.jsquad.jms.MessageSenderSessionJMS;
@@ -41,6 +42,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 import java.lang.reflect.Field;
 import java.util.Properties;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import static org.junit.Assert.assertEquals;
@@ -103,11 +105,30 @@ public class JmsMDBRestTest {
         jmsContextConsumer.setClientID("905");
         jmsContextConsumer.setAutoStart(true);
 
+        DatabaseGenerator databaseGenerator = new DatabaseGenerator();
+
         Properties properties = new Properties();
         properties.setProperty(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML, "META-INF/persistence.xml");
 
         entityManagerFactory = Persistence.createEntityManagerFactory("openBankPU", properties);
         entityManager = entityManagerFactory.createEntityManager();
+
+        Set<Client> clientSet = databaseGenerator.populateDatabase();
+
+        EntityTransaction entityTransaction = entityManager.getTransaction();
+        entityTransaction.begin();
+
+        for (Client client : clientSet) {
+            entityManager.persist(client);
+        }
+
+        SystemProperty systemProperty = new SystemProperty();
+        systemProperty.setName("VERSION");
+        systemProperty.setValue("1.0.1");
+
+        entityManager.persist(systemProperty);
+
+        entityTransaction.commit();
 
         clientInformationEJB = Mockito.spy(new ClientInformationEJB());
         ClientAdapter clientAdapter = Mockito.spy(new ClientAdapter());

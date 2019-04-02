@@ -15,8 +15,10 @@ import se.jsquad.client.info.ClientTypeApi;
 import se.jsquad.client.info.PersonApi;
 import se.jsquad.client.info.TransactionTypeApi;
 import se.jsquad.client.info.TypeApi;
+import se.jsquad.ejb.AccountTransactionEJB;
 import se.jsquad.ejb.ClientInformationEJB;
 import se.jsquad.ejb.OpenBankBusinessEJB;
+import se.jsquad.generator.DatabaseGenerator;
 import se.jsquad.generator.MessageGenerator;
 import se.jsquad.jms.MessageSenderSessionJMS;
 import se.jsquad.repository.ClientRepository;
@@ -35,6 +37,7 @@ import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Properties;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -48,6 +51,7 @@ public class IntegrationRestTest {
 
     private OpenBankRest openBankRest;
     private ClientInformationRest clientInformationRest;
+    private AccountTransferRest accountTransferRest;
     private ClientInformationEJB clientInformationEJB;
     private SessionContext sessionContext;
 
@@ -60,9 +64,11 @@ public class IntegrationRestTest {
         entityManager = entityManagerFactory.createEntityManager();
 
         clientInformationEJB = Mockito.spy(new ClientInformationEJB());
+        AccountTransactionEJB accountTransactionEJB = Mockito.spy(new AccountTransactionEJB());
         ClientAdapter clientAdapter = Mockito.spy(new ClientAdapter());
         ClientRepository clientRepository = Mockito.spy(new ClientRepository());
         clientInformationRest = Mockito.spy(new ClientInformationRest());
+        accountTransferRest = Mockito.spy(new AccountTransferRest());
         ClientValidator clientValidator = Mockito.spy(new ClientValidator());
         MessageGenerator messageGenerator = Mockito.spy(new MessageGenerator());
         MessageSenderSessionJMS messageSenderSessionJMS = Mockito.mock(MessageSenderSessionJMS.class);
@@ -80,6 +86,9 @@ public class IntegrationRestTest {
         Logger loggerMessageGenerator = Logger.getLogger(MessageGenerator.class.getName());
         Logger loggerOpenBankRest = Logger.getLogger(OpenBankRest.class.getName());
         Logger loggerOpenBankBusinessEJB = Logger.getLogger(OpenBankBusinessEJB.class.getName());
+        Logger loggerAccountTransactionRest = Logger.getLogger(AccountTransferRest.class.getName());
+        Logger loggerAccountTransactionEJB = Logger.getLogger(AccountTransactionEJB.class.getName());
+        DatabaseGenerator databaseGenerator = new DatabaseGenerator();
 
         Mockito.when(sessionContext.isCallerInRole(RoleConstants.ADMIN)).thenReturn(true);
 
@@ -88,6 +97,36 @@ public class IntegrationRestTest {
 
         // Set value
         field.set(clientInformationRest, clientInformationEJB);
+
+        field = AccountTransferRest.class.getDeclaredField("logger");
+        field.setAccessible(true);
+
+        // Set value
+        field.set(accountTransferRest, loggerAccountTransactionRest);
+
+        field = AccountTransferRest.class.getDeclaredField("authorization");
+        field.setAccessible(true);
+
+        // Set value
+        field.set(accountTransferRest, authorization);
+
+        field = AccountTransferRest.class.getDeclaredField("accountTransactionEJB");
+        field.setAccessible(true);
+
+        // Set value
+        field.set(accountTransferRest, accountTransactionEJB);
+
+        field = AccountTransactionEJB.class.getDeclaredField("logger");
+        field.setAccessible(true);
+
+        // Set value
+        field.set(accountTransactionEJB, loggerAccountTransactionEJB);
+
+        field = AccountTransactionEJB.class.getDeclaredField("clientRepository");
+        field.setAccessible(true);
+
+        // Set value
+        field.set(accountTransactionEJB, clientRepository);
 
         field = ClientInformationRest.class.getDeclaredField("logger");
         field.setAccessible(true);
@@ -206,17 +245,28 @@ public class IntegrationRestTest {
         // Set value
         field.set(openBankRest, loggerOpenBankRest);
 
-        MockitoAnnotations.initMocks(this);
+        EntityTransaction entityTransaction = entityManager.getTransaction();
+        entityTransaction.begin();
 
-        EntityTransaction tx = entityManager.getTransaction();
-        tx.begin();
+        Set<Client> clientSet = databaseGenerator.populateDatabase();
+
+        for (Client client : clientSet) {
+            clientRepository.createClient(client);
+        }
+
+        SystemProperty systemProperty = new SystemProperty();
+        systemProperty.setName("VERSION");
+        systemProperty.setValue("1.0.1");
+
+        entityManager.persist(systemProperty);
+
+        entityTransaction.commit();
+
+        MockitoAnnotations.initMocks(this);
     }
 
     @AfterEach
     public void tearDownAfterUnitTest() {
-        EntityTransaction tx = entityManager.getTransaction();
-        tx.commit();
-
         entityManager.close();
         entityManagerFactory.close();
     }
@@ -257,9 +307,82 @@ public class IntegrationRestTest {
     }
 
     @Test
+    public void testTransferValueFromAccountToAccount() {
+        // Given
+        long value = 250;
+        String fromAccountNumber = "1050";
+        String toAccountNumber = "1051";
+
+        // When
+        EntityTransaction tx = entityManager.getTransaction();
+        tx.begin();
+
+        Response response = accountTransferRest.transferValueFromAccountToAccount(value, fromAccountNumber,
+                toAccountNumber);
+
+        tx.commit();
+
+        ClientApi fromClientApi = (ClientApi) clientInformationRest.getClientInformtion(
+                "191212121220").getEntity();
+        ClientApi toClientApi = (ClientApi) clientInformationRest.getClientInformtion("191212121221").getEntity();
+
+
+        // Then
+        assertEquals(Response.Status.OK, Response.Status.fromStatusCode(response.getStatus()));
+        assertEquals("Transaction successful.", response.getEntity());
+
+        assertEquals(2, fromClientApi.getAccountList().get(0).getAccountTransactionList().size());
+        assertEquals(2, toClientApi.getAccountList().get(0).getAccountTransactionList().size());
+
+        assertTrue(fromClientApi.getAccountList().get(0).getAccountTransactionList().stream().anyMatch(ts -> ("250 " +
+                "has been withdrawn from the account.").equals(ts.getMessage()) && TransactionTypeApi.WITHDRAWAL.equals(
+                ts.getTransactionType())));
+
+        assertTrue(toClientApi.getAccountList().get(0).getAccountTransactionList().stream().anyMatch(ts -> ("250 has" +
+                " been deposited to the account.").equals(ts.getMessage()) && TransactionTypeApi.DEPOSIT.equals(
+                ts.getTransactionType())));
+
+        assertEquals(250.0, fromClientApi.getAccountList().get(0).getBalance());
+        assertEquals(1250.0, toClientApi.getAccountList().get(0).getBalance());
+    }
+
+    @Test
+    public void testGetClientAliceDoeWithAccount() {
+        // Given
+        String personIdentification = "191212121213";
+
+        // When
+        Response response = clientInformationRest.getClientInformtion(personIdentification);
+
+        // Then
+        assertEquals(Response.Status.OK, Response.Status.fromStatusCode(response.getStatus()));
+
+        ClientApi clientApi = (ClientApi) response.getEntity();
+
+        assertEquals(personIdentification, clientApi.getPerson().getPersonIdentification());
+        assertEquals("Alice", clientApi.getPerson().getFirstName());
+        assertEquals("Doe", clientApi.getPerson().getLastName());
+        assertEquals(personIdentification, clientApi.getPerson().getPersonIdentification());
+        assertEquals("alice.doe@test.se", clientApi.getPerson().getMail());
+
+        assertEquals(1, clientApi.getAccountList().size());
+        assertEquals(1000.0, clientApi.getAccountList().get(0).getBalance());
+
+        assertEquals(1, clientApi.getAccountList().get(0).getAccountTransactionList().size());
+        assertEquals("WITHDRAWAL", clientApi.getAccountList().get(0).getAccountTransactionList().get(0)
+                .getTransactionType().name());
+        assertEquals("500$ in withdrawal", clientApi.getAccountList().get(0).getAccountTransactionList().get(0)
+                .getMessage());
+
+        assertEquals(TypeApi.PREMIUM, clientApi.getClientType().getType());
+        assertEquals(1000, clientApi.getClientType().getPremiumRating());
+        assertEquals("Special offer you can not refuse.", clientApi.getClientType().getSpecialOffers());
+    }
+
+    @Test
     public void testCreateClientWithoutAccount() {
         // Given
-        String personIdentification = "191313131313";
+        String personIdentification = "191313131314";
         String firstName = "Mr.";
         String lastName = "Andersson";
         String mail = "mr.andersson@matrix.com";
@@ -278,8 +401,12 @@ public class IntegrationRestTest {
         clientApi.getClientType().setRating(Long.valueOf(500));
 
         // When
+        EntityTransaction tx = entityManager.getTransaction();
+        tx.begin();
+
         Response response = clientInformationRest.createClientInformation(clientApi);
-        entityManager.flush();
+
+        tx.commit();
 
         // Then
         assertEquals(Response.Status.OK, Response.Status.fromStatusCode(response.getStatus()));
@@ -333,15 +460,21 @@ public class IntegrationRestTest {
         clientApi.getAccountList().add(accountApi);
 
         // When
+        EntityTransaction entityTransaction = entityManager.getTransaction();
+        entityTransaction.begin();
         Response response = clientInformationRest.createClientInformation(clientApi);
-        entityManager.flush();
+        entityTransaction.commit();
 
         // Then
         assertEquals(Response.Status.OK, Response.Status.fromStatusCode(response.getStatus()));
         assertEquals("Client created successfully.", response.getEntity());
 
         // When
+        EntityTransaction tx = entityManager.getTransaction();
+        tx.begin();
+
         response = clientInformationRest.getClientInformtion(personIdentification);
+        tx.commit();
 
         assertEquals(Response.Status.OK, Response.Status.fromStatusCode(response.getStatus()));
 
@@ -351,7 +484,13 @@ public class IntegrationRestTest {
         assertEquals(firstName, clientApiResult.getPerson().getFirstName());
         assertEquals(lastName, clientApiResult.getPerson().getLastName());
         assertEquals(mail, clientApiResult.getPerson().getMail());
-        assertEquals(0, clientApiResult.getAccountList().size());
+        assertEquals(1, clientApiResult.getAccountList().size());
+        assertEquals(1, clientApiResult.getAccountList().get(0).getAccountTransactionList().size());
+
+        assertEquals(TransactionTypeApi.DEPOSIT,
+                clientApiResult.getAccountList().get(0).getAccountTransactionList().get(0).getTransactionType());
+        assertEquals("Deposit 500$",
+                clientApiResult.getAccountList().get(0).getAccountTransactionList().get(0).getMessage());
 
         assertEquals(TypeApi.PREMIUM, clientApi.getClientType().getType());
         assertEquals(9000, clientApi.getClientType().getPremiumRating());
@@ -361,7 +500,7 @@ public class IntegrationRestTest {
     @Test
     public void testCreateForeignClientWithAccount() {
         // Given
-        String personIdentification = "191313131313";
+        String personIdentification = "191313131315";
         String firstName = "Mr.";
         String lastName = "Almighty";
         String mail = "mr.almighty@usa.com";
@@ -393,8 +532,12 @@ public class IntegrationRestTest {
         clientApi.getAccountList().add(accountApi);
 
         // When
+        EntityTransaction tx = entityManager.getTransaction();
+        tx.begin();
+
         Response response = clientInformationRest.createClientInformation(clientApi);
-        entityManager.flush();
+
+        tx.commit();
 
         // Then
         assertEquals(Response.Status.OK, Response.Status.fromStatusCode(response.getStatus()));
@@ -411,7 +554,7 @@ public class IntegrationRestTest {
         assertEquals(firstName, clientApiResult.getPerson().getFirstName());
         assertEquals(lastName, clientApiResult.getPerson().getLastName());
         assertEquals(mail, clientApiResult.getPerson().getMail());
-        assertEquals(0, clientApiResult.getAccountList().size());
+        assertEquals(1, clientApiResult.getAccountList().size());
 
         assertEquals(TypeApi.FOREIGN, clientApi.getClientType().getType());
         assertEquals("United States of America", clientApi.getClientType().getCountry());

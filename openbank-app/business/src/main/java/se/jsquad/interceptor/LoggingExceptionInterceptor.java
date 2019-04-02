@@ -4,11 +4,13 @@ import se.jsquad.qualifier.Log;
 
 import javax.inject.Inject;
 import javax.interceptor.AroundInvoke;
+import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+@Interceptor
 public class LoggingExceptionInterceptor {
     @Inject @Log
     private Logger logger;

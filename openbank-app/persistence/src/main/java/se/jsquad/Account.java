@@ -5,18 +5,25 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "ACCOUNT")
+@NamedQuery(name = Account.ACCOUNT_ID, query = "SELECT a FROM Account a WHERE a.accountNumber =:" + Account.PARAM_ACCOUNT_NUMBER)
 public class Account implements Serializable {
+    @Transient
+    public static final String ACCOUNT_ID = "ACCOUNT_ID";
+
+    @Transient
+    public static final String PARAM_ACCOUNT_NUMBER = "PARAM_ACCOUNT_NUMBER";
+
     @Id
     @GeneratedValue
     private Long id;
@@ -24,16 +31,13 @@ public class Account implements Serializable {
     @Column(name = "BALANCE")
     private Long balance;
 
+    @Column(name = "ACCOUNT_NUMBER")
+    private String accountNumber;
+
     @ManyToOne
-    @JoinTable(name = "CLIENT_JOIN_ACCOUNT",
-            joinColumns = {@JoinColumn(name = "ACCOUNT_FK", referencedColumnName = "id")},
-            inverseJoinColumns = {@JoinColumn(name = "CLIENT_FK", referencedColumnName = "id")})
     private Client client;
 
-    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
-    @JoinTable(name = "ACCOUNT_JOIN_ACCOUNTTRANSACTION", joinColumns = {@JoinColumn(name = "ACCOUNT_FK",
-            referencedColumnName = "id")}, inverseJoinColumns = {@JoinColumn(name = "ACCOUNTTRANSACTION_FK",
-            referencedColumnName = "id")})
+    @OneToMany(cascade = {CascadeType.ALL}, orphanRemoval = true)
     private Set<AccountTransaction> accountTransactionSet;
 
     public Long getId() {
@@ -69,4 +73,11 @@ public class Account implements Serializable {
         this.accountTransactionSet = accountTransactionSet;
     }
 
+    public String getAccountNumber() {
+        return accountNumber;
+    }
+
+    public void setAccountNumber(String accountNumber) {
+        this.accountNumber = accountNumber;
+    }
 }

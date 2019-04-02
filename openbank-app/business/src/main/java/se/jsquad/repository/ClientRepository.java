@@ -1,5 +1,6 @@
 package se.jsquad.repository;
 
+import se.jsquad.Account;
 import se.jsquad.Client;
 import se.jsquad.qualifier.Log;
 
@@ -30,11 +31,25 @@ public class ClientRepository extends EntityManagerProducer {
         }
     }
 
+    public Account getAccountByNumber(String accountNumber) {
+        logger.log(Level.FINE, "getAccountByNumber(accountNumber: {0})", accountNumber);
+
+        TypedQuery<Account> query = getEntityManager().createNamedQuery(Account.ACCOUNT_ID, Account.class);
+        query.setParameter(Account.PARAM_ACCOUNT_NUMBER, accountNumber);
+
+        List<Account> accountList = query.getResultList();
+
+        if (accountList == null || accountList.isEmpty()) {
+            return null;
+        } else {
+            return accountList.get(0);
+        }
+    }
+
     public void createClient(Client client) {
         logger.log(Level.FINE, "createClient(client: {0})",
                 new Object[] {"hidden"});
 
-        client.getAccountSet().clear();
         getEntityManager().persist(client);
     }
 }

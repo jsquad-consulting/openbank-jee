@@ -10,6 +10,7 @@ import se.jsquad.batch.SlowMockBatch;
 import se.jsquad.batch.status.BatchStatus;
 import se.jsquad.batch.status.Status;
 import se.jsquad.ejb.OpenBankBusinessEJB;
+import se.jsquad.generator.DatabaseGenerator;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -36,6 +37,24 @@ public class OpenBankRestTest {
 
         entityManagerFactory = Persistence.createEntityManagerFactory("openBankPU", properties);
         entityManager = entityManagerFactory.createEntityManager();
+
+        EntityTransaction entityTransaction = entityManager.getTransaction();
+        entityTransaction.begin();
+
+        DatabaseGenerator databaseGenerator = new DatabaseGenerator();
+
+        for (Client client : databaseGenerator.populateDatabase()) {
+            entityManager.persist(client);
+        }
+
+        SystemProperty systemProperty = new SystemProperty();
+        systemProperty.setName("VERSION");
+        systemProperty.setValue("1.0.1");
+
+        entityManager.persist(systemProperty);
+
+        entityTransaction.commit();
+
 
         openBankRest = Mockito.spy(new OpenBankRest());
         OpenBankBusinessEJB openBankBusinessEJB = Mockito.spy(new OpenBankBusinessEJB());

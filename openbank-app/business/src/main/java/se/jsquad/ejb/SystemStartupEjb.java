@@ -1,8 +1,13 @@
 package se.jsquad.ejb;
 
+import se.jsquad.Client;
+import se.jsquad.SystemProperty;
+import se.jsquad.generator.DatabaseGenerator;
+import se.jsquad.repository.ClientRepository;
 import se.jsquad.repository.SystemPropertyRepository;
 import se.jsquad.thread.NumberOfLocks;
 
+import javax.annotation.PostConstruct;
 import javax.ejb.Schedule;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
@@ -21,6 +26,12 @@ public class SystemStartupEjb {
     @Inject
     private SystemPropertyRepository systemPropertyRepository;
 
+    @Inject
+    private ClientRepository clientRepository;
+
+    @Inject
+    private DatabaseGenerator databaseGenerator;
+
     public SystemStartupEjb() {
         logger.log(Level.FINE, "Starting up the application and caching the system properties to the secondary level "
                 + "cache.");
@@ -38,6 +49,24 @@ public class SystemStartupEjb {
         } finally {
             NumberOfLocks.decreaseNumberOfLocks();
             lock.unlock();
+        }
+    }
+
+    @PostConstruct
+    public void populateDatabase() {
+        logger.log(Level.FINE, "populateDatabase()");
+
+        if (clientRepository != null && clientRepository.getEntityManager() != null && clientRepository
+                .getClientByPersonIdentification("191212121212") == null) {
+            for (Client client : databaseGenerator.populateDatabase()) {
+                clientRepository.createClient(client);
+            }
+
+            SystemProperty systemProperty = new SystemProperty();
+            systemProperty.setName("VERSION");
+            systemProperty.setValue("1.0.1");
+
+            systemPropertyRepository.getEntityManager().persist(systemProperty);
         }
     }
 }

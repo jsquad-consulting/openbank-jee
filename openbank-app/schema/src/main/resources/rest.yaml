@@ -3,13 +3,57 @@ openapi: 3.0.0
 info:
   title: Jsquad OpenBank API
   description: Bank OpenAPI
-  version: 0.0.2
+  version: 0.0.3
 
 servers:
   - url: http://localhost:8080/restful-webservice/api
     description: Local OpenBank server
 
 paths:
+  /client/account/transfer/{value}/{fromAccountNumber}/{toAccountNumber}:
+    put:
+      summary: Transfer money from one account to another account
+      parameters:
+        - in: path
+          name: value
+          schema:
+            example: 250
+            type: integer
+          required: true
+        - in: path
+          name: fromAccountNumber
+          schema:
+            type: string
+            example: '1051'
+          required: true
+        - in: path
+          name: toAccountNumber
+          schema:
+            type: string
+            example: '1050'
+          required: true
+      responses:
+        '200':
+          description: Returns an ok if transfer was succesful
+          content:
+            application/json:
+              schema:
+                type: string
+                example: 'Transaction successful.'
+        '401':
+          description: Returns a unauthorized message
+          content:
+            application/json:
+              schema:
+                type: string
+                example: 'Authorization failed.'
+        '5XX':
+          description: Unexpected system error
+          content:
+            application/json:
+              schema:
+                example: 'System failure'
+                type: string
   /client/create/:
     post:
       summary: Create client
@@ -26,7 +70,7 @@ paths:
           content:
             application/json:
               schema:
-                example: 'Client successfully crated'
+                example: 'Client successfully created'
                 type: string
         '400':
           description: Client data has not valid format

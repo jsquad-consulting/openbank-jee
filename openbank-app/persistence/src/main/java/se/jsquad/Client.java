@@ -4,12 +4,11 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -19,7 +18,10 @@ import java.util.Set;
 @NamedQuery(name = Client.PERSON_IDENTIFICATION, query = "SELECT c FROM Client c WHERE " +
         "c.person.personIdentification = :" + Client.PARAM_PERSON_IDENTIFICATION)
 public class Client implements Serializable {
+    @Transient
     public static final String PERSON_IDENTIFICATION = "PERSON_IDENTIFICATION";
+
+    @Transient
     public static final String PARAM_PERSON_IDENTIFICATION = "personIdentification";
 
     @Id
@@ -27,15 +29,13 @@ public class Client implements Serializable {
     private Long id;
 
     @OneToOne(mappedBy = "client",
-            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
+            cascade = {CascadeType.ALL})
     private Person person;
 
-    @OneToOne(mappedBy = "client", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
+    @OneToOne(mappedBy = "client", cascade = {CascadeType.ALL}, orphanRemoval = true)
     private ClientType clientType;
 
-    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
-    @JoinTable(name = "CLIENT_JOIN_ACCOUNT", joinColumns = {@JoinColumn(name = "CLIENT_FK", referencedColumnName = "id")},
-            inverseJoinColumns = {@JoinColumn(name = "ACCOUNT_FK", referencedColumnName = "id")})
+    @OneToMany(cascade = {CascadeType.ALL}, orphanRemoval = true)
     private Set<Account> accountSet;
 
     public Long getId() {
