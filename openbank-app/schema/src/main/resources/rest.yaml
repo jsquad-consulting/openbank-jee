@@ -148,6 +148,7 @@ paths:
         name: personIdentification
         schema:
           type: string
+          example: '191212121212'
         required: true
         description: Client's identification number
     get:

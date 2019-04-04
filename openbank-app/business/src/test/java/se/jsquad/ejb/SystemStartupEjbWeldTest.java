@@ -1,9 +1,12 @@
 package se.jsquad.ejb;
 
-import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.jboss.weld.environment.se.Weld;
-import org.jboss.weld.environment.se.WeldContainer;
+import org.jboss.weld.junit5.WeldInitiator;
+import org.jboss.weld.junit5.WeldJunit5Extension;
+import org.jboss.weld.junit5.WeldSetup;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import se.jsquad.Client;
+import se.jsquad.SystemProperty;
 import se.jsquad.generator.DatabaseGenerator;
 import se.jsquad.producer.LoggerProducer;
 import se.jsquad.repository.ClientRepository;
@@ -11,47 +14,61 @@ import se.jsquad.repository.EntityManagerProducer;
 import se.jsquad.repository.SystemPropertyRepository;
 import se.jsquad.thread.NumberOfLocks;
 
+import javax.enterprise.inject.spi.InjectionPoint;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.Executors;
+import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@ExtendWith(WeldJunit5Extension.class)
 public class SystemStartupEjbWeldTest {
     private boolean runningThreads = true;
 
-    @Test
-    public void testConcurrentRefreshTheSecondaryLevelCache() throws NoSuchFieldException, IllegalAccessException {
-        Properties properties = new Properties();
-        properties.setProperty(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML, "META-INF/persistence.xml");
+    @WeldSetup
+    private WeldInitiator weldInitiator = WeldInitiator.from(SystemStartupEjb.class, DatabaseGenerator.class,
+            ClientRepository.class, SystemPropertyRepository.class, LoggerProducer.class, EntityManagerProducer.class)
+            .setPersistenceContextFactory(getPersistenceContextFactory()).build();
 
-        EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("openBankPU", properties);
+    @Inject
+    private SystemStartupEjb systemStartupEjb;
+
+    private static Function<InjectionPoint, Object> getPersistenceContextFactory() {
+        DatabaseGenerator databaseGenerator = new DatabaseGenerator();
+
+        Properties properties = new Properties();
+
+        EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("openBankPU",
+                properties);
         EntityManager entityManager = entityManagerFactory.createEntityManager();
 
-        Weld weld = new Weld();
-        weld.disableDiscovery();
+        EntityTransaction entityTransaction = entityManager.getTransaction();
+        entityTransaction.begin();
 
-        WeldContainer weldContainer = weld.beanClasses(SystemStartupEjb.class, SystemPropertyRepository.class,
-                ClientRepository.class, DatabaseGenerator.class)
-                .addBeanClass(LoggerProducer.class).initialize();
+        for (Client client : databaseGenerator.populateDatabase()) {
+            entityManager.persist(client);
+        }
 
-        SystemStartupEjb systemStartupEjb = weldContainer.select(SystemStartupEjb.class).get();
-        ClientRepository clientRepository = weldContainer.select(ClientRepository.class).get();
+        SystemProperty systemProperty = new SystemProperty();
+        systemProperty.setName("VERSION");
+        systemProperty.setValue("1.0.1");
 
-        Field field = SystemStartupEjb.class.getDeclaredField("clientRepository");
-        field.setAccessible(true);
+        entityManager.persist(systemProperty);
 
-        field.set(systemStartupEjb, clientRepository);
+        entityTransaction.commit();
 
-        field = EntityManagerProducer.class.getDeclaredField("entityManager");
-        field.setAccessible(true);
+        return functionPointer -> entityManager;
+    }
 
-        field.set(clientRepository, entityManager);
+    @Test
+    public void testConcurrentRefreshTheSecondaryLevelCache() {
 
         List<Integer> numberOfLockList = new ArrayList<>();
         var executorService = Executors.newFixedThreadPool(1001);
@@ -74,8 +91,7 @@ public class SystemStartupEjbWeldTest {
         while (!executorService.isTerminated()) {
         }
 
-       assertTrue(numberOfLockList.stream().noneMatch(n -> n.intValue() < 0 || n.intValue() > 1));
+        assertTrue(numberOfLockList.stream().noneMatch(n -> n.intValue() < 0 || n.intValue() > 1));
 
-        weldContainer.close();
     }
 }

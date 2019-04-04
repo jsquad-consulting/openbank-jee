@@ -1,10 +1,10 @@
 package se.jsquad;
 
-import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.jboss.weld.environment.se.Weld;
-import org.jboss.weld.environment.se.WeldContainer;
-import org.junit.jupiter.api.BeforeEach;
+import org.jboss.weld.junit5.WeldInitiator;
+import org.jboss.weld.junit5.WeldJunit5Extension;
+import org.jboss.weld.junit5.WeldSetup;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import se.jsquad.generator.DatabaseGenerator;
 import se.jsquad.getclientservice.GetClientRequest;
@@ -16,6 +16,8 @@ import se.jsquad.producer.LoggerProducer;
 import se.jsquad.repository.ClientRepository;
 import se.jsquad.repository.EntityManagerProducer;
 
+import javax.enterprise.inject.spi.InjectionPoint;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
@@ -23,23 +25,29 @@ import javax.persistence.Persistence;
 import javax.xml.ws.WebServiceContext;
 import java.lang.reflect.Field;
 import java.util.Properties;
+import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@ExtendWith(WeldJunit5Extension.class)
 public class GetClientWSWeldTest {
 
-    private EntityManager entityManager;
+    @WeldSetup
+    private WeldInitiator weldInitiator = WeldInitiator.from(GetClientWS.class, GetClientWsBusiness.class,
+            ClientRepository.class, LoggerProducer.class,
+            EntityManagerProducer.class).setPersistenceContextFactory(getPersistenceContextFactory()).build();
 
-    @BeforeEach
-    void initEntityManager() {
-        Properties properties = new Properties();
-        properties.setProperty(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML, "META-INF/persistence.xml");
+    @Inject
+    private GetClientWS getClientWS;
 
-        EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory(
-                "openBankPU", properties);
-        entityManager = entityManagerFactory.createEntityManager();
-
+    private static Function<InjectionPoint, Object> getPersistenceContextFactory() {
         DatabaseGenerator databaseGenerator = new DatabaseGenerator();
+
+        Properties properties = new Properties();
+
+        EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("openBankPU",
+                properties);
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
 
         EntityTransaction entityTransaction = entityManager.getTransaction();
         entityTransaction.begin();
@@ -55,47 +63,29 @@ public class GetClientWSWeldTest {
         entityManager.persist(systemProperty);
 
         entityTransaction.commit();
+
+        return functionPointer -> entityManager;
     }
 
     @Test
     public void testGetClientWs() throws NoSuchFieldException, IllegalAccessException {
         // Given
-        Weld weld = new Weld();
-        WeldContainer weldContainer =
-                weld.beanClasses(GetClientWS.class, ClientRepository.class, GetClientWsBusiness.class)
-                        .disableDiscovery()
-                .addBeanClass(LoggerProducer.class).initialize();
-
-        GetClientWS getClientWS = weldContainer.select(GetClientWS.class).get();
-        ClientRepository clientRepository = weldContainer.select(ClientRepository.class).get();
-        GetClientWsBusiness getClientWsBusiness = weldContainer.select(GetClientWsBusiness.class).get();
+        GetClientWsBusiness getClientWsBusiness = weldInitiator.select(GetClientWsBusiness.class).get();
         WebServiceContext webServiceContext = Mockito.mock(WebServiceContext.class);
         Mockito.when(webServiceContext.isUserInRole(RoleConstants.ADMIN)).thenReturn(true);
         Mockito.when(webServiceContext.isUserInRole(RoleConstants.CUSTOMER)).thenReturn(false);
 
-        Field field = EntityManagerProducer.class.getDeclaredField("entityManager");
+        Field field = GetClientWsBusiness.class.getDeclaredField("webServiceContext");
         field.setAccessible(true);
 
         // Set value
-        field.set(clientRepository, entityManager);
+        field.set(getClientWsBusiness, webServiceContext);
 
         field = GetClientWS.class.getDeclaredField("getClientWsBusiness");
         field.setAccessible(true);
 
         // Set value
         field.set(getClientWS, getClientWsBusiness);
-
-        field = GetClientWsBusiness.class.getDeclaredField("clientRepository");
-        field.setAccessible(true);
-
-        // Set value
-        field.set(getClientWsBusiness, clientRepository);
-
-        field = GetClientWsBusiness.class.getDeclaredField("webServiceContext");
-        field.setAccessible(true);
-
-        // Set value
-        field.set(getClientWsBusiness, webServiceContext);
 
         String personIdentification = "191212121212";
         GetClientRequest clientRequest = new GetClientRequest();
