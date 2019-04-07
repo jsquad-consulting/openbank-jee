@@ -19,7 +19,6 @@ import javax.persistence.Persistence;
 import javax.ws.rs.core.Response;
 import java.lang.reflect.Field;
 import java.util.Properties;
-import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -107,7 +106,7 @@ public class OpenBankRestTest {
     }
 
     @Test
-    public void testStartSlowBatchJob() throws ExecutionException, InterruptedException, NoSuchFieldException,
+    public void testStartSlowBatchJob() throws NoSuchFieldException,
             IllegalAccessException {
         // Given
         OpenBankRest openBankRest = Mockito.spy(new OpenBankRest());

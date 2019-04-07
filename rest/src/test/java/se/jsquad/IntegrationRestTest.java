@@ -46,6 +46,11 @@ import static org.mockito.ArgumentMatchers.anyObject;
 
 public class IntegrationRestTest {
 
+    public static final String LOGGER = "logger";
+    public static final String PERSON_IDENTIFICATION = "191212121212";
+    public static final String JOHN_DOE_TEST_SE = "john.doe@test.se";
+    public static final String CLIENT_CREATED_SUCCESSFULLY = "Client created successfully.";
+    public static final String DEPOSIT_500_$ = "Deposit 500$";
     private EntityManager entityManager;
     private EntityManagerFactory entityManagerFactory;
 
@@ -98,7 +103,7 @@ public class IntegrationRestTest {
         // Set value
         field.set(clientInformationRest, clientInformationEJB);
 
-        field = AccountTransferRest.class.getDeclaredField("logger");
+        field = AccountTransferRest.class.getDeclaredField(LOGGER);
         field.setAccessible(true);
 
         // Set value
@@ -116,7 +121,7 @@ public class IntegrationRestTest {
         // Set value
         field.set(accountTransferRest, accountTransactionEJB);
 
-        field = AccountTransactionEJB.class.getDeclaredField("logger");
+        field = AccountTransactionEJB.class.getDeclaredField(LOGGER);
         field.setAccessible(true);
 
         // Set value
@@ -128,7 +133,7 @@ public class IntegrationRestTest {
         // Set value
         field.set(accountTransactionEJB, clientRepository);
 
-        field = ClientInformationRest.class.getDeclaredField("logger");
+        field = ClientInformationRest.class.getDeclaredField(LOGGER);
         field.setAccessible(true);
 
         // Set value
@@ -140,7 +145,7 @@ public class IntegrationRestTest {
         // Set value
         field.set(clientInformationRest, messageGenerator);
 
-        field = MessageGenerator.class.getDeclaredField("logger");
+        field = MessageGenerator.class.getDeclaredField(LOGGER);
         field.setAccessible(true);
 
         // Set value
@@ -158,7 +163,7 @@ public class IntegrationRestTest {
         // Set value
         field.set(authorization, request);
 
-        field = Authorization.class.getDeclaredField("logger");
+        field = Authorization.class.getDeclaredField(LOGGER);
         field.setAccessible(true);
 
         // Set value
@@ -170,7 +175,7 @@ public class IntegrationRestTest {
         // Set value
         field.set(clientInformationEJB, clientAdapter);
 
-        field = ClientInformationEJB.class.getDeclaredField("logger");
+        field = ClientInformationEJB.class.getDeclaredField(LOGGER);
         field.setAccessible(true);
 
         // Set value
@@ -182,7 +187,7 @@ public class IntegrationRestTest {
         // Set value
         field.set(clientAdapter, sessionContext);
 
-        field = ClientAdapter.class.getDeclaredField("logger");
+        field = ClientAdapter.class.getDeclaredField(LOGGER);
         field.setAccessible(true);
 
         // Set value
@@ -200,7 +205,7 @@ public class IntegrationRestTest {
         // Set value
         field.set(clientInformationEJB, clientValidator);
 
-        field = ClientValidator.class.getDeclaredField("logger");
+        field = ClientValidator.class.getDeclaredField(LOGGER);
         field.setAccessible(true);
 
         // Set value
@@ -218,7 +223,7 @@ public class IntegrationRestTest {
         // Set value
         field.set(clientRepository, entityManager);
 
-        field = ClientRepository.class.getDeclaredField("logger");
+        field = ClientRepository.class.getDeclaredField(LOGGER);
         field.setAccessible(true);
 
         // Set value
@@ -233,13 +238,13 @@ public class IntegrationRestTest {
         // Set value
         field.set(openBankRest, openBankBusinessEJB);
 
-        field = OpenBankBusinessEJB.class.getDeclaredField("logger");
+        field = OpenBankBusinessEJB.class.getDeclaredField(LOGGER);
         field.setAccessible(true);
 
         // Set value
         field.set(openBankBusinessEJB, loggerOpenBankBusinessEJB);
 
-        field = OpenBankRest.class.getDeclaredField("logger");
+        field = OpenBankRest.class.getDeclaredField(LOGGER);
         field.setAccessible(true);
 
         // Set value
@@ -398,7 +403,7 @@ public class IntegrationRestTest {
 
         clientApi.setClientType(new ClientTypeApi());
         clientApi.getClientType().setType(TypeApi.REGULAR);
-        clientApi.getClientType().setRating(Long.valueOf(500));
+        clientApi.getClientType().setRating(500);
 
         // When
         EntityTransaction tx = entityManager.getTransaction();
@@ -444,17 +449,17 @@ public class IntegrationRestTest {
         // Given
         clientApi.setClientType(new ClientTypeApi());
         clientApi.getClientType().setType(TypeApi.PREMIUM);
-        clientApi.getClientType().setPremiumRating(Long.valueOf(9000));
+        clientApi.getClientType().setPremiumRating(9000);
         clientApi.getClientType().setSpecialOffers("Don Vito has an offer we can't refuse");
 
         AccountApi accountApi = new AccountApi();
 
-        accountApi.setBalance(Long.valueOf(1050));
+        accountApi.setBalance(1050);
         accountApi.getAccountTransactionList().clear();
 
         AccountTransactionApi accountTransactionApi = new AccountTransactionApi();
         accountTransactionApi.setTransactionType(TransactionTypeApi.DEPOSIT);
-        accountTransactionApi.setMessage("Deposit 500$");
+        accountTransactionApi.setMessage(DEPOSIT_500_$);
         accountApi.getAccountTransactionList().add(accountTransactionApi);
 
         clientApi.getAccountList().add(accountApi);
@@ -521,12 +526,12 @@ public class IntegrationRestTest {
 
         AccountApi accountApi = new AccountApi();
 
-        accountApi.setBalance(Long.valueOf(1050));
+        accountApi.setBalance(1050);
         accountApi.getAccountTransactionList().clear();
 
         AccountTransactionApi accountTransactionApi = new AccountTransactionApi();
         accountTransactionApi.setTransactionType(TransactionTypeApi.DEPOSIT);
-        accountTransactionApi.setMessage("Deposit 500$");
+        accountTransactionApi.setMessage(DEPOSIT_500_$);
         accountApi.getAccountTransactionList().add(accountTransactionApi);
 
         clientApi.getAccountList().add(accountApi);
@@ -541,7 +546,7 @@ public class IntegrationRestTest {
 
         // Then
         assertEquals(Response.Status.OK, Response.Status.fromStatusCode(response.getStatus()));
-        assertEquals("Client created successfully.", response.getEntity());
+        assertEquals(CLIENT_CREATED_SUCCESSFULLY, response.getEntity());
 
         // When
         response = clientInformationRest.getClientInformtion(personIdentification);
@@ -563,7 +568,7 @@ public class IntegrationRestTest {
     @Test
     public void testGetClientWithoutAccountInformationAsCustomer() {
         // Given
-        String personIdentification = "191212121212";
+        String personIdentification = PERSON_IDENTIFICATION;
 
         // When
         Mockito.when(sessionContext.isCallerInRole(RoleConstants.ADMIN)).thenReturn(false);
@@ -578,7 +583,7 @@ public class IntegrationRestTest {
         assertEquals("John", clientApi.getPerson().getFirstName());
         assertEquals("Doe", clientApi.getPerson().getLastName());
         assertEquals(personIdentification, clientApi.getPerson().getPersonIdentification());
-        assertEquals("john.doe@test.se", clientApi.getPerson().getMail());
+        assertEquals(JOHN_DOE_TEST_SE, clientApi.getPerson().getMail());
 
         assertEquals(0, clientApi.getAccountList().size());
     }
@@ -586,7 +591,7 @@ public class IntegrationRestTest {
     @Test
     public void testGetClient() {
         // Given
-        String personIdentification = "191212121212";
+        String personIdentification = PERSON_IDENTIFICATION;
 
         // When
         Response response = clientInformationRest.getClientInformtion(personIdentification);
@@ -600,7 +605,7 @@ public class IntegrationRestTest {
         assertEquals("John", clientApi.getPerson().getFirstName());
         assertEquals("Doe", clientApi.getPerson().getLastName());
         assertEquals(personIdentification, clientApi.getPerson().getPersonIdentification());
-        assertEquals("john.doe@test.se", clientApi.getPerson().getMail());
+        assertEquals(JOHN_DOE_TEST_SE, clientApi.getPerson().getMail());
 
         assertEquals(1, clientApi.getAccountList().size());
         assertEquals(500.0, clientApi.getAccountList().get(0).getBalance());
@@ -618,7 +623,7 @@ public class IntegrationRestTest {
     @Test
     public void testGetClientException() throws JMSException {
         // Given
-        String personIdentification = "191212121212";
+        String personIdentification = PERSON_IDENTIFICATION;
 
         // When
         Mockito.when(clientInformationEJB.getClient(personIdentification)).thenThrow(new RuntimeException(
@@ -633,7 +638,7 @@ public class IntegrationRestTest {
     @Test
     public void testGetClientInformationWithAccountIsAdminRole() {
         // Given
-        String personIdentification = "191212121212";
+        String personIdentification = PERSON_IDENTIFICATION;
 
         // When
         Mockito.when(sessionContext.isCallerInRole(RoleConstants.ADMIN)).thenReturn(true);
@@ -648,7 +653,7 @@ public class IntegrationRestTest {
         assertEquals("John", clientApi.getPerson().getFirstName());
         assertEquals("Doe", clientApi.getPerson().getLastName());
         assertEquals(personIdentification, clientApi.getPerson().getPersonIdentification());
-        assertEquals("john.doe@test.se", clientApi.getPerson().getMail());
+        assertEquals(JOHN_DOE_TEST_SE, clientApi.getPerson().getMail());
 
         assertEquals(1, clientApi.getAccountList().size());
         assertEquals(500.0, clientApi.getAccountList().get(0).getBalance());
