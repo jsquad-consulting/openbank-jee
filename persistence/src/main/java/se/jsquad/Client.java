@@ -1,6 +1,7 @@
 package se.jsquad;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -8,7 +9,6 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -18,14 +18,12 @@ import java.util.Set;
 @NamedQuery(name = Client.PERSON_IDENTIFICATION, query = "SELECT c FROM Client c WHERE " +
         "c.person.personIdentification = :" + Client.PARAM_PERSON_IDENTIFICATION)
 public class Client implements Serializable {
-    @Transient
     public static final String PERSON_IDENTIFICATION = "PERSON_IDENTIFICATION";
-
-    @Transient
     public static final String PARAM_PERSON_IDENTIFICATION = "personIdentification";
 
     @Id
     @GeneratedValue
+    @Column(name = "ID")
     private Long id;
 
     @OneToOne(mappedBy = "client",

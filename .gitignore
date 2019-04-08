@@ -84,6 +84,7 @@ hs_err_pid*
 # User-specific stuff
 .idea
 *.iml
+target
 
 # CMake
 cmake-build-debug/

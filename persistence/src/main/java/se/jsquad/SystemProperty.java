@@ -18,12 +18,13 @@ public class SystemProperty {
 
     @Id
     @GeneratedValue
+    @Column(name = "ID")
     private Long id;
 
-    @Column(name = "name")
+    @Column(name = "NAME")
     private String name;
 
-    @Column(name = "value")
+    @Column(name = "VALUE")
     private String value;
 
     public Long getId() {

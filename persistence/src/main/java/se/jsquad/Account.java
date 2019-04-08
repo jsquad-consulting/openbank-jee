@@ -9,7 +9,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -18,14 +17,12 @@ import java.util.Set;
 @Table(name = "ACCOUNT")
 @NamedQuery(name = Account.ACCOUNT_ID, query = "SELECT a FROM Account a WHERE a.accountNumber =:" + Account.PARAM_ACCOUNT_NUMBER)
 public class Account implements Serializable {
-    @Transient
     public static final String ACCOUNT_ID = "ACCOUNT_ID";
-
-    @Transient
     public static final String PARAM_ACCOUNT_NUMBER = "PARAM_ACCOUNT_NUMBER";
 
     @Id
     @GeneratedValue
+    @Column(name = "ID")
     private Long id;
 
     @Column(name = "BALANCE")
