@@ -18,6 +18,8 @@ import se.jsquad.client.info.ClientApi;
 import se.jsquad.client.info.TypeApi;
 import se.jsquad.ejb.ClientInformationEJB;
 import se.jsquad.ejb.OpenBankBusinessEJB;
+import se.jsquad.entity.Client;
+import se.jsquad.entity.SystemProperty;
 import se.jsquad.generator.DatabaseGenerator;
 import se.jsquad.generator.MessageGenerator;
 import se.jsquad.jms.MessageMDB;

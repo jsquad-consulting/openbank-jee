@@ -20,7 +20,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Path("/client")
@@ -44,20 +43,14 @@ public class ClientInformationRest {
     @Path("/login")
     @Produces(MediaType.APPLICATION_JSON)
     public Response login() {
-        logger.log(Level.FINE, "login()");
-
         try {
             if (authorization.isAuthorized()) {
-                logger.log(Level.FINE, "Authorization ok.");
                 return Response.ok().entity("Authorization ok").type(MediaType.TEXT_PLAIN).build();
             } else {
-                logger.log(Level.FINE, AUTHORIZATION_FAILED);
                 return Response.status(Response.Status.UNAUTHORIZED).entity(AUTHORIZATION_FAILED)
                         .type(MediaType.TEXT_PLAIN).build();
             }
         } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage(), e);
-
             return Response.serverError().entity("Severe system failure has occured.").type(MediaType.TEXT_PLAIN)
                     .build();
         }
@@ -68,14 +61,10 @@ public class ClientInformationRest {
     @Path("/logout")
     @Produces(MediaType.APPLICATION_JSON)
     public Response logout() {
-        logger.log(Level.FINE, "logout()");
-
         try {
             authorization.logout();
             return Response.ok().entity("Logout successful.").entity(MediaType.TEXT_PLAIN).build();
         } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage(), e);
-
             return Response.serverError().entity("Severe system failure has occured.").type(MediaType.TEXT_PLAIN)
                     .build();
         }
@@ -86,9 +75,6 @@ public class ClientInformationRest {
     @Path("info/{personIdentification}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getClientInformtion(@PathParam("personIdentification") String personIdentification) {
-        logger.log(Level.FINE, "getClientInformtion(personIdentification: {0})",
-                new Object[]{"secret person identification parameter"});
-
         try {
             if (!authorization.isAuthorized()) {
                 return Response.status(Response.Status.UNAUTHORIZED).entity("Unauthorized request.").type(MediaType
@@ -104,14 +90,10 @@ public class ClientInformationRest {
                         .TEXT_PLAIN).build();
             }
         } catch (NoResultException e) {
-            logger.log(Level.FINE, e.getMessage(), e);
-
             return Response.status(Response.Status.NOT_FOUND).entity("Client not found.").type(MediaType.TEXT_PLAIN)
                     .build();
 
         } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage(), e);
-
             return Response.serverError().entity("Severe system failure has occured!").type(MediaType.APPLICATION_JSON)
                     .build();
         }
@@ -122,12 +104,7 @@ public class ClientInformationRest {
     @Path("/create")
     @Produces(MediaType.APPLICATION_JSON)
     public Response createClientInformation(ClientApi clientApi) {
-        logger.log(Level.FINE, "createClientInformation(clientApi: {0})",
-                new Object[]{"hidden"});
-
         if (clientApi == null || clientApi.getPerson() == null) {
-            logger.log(Level.SEVERE, "Client information must contain a person at least.");
-
             return Response.status(Response.Status.BAD_REQUEST).entity("Client must at least contain a person")
                     .type(MediaType.TEXT_PLAIN).build();
         }
@@ -144,13 +121,9 @@ public class ClientInformationRest {
             String message = messageGenerator.generateClientValidationMessage(e.getConstraintViolations());
             return Response.status(Response.Status.BAD_REQUEST).entity(message).type(MediaType.TEXT_PLAIN).build();
         } catch (BadRequestException e) {
-            logger.log(Level.SEVERE, e.getMessage(), e);
-
             return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).type(MediaType.APPLICATION_JSON)
                     .build();
         } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage(), e);
-
             return Response.serverError().entity("Severe system failure has occured!").type(MediaType.TEXT_PLAIN)
                     .build();
         }

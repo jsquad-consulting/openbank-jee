@@ -1,12 +1,12 @@
 package se.jsquad.generator;
 
-import se.jsquad.Account;
-import se.jsquad.AccountTransaction;
-import se.jsquad.Client;
-import se.jsquad.Person;
-import se.jsquad.PremiumClient;
-import se.jsquad.RegularClient;
-import se.jsquad.TransactionType;
+import se.jsquad.entity.Account;
+import se.jsquad.entity.AccountTransaction;
+import se.jsquad.entity.Client;
+import se.jsquad.entity.Person;
+import se.jsquad.entity.PremiumClient;
+import se.jsquad.entity.RegularClient;
+import se.jsquad.entity.TransactionType;
 
 import java.util.HashSet;
 import java.util.Set;

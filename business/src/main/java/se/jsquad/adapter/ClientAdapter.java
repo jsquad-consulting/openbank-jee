@@ -1,14 +1,6 @@
 package se.jsquad.adapter;
 
-import se.jsquad.Account;
-import se.jsquad.AccountTransaction;
-import se.jsquad.Client;
-import se.jsquad.ForeignClient;
-import se.jsquad.Person;
-import se.jsquad.PremiumClient;
-import se.jsquad.RegularClient;
 import se.jsquad.RoleConstants;
-import se.jsquad.TransactionType;
 import se.jsquad.client.info.AccountApi;
 import se.jsquad.client.info.AccountTransactionApi;
 import se.jsquad.client.info.ClientApi;
@@ -16,6 +8,14 @@ import se.jsquad.client.info.ClientTypeApi;
 import se.jsquad.client.info.PersonApi;
 import se.jsquad.client.info.TransactionTypeApi;
 import se.jsquad.client.info.TypeApi;
+import se.jsquad.entity.Account;
+import se.jsquad.entity.AccountTransaction;
+import se.jsquad.entity.Client;
+import se.jsquad.entity.ForeignClient;
+import se.jsquad.entity.Person;
+import se.jsquad.entity.PremiumClient;
+import se.jsquad.entity.RegularClient;
+import se.jsquad.entity.TransactionType;
 import se.jsquad.qualifier.Log;
 
 import javax.annotation.Resource;
@@ -23,7 +23,6 @@ import javax.ejb.SessionContext;
 import javax.inject.Inject;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ClientAdapter {
@@ -34,9 +33,6 @@ public class ClientAdapter {
     private SessionContext sessionContext;
 
     public ClientApi translateClientToClientApi(Client client) {
-        logger.log(Level.FINE, "translateClientToClientApi: {0})",
-                new Object[] {"hidden"});
-
         ClientApi clientApi = new ClientApi();
         PersonApi personApi = new PersonApi();
         ClientTypeApi clientTypeApi = new ClientTypeApi();
@@ -93,9 +89,6 @@ public class ClientAdapter {
     }
 
     public Client translateClientApiToClient(ClientApi clientApi) {
-        logger.log(Level.FINE, "translateClientApiToClient: {0})",
-                new Object[] {"hidden"});
-
         Client client = new Client();
         client.setPerson(new Person());
 

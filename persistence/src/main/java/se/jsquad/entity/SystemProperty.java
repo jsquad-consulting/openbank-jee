@@ -1,4 +1,4 @@
-package se.jsquad;
+package se.jsquad.entity;
 
 import javax.persistence.Cacheable;
 import javax.persistence.Column;

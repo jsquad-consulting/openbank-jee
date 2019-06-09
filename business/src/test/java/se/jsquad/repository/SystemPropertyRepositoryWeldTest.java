@@ -8,8 +8,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
-import se.jsquad.Client;
-import se.jsquad.SystemProperty;
+import se.jsquad.entity.Client;
+import se.jsquad.entity.SystemProperty;
 import se.jsquad.generator.DatabaseGenerator;
 import se.jsquad.producer.LoggerProducer;
 

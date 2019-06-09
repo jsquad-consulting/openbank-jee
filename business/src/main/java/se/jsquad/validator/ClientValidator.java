@@ -1,8 +1,8 @@
 package se.jsquad.validator;
 
-import se.jsquad.Account;
-import se.jsquad.AccountTransaction;
-import se.jsquad.Client;
+import se.jsquad.entity.Account;
+import se.jsquad.entity.AccountTransaction;
+import se.jsquad.entity.Client;
 import se.jsquad.qualifier.Log;
 
 import javax.inject.Inject;
@@ -13,7 +13,6 @@ import javax.validation.ValidatorFactory;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ClientValidator {
@@ -21,9 +20,6 @@ public class ClientValidator {
     private Logger logger;
 
     public Set<ConstraintViolation<Object>> createConstraintViolationSet(Client client) {
-        logger.log(Level.FINE, "clientValidator(client: {0})",
-                new Object[] {"hidden"});
-
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         Validator validator = factory.getValidator();
 

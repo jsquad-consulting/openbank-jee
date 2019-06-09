@@ -6,18 +6,13 @@ import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class MessageGenerator {
     @Inject @Log
     private Logger logger;
 
-
     public String generateClientValidationMessage(Set<ConstraintViolation<?>> constraintViolationSet) {
-        logger.log(Level.FINE, "generateClientValidationMessage(constraintViolationSet: {0}",
-                new Object[] {"hidden"});
-
         StringBuilder stringBuilder = new StringBuilder();
 
         Iterator<ConstraintViolation<?>> constraintViolationIterator = constraintViolationSet.iterator();

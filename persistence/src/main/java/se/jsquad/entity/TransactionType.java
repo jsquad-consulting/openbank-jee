@@ -1,4 +1,4 @@
-package se.jsquad;
+package se.jsquad.entity;
 
 public enum TransactionType {
     DEPOSIT,

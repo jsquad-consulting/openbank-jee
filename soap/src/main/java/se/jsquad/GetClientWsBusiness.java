@@ -1,5 +1,11 @@
 package se.jsquad;
 
+import se.jsquad.entity.Account;
+import se.jsquad.entity.AccountTransaction;
+import se.jsquad.entity.Client;
+import se.jsquad.entity.ForeignClient;
+import se.jsquad.entity.PremiumClient;
+import se.jsquad.entity.RegularClient;
 import se.jsquad.getclientservice.AccountTransactionType;
 import se.jsquad.getclientservice.AccountType;
 import se.jsquad.getclientservice.ClientType;
@@ -18,7 +24,6 @@ import javax.inject.Inject;
 import javax.jws.WebService;
 import javax.xml.ws.WebServiceContext;
 import java.util.Iterator;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @WebService
@@ -40,7 +45,6 @@ public class GetClientWsBusiness {
         getClientResponse.setStatus(StatusType.ERROR);
 
         if (request == null) {
-            logger.log(Level.FINE, "Request parameter must be set, can't be null.");
             getClientResponse.setMessage("Request must be set with proper person identification number.");
             return getClientResponse;
         }
@@ -51,7 +55,7 @@ public class GetClientWsBusiness {
             return getClientResponse;
         }
 
-        se.jsquad.Client client = clientRepository.getClientByPersonIdentification(request.getPersonIdentification());
+        Client client = clientRepository.getClientByPersonIdentification(request.getPersonIdentification());
 
         if (client == null) {
             getClientResponse.setStatus(StatusType.WARNING);

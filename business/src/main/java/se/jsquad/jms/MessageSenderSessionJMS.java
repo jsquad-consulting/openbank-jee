@@ -13,7 +13,6 @@ import javax.jms.Queue;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.UUID;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class MessageSenderSessionJMS {
@@ -29,8 +28,6 @@ public class MessageSenderSessionJMS {
     private JMSContext jmsContext;
 
     public void sendMessage(String body) throws JMSException {
-        logger.log(Level.FINE, "sendMessage(message: {0})", new Object[] {body});
-
         Message message = jmsContext.createObjectMessage(body);
         message.setJMSTimestamp(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
         message.setJMSCorrelationID(UUID.randomUUID().toString());

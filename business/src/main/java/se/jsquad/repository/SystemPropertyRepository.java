@@ -1,12 +1,11 @@
 package se.jsquad.repository;
 
-import se.jsquad.SystemProperty;
+import se.jsquad.entity.SystemProperty;
 import se.jsquad.qualifier.Log;
 
 import javax.inject.Inject;
 import javax.persistence.TypedQuery;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class SystemPropertyRepository extends EntityManagerProducer {
@@ -14,9 +13,6 @@ public class SystemPropertyRepository extends EntityManagerProducer {
     private Logger logger;
 
     List<SystemProperty> findAllUniqueSystemProperties() {
-        logger.log(Level.FINE, "findAllUniqueSystemProperties() is being called and caching the secondary cache level"
-                + " with SYSTEMPROPERTY entities.");
-
         TypedQuery<SystemProperty> query = getEntityManager().createNamedQuery(SystemProperty
                 .FIND_ALL_UNIQUE_SYSTEM_PROPERTIES, SystemProperty.class);
 
@@ -24,14 +20,10 @@ public class SystemPropertyRepository extends EntityManagerProducer {
     }
 
     void clearSecondaryLevelCache() {
-        logger.log(Level.FINE, "clearSecondaryLevelCache() method is called for clearing all of the SystemProperty " +
-                "entities from the secondary level JPA cache.");
         getEntityManager().getEntityManagerFactory().getCache().evictAll();
     }
 
     public void refreshSecondaryLevelCache() {
-        logger.log(Level.FINE, "refreshSecondaryLevelCache() refreshing the secondary level cache for SYSTEMPROPERTY "
-                + "entities.");
         clearSecondaryLevelCache();
         findAllUniqueSystemProperties();
     }

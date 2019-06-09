@@ -10,6 +10,8 @@ import se.jsquad.batch.SlowMockBatch;
 import se.jsquad.batch.status.BatchStatus;
 import se.jsquad.batch.status.Status;
 import se.jsquad.ejb.OpenBankBusinessEJB;
+import se.jsquad.entity.Client;
+import se.jsquad.entity.SystemProperty;
 import se.jsquad.generator.DatabaseGenerator;
 
 import javax.persistence.EntityManager;

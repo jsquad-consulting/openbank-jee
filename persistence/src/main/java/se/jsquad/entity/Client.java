@@ -1,4 +1,4 @@
-package se.jsquad;
+package se.jsquad.entity;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -26,8 +26,7 @@ public class Client implements Serializable {
     @Column(name = "ID")
     private Long id;
 
-    @OneToOne(mappedBy = "client",
-            cascade = {CascadeType.ALL})
+    @OneToOne(mappedBy = "client", cascade = {CascadeType.ALL})
     private Person person;
 
     @OneToOne(mappedBy = "client", cascade = {CascadeType.ALL}, orphanRemoval = true)

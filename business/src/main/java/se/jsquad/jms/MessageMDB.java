@@ -26,7 +26,6 @@ public class MessageMDB implements MessageListener {
 
     @Override
     public void onMessage(Message message) {
-        logger.log(Level.FINE, "onMessage(message: {0}", new Object[] {message});
         if (messageDrivenContext.getRollbackOnly()) {
             logger.log(Level.SEVERE, "Transaction is set for rollback, the message will 'redelivered' by default");
         }

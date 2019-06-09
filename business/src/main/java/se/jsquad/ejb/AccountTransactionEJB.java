@@ -1,18 +1,19 @@
 package se.jsquad.ejb;
 
-import se.jsquad.Account;
-import se.jsquad.AccountTransaction;
-import se.jsquad.TransactionType;
+import se.jsquad.entity.Account;
+import se.jsquad.entity.AccountTransaction;
+import se.jsquad.entity.TransactionType;
+import se.jsquad.interceptor.LoggerInterceptor;
 import se.jsquad.qualifier.Log;
 import se.jsquad.repository.ClientRepository;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.RollbackException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Stateless
+@LoggerInterceptor
 public class AccountTransactionEJB {
     @Inject @Log
     private Logger logger;
@@ -21,10 +22,6 @@ public class AccountTransactionEJB {
     private ClientRepository clientRepository;
 
     public void transferValueFromAccountToAccount(long value, String fromAccountNumber, String toAccountNumber) {
-        logger.log(Level.FINE, "transferValueFromAccountToAccount(value: {0}, fromAccountNumber: {1}, " +
-                        "toAccountNumber: {2}",
-                new Object[]{value, fromAccountNumber, toAccountNumber});
-
         Account fromAccount = clientRepository.getAccountByNumber(fromAccountNumber);
         Account toAccount = clientRepository.getAccountByNumber(toAccountNumber);
 
@@ -36,8 +33,6 @@ public class AccountTransactionEJB {
     }
 
     private void transferValueFromAccountToAccount(long value, Account fromAccount, Account toAccount) {
-        logger.log(Level.FINE, "transferValueFromAccountToAccount(value: {0}, fromAccount: {1}, toAccount: {2}",
-                new Object[] {value, fromAccount, toAccount});
         if (value > 0 && value <= fromAccount.getBalance()) {
             fromAccount.setBalance(fromAccount.getBalance()-value);
 

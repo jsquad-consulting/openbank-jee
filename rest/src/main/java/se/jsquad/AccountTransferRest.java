@@ -14,7 +14,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Path("/client")
@@ -36,9 +35,6 @@ public class AccountTransferRest {
     public Response transferValueFromAccountToAccount(@PathParam("value") long value,
                                                       @PathParam("fromAccountNumber") String fromAccountNumber,
                                                       @PathParam("toAccountNumber") String toAccountNumber) {
-        logger.log(Level.FINE, "transferValueFromAccountToAccount(value: {0}, fromAccountNumber: {1}, " +
-                "toAccountNumber: {2}");
-
         try {
             if (!authorization.isAuthorized()) {
                 return Response.status(Response.Status.UNAUTHORIZED).entity("Unauthorized request.").type(
@@ -49,7 +45,6 @@ public class AccountTransferRest {
                     toAccountNumber);
             return Response.ok().entity("Transaction successful.").type(MediaType.TEXT_PLAIN).build();
         } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage(), e);
             return Response.serverError().entity("Severe system failure has occured!").type(MediaType.TEXT_PLAIN)
                     .build();
         }

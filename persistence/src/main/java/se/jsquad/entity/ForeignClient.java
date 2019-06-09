@@ -1,4 +1,4 @@
-package se.jsquad;
+package se.jsquad.entity;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;

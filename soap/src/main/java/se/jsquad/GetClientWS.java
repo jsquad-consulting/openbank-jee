@@ -8,7 +8,6 @@ import se.jsquad.qualifier.Log;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.jws.WebService;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Stateless
@@ -22,8 +21,6 @@ public class GetClientWS implements GetClientServicePort {
 
     @Override
     public GetClientResponse getClient(GetClientRequest request) {
-        logger.log(Level.FINE, "getClient: {0}", new Object[] {"hidden person identification number."});
-
         return getClientWsBusiness.getClientResponse(request);
     }
 }

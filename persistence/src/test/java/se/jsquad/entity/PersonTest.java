@@ -1,4 +1,4 @@
-package se.jsquad;
+package se.jsquad.entity;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

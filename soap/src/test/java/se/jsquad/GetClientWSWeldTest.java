@@ -6,6 +6,8 @@ import org.jboss.weld.junit5.WeldSetup;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
+import se.jsquad.entity.Client;
+import se.jsquad.entity.SystemProperty;
 import se.jsquad.generator.DatabaseGenerator;
 import se.jsquad.getclientservice.GetClientRequest;
 import se.jsquad.getclientservice.GetClientResponse;

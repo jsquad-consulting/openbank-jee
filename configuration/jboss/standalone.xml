@@ -121,6 +121,9 @@
       <logger category="sun.rmi">
         <level name="WARN" />
       </logger>
+      <logger category="se.jsquad.*">
+        <level name="SEVERE" />
+      </logger>
       <root-logger>
         <level name="INFO" />
         <handlers>

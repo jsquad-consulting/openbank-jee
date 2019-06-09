@@ -12,7 +12,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.concurrent.Future;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Path("/openbank")
@@ -27,12 +26,9 @@ public class OpenBankRest {
     @Path("/hello/world")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getHelloWorld() {
-        logger.log(Level.FINE, "getHelloWorld() method called.");
-
         try {
             return Response.ok().entity(openBankBusinessEJB.getHelloWorld()).build();
         } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage(), e);
             return Response.serverError().entity("Severe system failure has occured!").type(MediaType.TEXT_PLAIN)
                     .build();
         }
@@ -42,13 +38,11 @@ public class OpenBankRest {
     @Path("/start/slow/batch/mock")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getSlowBatchMock() {
-        logger.log(Level.FINE, "getSlowBatchMock() method called.");
         try {
             Future<BatchStatus> batchStatusFuture = openBankBusinessEJB.startSlowBatch();
 
             return Response.ok().entity(batchStatusFuture.get()).build();
         } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage(), e);
             return Response.serverError().entity("Severe system failure has occured!").type(MediaType.TEXT_PLAIN)
                     .build();
         }

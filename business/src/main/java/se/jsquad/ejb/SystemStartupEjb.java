@@ -1,8 +1,9 @@
 package se.jsquad.ejb;
 
-import se.jsquad.Client;
-import se.jsquad.SystemProperty;
+import se.jsquad.entity.Client;
+import se.jsquad.entity.SystemProperty;
 import se.jsquad.generator.DatabaseGenerator;
+import se.jsquad.interceptor.LoggerInterceptor;
 import se.jsquad.repository.ClientRepository;
 import se.jsquad.repository.SystemPropertyRepository;
 import se.jsquad.thread.NumberOfLocks;
@@ -14,11 +15,11 @@ import javax.ejb.Startup;
 import javax.inject.Inject;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Singleton
 @Startup
+@LoggerInterceptor
 public class SystemStartupEjb {
     private static final Logger logger = Logger.getLogger(SystemStartupEjb.class.getName());
     private static final Lock lock = new ReentrantLock();
@@ -33,14 +34,11 @@ public class SystemStartupEjb {
     private DatabaseGenerator databaseGenerator;
 
     public SystemStartupEjb() {
-        logger.log(Level.FINE, "Starting up the application and caching the system properties to the secondary level "
-                + "cache.");
+        // No SONAR
     }
 
     @Schedule(minute = "*/5", hour = "*")
     public void refreshTheSecondaryLevelCache() {
-        logger.log(Level.FINE, "refreshTheSecondaryLevelCache() method is being called to refresh the secondary level"
-                + " cache for SystemProperty entities.");
         lock.lock();
         NumberOfLocks.increaseNumberOfLocks();
 
@@ -54,8 +52,6 @@ public class SystemStartupEjb {
 
     @PostConstruct
     public void populateDatabase() {
-        logger.log(Level.FINE, "populateDatabase()");
-
         if (clientRepository != null && clientRepository.getEntityManager() != null && clientRepository
                 .getClientByPersonIdentification("191212121212") == null) {
             for (Client client : databaseGenerator.populateDatabase()) {
