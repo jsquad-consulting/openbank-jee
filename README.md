@@ -44,13 +44,15 @@ To run application with Docker:
 
 #### Dependency injection
 
-[Injected Logger](https://github.com/jsquad-consulting/openbank-jee/blame/master/business/src/main/java/se/jsquad/ejb/OpenBankBusinessEJB.java#L17)
+[Injected Logger](https://github.com/jsquad-consulting/openbank-jee/blame/master/business/src/main/java/se/jsquad/ejb/OpenBankBusinessEJB.java#L20)
 
 [Dependent injected EntityManager](https://github.com/jsquad-consulting/openbank-jee/blame/master/business/src/main/java/se/jsquad/repository/EntityManagerProducer.java#L7)
 
 #### Interceptor and Produces
 
-[Interceptor Logger Producer](https://github.com/jsquad-consulting/openbank-jee/blame/master/business/src/main/java/se/jsquad/interceptor/GenericLoggerInterceptor.java)
+[Logger Producer](https://github.com/jsquad-consulting/openbank-jee/blame/master/business/src/main/java/se/jsquad/producer/LoggerProducer.java)
+
+[Interceptor Logger](https://github.com/jsquad-consulting/openbank-jee/blame/master/business/src/main/java/se/jsquad/interceptor/GenericLoggerInterceptor.java)
 
 #### Scopes
 
