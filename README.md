@@ -13,11 +13,11 @@ for further learning.
 * [Java EE 7+ Stack Related To Code](#java-ee-7-stack-related-to-code)
 * [Installation](#installation)
 * [Start OpenBank](#start-openbank)
-* [Test RESTful/SOAP contracts](#test-restfulsoap-contracts)
-* [Restful testing](#restful-testing)
-* [SOAP testing](#soap-testing)
-* [Start the client](#start-the-client)
-* [Administrate the Wildfly application server](#administrate-wildly-application-server)
+* [Test RESTful/SOAP Contracts](#test-restfulsoap-contracts)
+* [Restful Testing](#restful-testing)
+* [SOAP Testing](#soap-testing)
+* [Start The Client](#start-the-client)
+* [Administrate The Wildfly Application Server](#administrate-wildly-application-server)
 
 ## Requirements
 To be able to compile and run the OpenBank application the following dependicies are required:
@@ -46,7 +46,7 @@ To run application with Docker:
 
 [Injected Logger](https://github.com/jsquad-consulting/openbank-jee/blame/master/business/src/main/java/se/jsquad/ejb/OpenBankBusinessEJB.java#L20)
 
-[Dependent injected EntityManager](https://github.com/jsquad-consulting/openbank-jee/blame/master/business/src/main/java/se/jsquad/repository/EntityManagerProducer.java#L7)
+[Dependent Injected EntityManager](https://github.com/jsquad-consulting/openbank-jee/blame/master/business/src/main/java/se/jsquad/repository/EntityManagerProducer.java#L7)
 
 #### Interceptor and Produces
 
