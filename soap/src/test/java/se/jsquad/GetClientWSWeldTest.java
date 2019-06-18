@@ -5,6 +5,8 @@ import org.jboss.weld.junit5.WeldJunit5Extension;
 import org.jboss.weld.junit5.WeldSetup;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.mockito.Mockito;
 import se.jsquad.entity.Client;
 import se.jsquad.entity.SystemProperty;
@@ -32,6 +34,7 @@ import java.util.function.Function;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(WeldJunit5Extension.class)
+@Execution(ExecutionMode.SAME_THREAD)
 public class GetClientWSWeldTest {
 
     @WeldSetup
@@ -118,5 +121,48 @@ public class GetClientWSWeldTest {
 
         assertEquals(Type.REGULAR, getClientResponse.getClient().getClientType().getType());
         assertEquals(500, getClientResponse.getClient().getClientType().getRating());
+    }
+
+    @Test
+    public void testGetClientWsAddressType() throws NoSuchFieldException, IllegalAccessException {
+        // Given
+        GetClientWsBusiness getClientWsBusiness = weldInitiator.select(GetClientWsBusiness.class).get();
+        WebServiceContext webServiceContext = Mockito.mock(WebServiceContext.class);
+        Mockito.when(webServiceContext.isUserInRole(RoleConstants.ADMIN)).thenReturn(true);
+        Mockito.when(webServiceContext.isUserInRole(RoleConstants.CUSTOMER)).thenReturn(false);
+
+        Field field = GetClientWsBusiness.class.getDeclaredField("webServiceContext");
+        field.setAccessible(true);
+
+        // Set value
+        field.set(getClientWsBusiness, webServiceContext);
+
+        field = GetClientWS.class.getDeclaredField("getClientWsBusiness");
+        field.setAccessible(true);
+
+        // Set value
+        field.set(getClientWS, getClientWsBusiness);
+
+        String personIdentification = "191212121213";
+        GetClientRequest clientRequest = new GetClientRequest();
+        clientRequest.setPersonIdentification(personIdentification);
+
+        // When
+        GetClientResponse getClientResponse = getClientWS.getClient(clientRequest);
+
+        // Then
+        assertEquals(StatusType.OK, getClientResponse.getStatus());
+        assertEquals("Client found.", getClientResponse.getMessage());
+
+        assertEquals("Alice", getClientResponse.getClient().getPerson().getFirstName());
+        assertEquals("Doe", getClientResponse.getClient().getPerson().getLastName());
+
+        assertEquals(1, getClientResponse.getClient().getPerson().getAddressList().size());
+
+        assertEquals("Stockholm county", getClientResponse.getClient().getPerson().getAddressList().get(0).getMunicipality());
+        assertEquals("Sweden", getClientResponse.getClient().getPerson().getAddressList().get(0).getCountry());
+        assertEquals(17211, getClientResponse.getClient().getPerson().getAddressList().get(0).getPostalCode());
+        assertEquals("Vallhallavägen", getClientResponse.getClient().getPerson().getAddressList().get(0).getStreet());
+        assertEquals(12, getClientResponse.getClient().getPerson().getAddressList().get(0).getStreetNumber());
     }
 }

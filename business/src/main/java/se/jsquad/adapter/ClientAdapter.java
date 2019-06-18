@@ -3,6 +3,7 @@ package se.jsquad.adapter;
 import se.jsquad.RoleConstants;
 import se.jsquad.client.info.AccountApi;
 import se.jsquad.client.info.AccountTransactionApi;
+import se.jsquad.client.info.AddressApi;
 import se.jsquad.client.info.ClientApi;
 import se.jsquad.client.info.ClientTypeApi;
 import se.jsquad.client.info.PersonApi;
@@ -10,6 +11,7 @@ import se.jsquad.client.info.TransactionTypeApi;
 import se.jsquad.client.info.TypeApi;
 import se.jsquad.entity.Account;
 import se.jsquad.entity.AccountTransaction;
+import se.jsquad.entity.Address;
 import se.jsquad.entity.Client;
 import se.jsquad.entity.ForeignClient;
 import se.jsquad.entity.Person;
@@ -55,6 +57,21 @@ public class ClientAdapter {
         personApi.setLastName(client.getPerson().getLastName());
         personApi.setPersonIdentification(client.getPerson().getPersonIdentification());
         personApi.setMail(client.getPerson().getMail());
+
+        personApi.getAddressList().clear();
+
+        if (client.getPerson().getAddressSet() != null) {
+            for (Address address : client.getPerson().getAddressSet()) {
+                AddressApi addressApi = new AddressApi();
+                personApi.getAddressList().add(addressApi);
+
+                addressApi.setCountry(address.getCountry());
+                addressApi.setMunicipality(address.getMunicipality());
+                addressApi.setPostalCode(address.getPostalCode());
+                addressApi.setStreet(address.getStreet());
+                addressApi.setStreetNumber(address.getStreetNumber());
+            }
+        }
 
         Set<AccountApi> accountApiSet = new HashSet<>();
 

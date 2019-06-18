@@ -26,6 +26,7 @@ public class DynamicInjectionPointInterceptor implements Extension {
                 && !annotatedType.getJavaClass().getPackage().getName().contains("se.jsquad.ejb")
                 && !annotatedType.getJavaClass().getPackage().getName().contains("se.jsquad.generator")
                 && !annotatedType.getJavaClass().getPackage().getName().contains("se.jsquad.repository")
+                && !annotatedType.getJavaClass().getPackage().getName().contains("se.jsquad.jms")
                 && !annotatedType.getJavaClass().equals(NumberOfLocks.class)
                 && !annotatedType.getJavaClass().equals(EntityManagerProducer.class)) {
             Annotation loggerInterceptorAnnotation = () -> LoggerInterceptor.class;

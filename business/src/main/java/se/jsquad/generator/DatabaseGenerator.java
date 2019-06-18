@@ -2,6 +2,7 @@ package se.jsquad.generator;
 
 import se.jsquad.entity.Account;
 import se.jsquad.entity.AccountTransaction;
+import se.jsquad.entity.Address;
 import se.jsquad.entity.Client;
 import se.jsquad.entity.Person;
 import se.jsquad.entity.PremiumClient;
@@ -79,6 +80,23 @@ public class DatabaseGenerator {
         client1.getPerson().setLastName("Doe");
         client1.getPerson().setPersonIdentification("191212121213");
         client1.getPerson().setMail("alice.doe@test.se");
+
+        Address address = new Address();
+        address.setCountry("Sweden");
+        address.setMunicipality("Stockholm county");
+        address.setPostalCode(17211);
+        address.setStreet("Vallhallavägen");
+        address.setStreetNumber(12);
+
+        Set<Person> personSet = new HashSet<>();
+        personSet.add(client1.getPerson());
+
+        address.setPersonSet(personSet);
+
+        Set<Address> addressSet = new HashSet<>();
+        addressSet.add(address);
+
+        client1.getPerson().setAddressSet(addressSet);
 
         clientSet.add(client1);
 

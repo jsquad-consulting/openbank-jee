@@ -59,6 +59,17 @@
                     <xsd:element name="firstName" type="xsd:string"/>
                     <xsd:element name="lastName" type="xsd:string"/>
                     <xsd:element name="mail" type="xsd:string"/>
+                    <xsd:element name="addressList" type="tns:AddressType" minOccurs="0" maxOccurs="unbounded"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <xsd:complexType name="AddressType">
+                <xsd:sequence>
+                    <xsd:element name="country" type="xsd:string"/>
+                    <xsd:element name="municipality" type="xsd:string"/>
+                    <xsd:element name="postalCode" type="xsd:int"/>
+                    <xsd:element name="street" type="xsd:string"/>
+                    <xsd:element name="streetNumber" type="xsd:int"/>
                 </xsd:sequence>
             </xsd:complexType>
 

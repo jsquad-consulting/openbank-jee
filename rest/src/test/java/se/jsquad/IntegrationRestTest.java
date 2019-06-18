@@ -355,7 +355,7 @@ public class IntegrationRestTest {
     }
 
     @Test
-    public void testGetClientAliceDoeWithAccount() {
+    public void testGetClientAliceDoeWithAccountAndAdressList() {
         // Given
         String personIdentification = "191212121213";
 
@@ -366,6 +366,14 @@ public class IntegrationRestTest {
         assertEquals(Response.Status.OK, Response.Status.fromStatusCode(response.getStatus()));
 
         ClientApi clientApi = (ClientApi) response.getEntity();
+
+        assertEquals(1, clientApi.getPerson().getAddressList().size());
+
+        assertEquals("Stockholm county", clientApi.getPerson().getAddressList().get(0).getMunicipality());
+        assertEquals("Sweden", clientApi.getPerson().getAddressList().get(0).getCountry());
+        assertEquals(17211, clientApi.getPerson().getAddressList().get(0).getPostalCode());
+        assertEquals("Vallhallavägen", clientApi.getPerson().getAddressList().get(0).getStreet());
+        assertEquals(12, clientApi.getPerson().getAddressList().get(0).getStreetNumber());
 
         assertEquals(personIdentification, clientApi.getPerson().getPersonIdentification());
         assertEquals("Alice", clientApi.getPerson().getFirstName());

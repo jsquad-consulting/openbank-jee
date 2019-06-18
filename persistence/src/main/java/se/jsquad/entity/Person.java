@@ -1,13 +1,16 @@
 package se.jsquad.entity;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.Pattern;
 import java.io.Serializable;
+import java.util.Set;
 
 @Entity
 public class Person implements Serializable {
@@ -43,6 +46,9 @@ public class Person implements Serializable {
     @JoinColumn(name = "CLIENT_FK")
     private Client client;
 
+    @ManyToMany(cascade = CascadeType.ALL)
+    private Set<Address> addressSet;
+
     public Long getId() {
         return id;
     }
@@ -53,6 +59,14 @@ public class Person implements Serializable {
 
     public void setPersonIdentification(String personIdentification) {
         this.personIdentification = personIdentification;
+    }
+
+    public Set<Address> getAddressSet() {
+        return addressSet;
+    }
+
+    public void setAddressSet(Set<Address> addressSet) {
+        this.addressSet = addressSet;
     }
 
     public String getFirstName() {

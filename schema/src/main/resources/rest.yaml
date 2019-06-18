@@ -281,6 +281,29 @@ components:
         mail:
           type: string
           example: 'john.doe@test.se'
+        adressList:
+          type: array
+          items:
+            $ref: '#/components/schemas/Address'
+
+    Address:
+      type: object
+      properties:
+        country:
+          type: string
+          example: 'Sweden'
+        municipality:
+          type: string
+          example: 'Stockholm county'
+        postalCode:
+          type: integer
+          example: 17211
+        street:
+          type: string
+          example: 'Valhallavägen'
+        streetNumber:
+          type: integer
+          example: 12
 
     Account:
       type: object

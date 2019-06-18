@@ -35,6 +35,17 @@
             <xs:element name="firstName" type="xs:string"/>
             <xs:element name="lastName" type="xs:string"/>
             <xs:element name="mail" type="xs:string"/>
+            <xs:element name="addressList" type="tns:AddressApi" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="AddressApi">
+        <xs:sequence>
+            <xs:element name="country" type="xs:string"/>
+            <xs:element name="municipality" type="xs:string"/>
+            <xs:element name="postalCode" type="xs:int"/>
+            <xs:element name="street" type="xs:string"/>
+            <xs:element name="streetNumber" type="xs:int"/>
         </xs:sequence>
     </xs:complexType>
 

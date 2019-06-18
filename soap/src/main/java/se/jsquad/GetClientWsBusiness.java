@@ -2,12 +2,14 @@ package se.jsquad;
 
 import se.jsquad.entity.Account;
 import se.jsquad.entity.AccountTransaction;
+import se.jsquad.entity.Address;
 import se.jsquad.entity.Client;
 import se.jsquad.entity.ForeignClient;
 import se.jsquad.entity.PremiumClient;
 import se.jsquad.entity.RegularClient;
 import se.jsquad.getclientservice.AccountTransactionType;
 import se.jsquad.getclientservice.AccountType;
+import se.jsquad.getclientservice.AddressType;
 import se.jsquad.getclientservice.ClientType;
 import se.jsquad.getclientservice.ClientTypeType;
 import se.jsquad.getclientservice.GetClientRequest;
@@ -69,7 +71,6 @@ public class GetClientWsBusiness {
         return getClientResponse;
     }
 
-
     private void createClientType(GetClientResponse getClientResponse, Client client) {
         se.jsquad.getclientservice.ClientType clientType = new ClientType();
         getClientResponse.setClient(clientType);
@@ -79,6 +80,10 @@ public class GetClientWsBusiness {
         clientType.getPerson().setLastName(client.getPerson().getLastName());
         clientType.getPerson().setMail(client.getPerson().getMail());
         clientType.getPerson().setPersonIdentification(client.getPerson().getPersonIdentification());
+
+        clientType.getPerson().getAddressList().clear();
+
+        populateAddressList(client, clientType);
 
         clientType.setClientType(new ClientTypeType());
 
@@ -117,6 +122,21 @@ public class GetClientWsBusiness {
                     }
                 }
                 clientType.getAccountList().add(accountType);
+            }
+        }
+    }
+
+    private void populateAddressList(Client client, ClientType clientType) {
+        if (client.getPerson().getAddressSet() != null) {
+            for (Address address : client.getPerson().getAddressSet()) {
+                AddressType addressType = new AddressType();
+                clientType.getPerson().getAddressList().add(addressType);
+
+                addressType.setCountry(address.getCountry());
+                addressType.setMunicipality(address.getMunicipality());
+                addressType.setPostalCode(address.getPostalCode());
+                addressType.setStreet(address.getStreet());
+                addressType.setStreetNumber(address.getStreetNumber());
             }
         }
     }
