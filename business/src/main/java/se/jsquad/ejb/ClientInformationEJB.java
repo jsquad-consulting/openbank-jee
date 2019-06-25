@@ -19,7 +19,6 @@ package se.jsquad.ejb;
 import se.jsquad.adapter.ClientAdapter;
 import se.jsquad.client.info.ClientApi;
 import se.jsquad.entity.Client;
-import se.jsquad.interceptor.LoggerInterceptor;
 import se.jsquad.jms.MessageSenderSessionJMS;
 import se.jsquad.qualifier.Log;
 import se.jsquad.repository.ClientRepository;
@@ -35,7 +34,6 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 @Stateless
-@LoggerInterceptor
 public class ClientInformationEJB {
     @Inject @Log
     private Logger logger;

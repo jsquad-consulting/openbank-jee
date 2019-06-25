@@ -19,7 +19,6 @@ package se.jsquad.ejb;
 import se.jsquad.entity.Account;
 import se.jsquad.entity.AccountTransaction;
 import se.jsquad.entity.TransactionType;
-import se.jsquad.interceptor.LoggerInterceptor;
 import se.jsquad.qualifier.Log;
 import se.jsquad.repository.ClientRepository;
 
@@ -29,7 +28,6 @@ import javax.persistence.RollbackException;
 import java.util.logging.Logger;
 
 @Stateless
-@LoggerInterceptor
 public class AccountTransactionEJB {
     @Inject @Log
     private Logger logger;

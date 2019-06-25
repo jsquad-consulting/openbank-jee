@@ -18,7 +18,6 @@ package se.jsquad.ejb;
 
 import se.jsquad.RoleConstants;
 import se.jsquad.authorization.SecurityOpenBank;
-import se.jsquad.interceptor.LoggerInterceptor;
 import se.jsquad.qualifier.Log;
 
 import javax.annotation.Resource;
@@ -29,7 +28,6 @@ import javax.inject.Inject;
 import java.util.logging.Logger;
 
 @Stateless
-@LoggerInterceptor
 public class SecurityEJB {
     @Inject @Log
     private Logger logger;

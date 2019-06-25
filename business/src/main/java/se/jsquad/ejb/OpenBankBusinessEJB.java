@@ -18,7 +18,6 @@ package se.jsquad.ejb;
 
 import se.jsquad.batch.SlowMockBatch;
 import se.jsquad.batch.status.BatchStatus;
-import se.jsquad.interceptor.LoggerInterceptor;
 import se.jsquad.qualifier.Log;
 
 import javax.ejb.AsyncResult;
@@ -29,7 +28,6 @@ import java.util.concurrent.Future;
 import java.util.logging.Logger;
 
 @Stateless
-@LoggerInterceptor
 public class OpenBankBusinessEJB {
     private  static final String HELLO_WORLD = "Hello world!";
 

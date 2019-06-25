@@ -19,7 +19,6 @@ package se.jsquad.ejb;
 import se.jsquad.entity.Client;
 import se.jsquad.entity.SystemProperty;
 import se.jsquad.generator.DatabaseGenerator;
-import se.jsquad.interceptor.LoggerInterceptor;
 import se.jsquad.repository.ClientRepository;
 import se.jsquad.repository.SystemPropertyRepository;
 import se.jsquad.thread.NumberOfLocks;
@@ -35,7 +34,6 @@ import java.util.logging.Logger;
 
 @Singleton
 @Startup
-@LoggerInterceptor
 public class SystemStartupEjb {
     private static final Logger logger = Logger.getLogger(SystemStartupEjb.class.getName());
     private static final Lock lock = new ReentrantLock();

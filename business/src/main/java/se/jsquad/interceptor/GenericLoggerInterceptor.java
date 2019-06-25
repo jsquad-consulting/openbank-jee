@@ -18,7 +18,6 @@ package se.jsquad.interceptor;
 
 import se.jsquad.qualifier.Log;
 
-import javax.annotation.Priority;
 import javax.inject.Inject;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptor;
@@ -28,7 +27,6 @@ import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-@Priority(Interceptor.Priority.APPLICATION)
 @LoggerInterceptor
 @Interceptor
 public class GenericLoggerInterceptor implements Serializable {
