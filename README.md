@@ -2,12 +2,6 @@
 A demonstration of an simple bank application made with Java Enterprise Edition 8 platform (not JAKARTA EE) for the 
 backend part and with Angular 7 for the frontend part.
 
-If you are new to Java Enterprise Edition framework, we recommend that you get the book [Beginning Java EE 7][^fn1] 
-and later on read whats new in Java EE 8 and future newer versions (JAKARTA EE 8+).
-
-We also recommend that you compare this repository code with Antonio Goncalves [repository](https://github.com/agoncal/agoncal-book-javaee7)
-for further learning.
-
 ## Table of contents
 * [Requirements](#requirements)
 * [Java EE 7+ Stack Related To Code](#java-ee-7-stack-related-to-code)
