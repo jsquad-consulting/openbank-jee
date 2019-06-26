@@ -252,9 +252,6 @@ Goto http://localhost:8080/client/openbank and basic authorization is simplest t
 
 http://localhost:8080/console
 
-## Reference
-
-[^fn1]: https://www.amazon.com/Beginning-Java-EE-Expert-Voice/dp/143024626X "Antonio Goncalves, 'Beginning Java EE 7,' Apress, 2013"
 
 ## Annex
 
