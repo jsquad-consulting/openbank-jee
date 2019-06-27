@@ -34,13 +34,13 @@ To run application with Docker:
 
 #### Context
 
-[Singleton Enterprise JavaBean](https://github.com/jsquad-consulting/openbank-jee/blame/master/business/src/main/java/se/jsquad/ejb/SystemStartupEjb.java#L20)
+[Singleton Enterprise JavaBean](https://github.com/jsquad-consulting/openbank-jee/blame/master/business/src/main/java/se/jsquad/ejb/SystemStartupEjb.java#L35)
 
 #### Dependency injection
 
-[Injected Logger](https://github.com/jsquad-consulting/openbank-jee/blame/master/business/src/main/java/se/jsquad/ejb/OpenBankBusinessEJB.java#L20)
+[Injected Logger](https://github.com/jsquad-consulting/openbank-jee/blame/master/business/src/main/java/se/jsquad/ejb/OpenBankBusinessEJB.java#L34)
 
-[Dependent Injected EntityManager](https://github.com/jsquad-consulting/openbank-jee/blame/master/business/src/main/java/se/jsquad/repository/EntityManagerProducer.java#L7)
+[Dependent Injected EntityManager](https://github.com/jsquad-consulting/openbank-jee/blame/master/business/src/main/java/se/jsquad/repository/EntityManagerProducer.java#L25)
 
 #### Interceptor and Produces
 
@@ -50,7 +50,7 @@ To run application with Docker:
 
 #### Scopes
 
-[Dependent EntityManager](https://github.com/jsquad-consulting/openbank-jee/blame/master/business/src/main/java/se/jsquad/repository/EntityManagerProducer.java#L7)
+[Dependent EntityManager](https://github.com/jsquad-consulting/openbank-jee/blame/master/business/src/main/java/se/jsquad/repository/EntityManagerProducer.java#L23)
 
 ### Bean Validation
 
@@ -66,7 +66,7 @@ To run application with Docker:
 
 #### Quering entity
 
-[Client](https://github.com/jsquad-consulting/openbank-jee/blame/master/persistence/src/main/java/se/jsquad/entity/Client.java#L18)
+[Client](https://github.com/jsquad-consulting/openbank-jee/blame/master/persistence/src/main/java/se/jsquad/entity/Client.java#L34)
 
 #### Perstistence Unit
 
@@ -74,7 +74,7 @@ To run application with Docker:
 
 #### Persistence Context
 
-[Persistence Context](https://github.com/jsquad-consulting/openbank-jee/blame/master/business/src/main/java/se/jsquad/repository/EntityManagerProducer.java#L9)
+[Persistence Context](https://github.com/jsquad-consulting/openbank-jee/blame/master/business/src/main/java/se/jsquad/repository/EntityManagerProducer.java#L25)
 
 ### Object-Relational Mapping
 
@@ -84,69 +84,69 @@ Annotations that can be applied to both field and method.
 
 #### Table Annotation
 
-[Table](https://github.com/jsquad-consulting/openbank-jee/blame/master/persistence/src/main/java/se/jsquad/entity/Client.java#L17)
+[Table](https://github.com/jsquad-consulting/openbank-jee/blame/master/persistence/src/main/java/se/jsquad/entity/Client.java#L33)
 
 #### Primary Key Annotation
 
-[Primary Key](https://github.com/jsquad-consulting/openbank-jee/blame/master/persistence/src/main/java/se/jsquad/entity/Client.java#L24)
+[Primary Key](https://github.com/jsquad-consulting/openbank-jee/blame/master/persistence/src/main/java/se/jsquad/entity/Client.java#L40)
 
 #### Column Annotation
 
-[Column](https://github.com/jsquad-consulting/openbank-jee/blame/master/persistence/src/main/java/se/jsquad/entity/Client.java#L26)
+[Column](https://github.com/jsquad-consulting/openbank-jee/blame/master/persistence/src/main/java/se/jsquad/entity/Client.java#L42)
 
 #### Enumerated Annotation
 
-[Enumerated](https://github.com/jsquad-consulting/openbank-jee/blame/master/persistence/src/main/java/se/jsquad/entity/AccountTransaction.java#L22)
+[Enumerated](https://github.com/jsquad-consulting/openbank-jee/blame/master/persistence/src/main/java/se/jsquad/entity/AccountTransaction.java#L38)
 
 #### Relational Mapping
 
-[OneToOne](https://github.com/jsquad-consulting/openbank-jee/blame/master/persistence/src/main/java/se/jsquad/entity/Client.java#L29)
+[OneToOne](https://github.com/jsquad-consulting/openbank-jee/blame/master/persistence/src/main/java/se/jsquad/entity/Client.java#L48)
 
-[OneToMany](https://github.com/jsquad-consulting/openbank-jee/blame/master/persistence/src/main/java/se/jsquad/entity/Client.java#L35)
+[OneToMany](https://github.com/jsquad-consulting/openbank-jee/blame/master/persistence/src/main/java/se/jsquad/entity/Client.java#L51)
 
-[ManyToOne](https://github.com/jsquad-consulting/openbank-jee/blame/master/persistence/src/main/java/se/jsquad/entity/Account.java#L34)
+[ManyToOne](https://github.com/jsquad-consulting/openbank-jee/blame/master/persistence/src/main/java/se/jsquad/entity/Account.java#L50)
 
-[ManyToMany](https://github.com/jsquad-consulting/openbank-jee/blame/master/persistence/src/main/java/se/jsquad/entity/Person.java#L49)
+[ManyToMany](https://github.com/jsquad-consulting/openbank-jee/blame/master/persistence/src/main/java/se/jsquad/entity/Person.java#L65)
 
 #### Inheritance Mapping
 
-[Single Table Inheritance](https://github.com/jsquad-consulting/openbank-jee/blame/master/persistence/src/main/java/se/jsquad/entity/ClientType.java#L18)
+[Single Table Inheritance](https://github.com/jsquad-consulting/openbank-jee/blame/master/persistence/src/main/java/se/jsquad/entity/ClientType.java#L34)
 
 ### Managing Persistence Objects
 
 #### Obtaining an EntityManager
-[EntityManager](https://github.com/jsquad-consulting/openbank-jee/blame/master/business/src/main/java/se/jsquad/repository/EntityManagerProducer.java#L9)
+[EntityManager](https://github.com/jsquad-consulting/openbank-jee/blame/master/business/src/main/java/se/jsquad/repository/EntityManagerProducer.java#L26)
 
 #### Save an Entity
 
-[Persist](https://github.com/jsquad-consulting/openbank-jee/blame/master/business/src/main/java/se/jsquad/ejb/AccountTransactionEJB.java#L47)
+[Persist](https://github.com/jsquad-consulting/openbank-jee/blame/master/business/src/main/java/se/jsquad/ejb/AccountTransactionEJB.java#L58)
 
 #### JPQL and Named Queries
 
-[Named Query](https://github.com/jsquad-consulting/openbank-jee/blame/master/business/src/main/java/se/jsquad/repository/ClientRepository.java#L17)
+[Named Query](https://github.com/jsquad-consulting/openbank-jee/blame/master/business/src/main/java/se/jsquad/repository/ClientRepository.java#L33)
 
 ### Enterprise JavaBeans
 
 #### Stateless EJB
 
-[AccountTransactionEJB](https://github.com/jsquad-consulting/openbank-jee/blame/master/business/src/main/java/se/jsquad/ejb/AccountTransactionEJB.java#L17)
+[AccountTransactionEJB](https://github.com/jsquad-consulting/openbank-jee/blame/master/business/src/main/java/se/jsquad/ejb/AccountTransactionEJB.java#L30)
 
 ### Transactions (Required, Supports)
 Enterprise JavaBeans are required by default.
 
 #### Required transaction
 
-[Transaction.Required](https://github.com/jsquad-consulting/openbank-jee/blame/master/rest/src/main/java/se/jsquad/ClientInformationRest.java#L42)
+[Transaction.Required](https://github.com/jsquad-consulting/openbank-jee/blame/master/rest/src/main/java/se/jsquad/ClientInformationRest.java#L58)
 
 #### Supported transaction
 
-[Transaction.Supports](https://github.com/jsquad-consulting/openbank-jee/blame/master/rest/src/main/java/se/jsquad/ClientInformationRest.java#L74)
+[Transaction.Supports](https://github.com/jsquad-consulting/openbank-jee/blame/master/rest/src/main/java/se/jsquad/ClientInformationRest.java#L90)
 
 ### Messaging
 
 #### Java Messaging Service API
 
-[JMSContext as Producer](https://github.com/jsquad-consulting/openbank-jee/blame/master/business/src/main/java/se/jsquad/jms/MessageSenderSessionJMS.java#L28)
+[JMSContext as Producer](https://github.com/jsquad-consulting/openbank-jee/blame/master/business/src/main/java/se/jsquad/jms/MessageSenderSessionJMS.java#L44)
 
 #### Message-Driven Bean as Asyncronous JMSContext Consumer
 
