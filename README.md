@@ -44,7 +44,7 @@ To run application with Docker:
 
 #### Interceptor and Produces
 
-[Logger Producer](https://github.com/jsquad-consulting/openbank-jee/blame/master/business/src/main/java/se/jsquad/producer/LoggerProducer.java)
+[Logger Producer](https://github.com/jsquad-consulting/openbank-jee/blame/master/business/src/main/java/se/jsquad/producer/LoggerProducer.java#L26)
 
 [Interceptor Logger](https://github.com/jsquad-consulting/openbank-jee/blame/master/business/src/main/java/se/jsquad/interceptor/GenericLoggerInterceptor.java)
 
@@ -164,7 +164,7 @@ Enterprise JavaBeans are required by default.
 
 To be able to dynamically add Interceptor annotation to all Java CDI beans not included in the excluded list.
 
-[DynamicInjectionPointInterceptor](business/src/main/java/se/jsquad/interceptor/DynamicInjectionPointInterceptor.java)
+[DynamicEjbInjectionPointInterceptor](business/src/main/java/se/jsquad/interceptor/DynamicEjbInjectionPointInterceptor.java)
 
 ## Installation
 
