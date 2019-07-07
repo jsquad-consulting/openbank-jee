@@ -12,6 +12,7 @@ backend part and with Angular 7 for the frontend part.
 * [SOAP Testing](#soap-testing)
 * [Start The Client](#start-the-client)
 * [Administrate The Wildfly Application Server](#administrate-wildly-application-server)
+* [Run all tests](#run-all-tests-with-coverage)
 
 ## Requirements
 To be able to compile and run the OpenBank application the following dependicies are required:
@@ -197,11 +198,20 @@ cp ./ear/target/openbank-1.0-SNAPSHOT.ear $WILDFLY_HOME/wildfly/standalone/deplo
 ### Wìth Docker (Linux, MacOS & Windows)
 
 ```bash
+mvn clean install
 docker build -t openbank .
+```
+
+### With Docker Pipeline (requires no dependicies more then Docker)
+
+````bash
+docker build -f PipeLineDockerfile -t openbank .
+````
 
 # Sometimes it is nessesary to clean up images and containers to be able to run OpenBank because 
 # of little memory space left and even hard disk space left, only execute this commands below if 
 # command above gives errors.
+```bash
 docker rm -vf $(docker ps -a -q) # Clean up containers
 docker rmi -f $(docker images -a -q) # Clean up all images
 ```
@@ -212,6 +222,12 @@ docker rmi -f $(docker images -a -q) # Clean up all images
 
 ````bash
 ./$WILDFLY_HOME/usr/wildfly/bin/standalone.sh" -b 0.0.0.0 -bmanagement 0.0.0.0
+````
+
+### With Docker compose
+Run Docker compose instead of running 'docker run...' command below.
+````bash
+docker-compose up
 ````
 
 ### With Docker
@@ -246,6 +262,17 @@ Goto http://localhost:8080/client/openbank and basic authorization is simplest t
 
 http://localhost:8080/console
 
+## Run all tests with coverage
+
+To be able to run integration tests against Docker containers and regular tests run the following commands:
+
+````bash
+mvn clean install
+docker build -t openbank .
+mvn clean install -Palltests
+````
+
+Be aware that the integration tests are not properly setup for jacoco coverage yet.
 
 ## Annex
 

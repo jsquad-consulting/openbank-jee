@@ -1,6 +1,9 @@
 # Created by .ignore support plugin (hsz.mobi)
 ### Eclipse template
 
+# Ignore all target directories
+**/target
+
 .metadata
 bin/
 tmp/

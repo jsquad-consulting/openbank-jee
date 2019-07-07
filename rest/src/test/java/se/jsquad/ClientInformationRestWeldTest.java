@@ -60,7 +60,6 @@ import static org.mockito.ArgumentMatchers.anyObject;
 
 @ExtendWith(WeldJunit5Extension.class)
 public class ClientInformationRestWeldTest {
-
     @WeldSetup
     private WeldInitiator weldInitiator = WeldInitiator.from(ClientInformationRest.class,
             ClientInformationEJB.class, ClientValidator.class, ClientAdapter.class, SystemStartupEjb.class,

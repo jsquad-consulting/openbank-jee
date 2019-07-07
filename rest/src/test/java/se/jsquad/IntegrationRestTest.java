@@ -20,6 +20,8 @@ import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import se.jsquad.adapter.ClientAdapter;
@@ -63,8 +65,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyObject;
 
+@Execution(ExecutionMode.SAME_THREAD)
 public class IntegrationRestTest {
-
     public static final String LOGGER = "logger";
     public static final String PERSON_IDENTIFICATION = "191212121212";
     public static final String JOHN_DOE_TEST_SE = "john.doe@test.se";

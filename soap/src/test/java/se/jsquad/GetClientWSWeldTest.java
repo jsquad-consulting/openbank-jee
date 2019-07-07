@@ -52,7 +52,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ExtendWith(WeldJunit5Extension.class)
 @Execution(ExecutionMode.SAME_THREAD)
 public class GetClientWSWeldTest {
-
     @WeldSetup
     private WeldInitiator weldInitiator = WeldInitiator.from(GetClientWS.class, GetClientWsBusiness.class,
             ClientRepository.class, LoggerProducer.class,
