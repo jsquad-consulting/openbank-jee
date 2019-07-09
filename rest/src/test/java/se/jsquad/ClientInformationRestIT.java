@@ -23,11 +23,11 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.MountableFile;
 import se.jsquad.client.info.ClientApi;
 import se.jsquad.client.info.TypeApi;
 
@@ -37,14 +37,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Testcontainers
 public class ClientInformationRestIT {
-
     Gson gson = new Gson();
-
-    static final Logger LOGGER = LoggerFactory.getLogger(ClientInformationRestIT.class);
 
     @Container
     private static GenericContainer container = new GenericContainer("openbank")
             .withExposedPorts(8080)
+            .withFileSystemBind("../target/jacoco-agent", "/jacoco-agent", BindMode.READ_WRITE)
+            .withFileSystemBind("../target/jacoco-it", "/jacoco-it", BindMode.READ_WRITE)
+            .withFileSystemBind("../target", "/jacoco-path", BindMode.READ_WRITE)
+            .withCopyFileToContainer(MountableFile.forClasspathResource("configuration/jboss/standalone.conf"),
+                    "/usr/wildfly/bin/standalone.conf")
             .withCommand("/usr/wildfly/bin/standalone.sh -b 0.0.0.0 -bmanagement 0.0.0.0");
 
     @BeforeAll
@@ -59,7 +61,7 @@ public class ClientInformationRestIT {
 
     @AfterAll
     static void destroyDocker() {
-        container.stop();
+        container.close();
     }
 
     @Test
