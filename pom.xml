@@ -172,6 +172,13 @@
         </dependency>
 
         <dependency>
+            <groupId>com.atlassian.oai</groupId>
+            <artifactId>swagger-request-validator-restassured</artifactId>
+            <version>2.4.1</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
             <groupId>org.apache.activemq</groupId>
             <artifactId>artemis-junit</artifactId>
             <version>2.7.0</version>
@@ -212,7 +219,7 @@
                     <scope>test</scope>
                 </dependency>
             </dependencies>
-            <id>alltests</id>
+            <id>coverage</id>
             <activation>
                 <activeByDefault>false</activeByDefault>
             </activation>
@@ -222,6 +229,15 @@
                         <artifactId>maven-dependency-plugin</artifactId>
                         <executions>
                             <execution>
+                                <id>copy-dependencies</id>
+                                <goals>
+                                    <goal>copy-dependencies</goal>
+                                </goals>
+                                <configuration>
+                                    <includeScope>runtime</includeScope>
+                                </configuration>
+                            </execution>
+                            <execution>
                                 <id>copy-jacoco</id>
                                 <goals>
                                     <goal>copy-dependencies</goal>
@@ -230,11 +246,37 @@
                                 <configuration>
                                     <includeArtifactIds>org.jacoco.agent</includeArtifactIds>
                                     <includeClassifiers>runtime</includeClassifiers>
-                                    <outputDirectory>${project.basedir}/../target/jacoco-agent</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/jacoco-agent</outputDirectory>
                                     <stripVersion>true</stripVersion>
                                 </configuration>
                             </execution>
                         </executions>
+                    </plugin>
+                    <!-- Run integration tests (*IT) -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <version>${maven.surefire.version}</version>
+                        <executions>
+                            <execution>
+                                <id>integration-test</id>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                    <goal>verify</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
+                        </configuration>
+                    </plugin>
+                    <!-- JUnit 5 requires Surefire version 2.22.1 or higher -->
+                    <plugin>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>${maven.surefire.version}</version>
+                        <configuration>
+                            <skipTests>false</skipTests>
+                        </configuration>
                     </plugin>
                     <plugin>
                         <groupId>org.jacoco</groupId>
@@ -282,6 +324,16 @@
                             <append>true</append>
                         </configuration>
                     </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>integrationtests</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
                     <!-- Run integration tests (*IT) -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
@@ -305,11 +357,47 @@
                         <artifactId>maven-surefire-plugin</artifactId>
                         <version>${maven.surefire.version}</version>
                         <configuration>
-                            <skipTests>false</skipTests>
+                            <skipTests>true</skipTests>
                         </configuration>
                     </plugin>
                 </plugins>
             </build>
         </profile>
+		<profile>
+			<id>alltests</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<build>
+				<plugins>
+					<!-- Run integration tests (*IT) -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-failsafe-plugin</artifactId>
+						<version>${maven.surefire.version}</version>
+						<executions>
+							<execution>
+								<id>integration-test</id>
+								<goals>
+									<goal>integration-test</goal>
+									<goal>verify</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
+						</configuration>
+					</plugin>
+					<!-- JUnit 5 requires Surefire version 2.22.1 or higher -->
+					<plugin>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<version>${maven.surefire.version}</version>
+						<configuration>
+							<skipTests>false</skipTests>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
     </profiles>
 </project>

@@ -298,7 +298,7 @@ components:
         mail:
           type: string
           example: 'john.doe@test.se'
-        adressList:
+        addressList:
           type: array
           items:
             $ref: '#/components/schemas/Address'

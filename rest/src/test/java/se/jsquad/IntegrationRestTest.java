@@ -615,6 +615,7 @@ public class IntegrationRestTest {
         assertEquals(JOHN_DOE_TEST_SE, clientApi.getPerson().getMail());
 
         assertEquals(0, clientApi.getAccountList().size());
+        assertEquals(true, clientApi.getPerson().getAddressList().isEmpty());
     }
 
     @Test

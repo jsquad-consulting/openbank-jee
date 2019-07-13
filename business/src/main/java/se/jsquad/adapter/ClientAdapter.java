@@ -55,6 +55,13 @@ public class ClientAdapter {
         PersonApi personApi = new PersonApi();
         ClientTypeApi clientTypeApi = new ClientTypeApi();
 
+        // OpenApi does not allow null definitions in the RESTful contract
+
+        clientTypeApi.setRating(0);
+        clientTypeApi.setPremiumRating(0);
+        clientTypeApi.setSpecialOffers("");
+        clientTypeApi.setCountry("");
+
         if (client.getClientType() instanceof RegularClient) {
             clientTypeApi.setRating(((RegularClient) client.getClientType()).getRating());
             clientTypeApi.setType(TypeApi.REGULAR);

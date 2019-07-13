@@ -16,6 +16,7 @@
 
 package se.jsquad;
 
+import com.atlassian.oai.validator.restassured.OpenApiValidationFilter;
 import com.google.gson.Gson;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -23,30 +24,27 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.utility.MountableFile;
 import se.jsquad.client.info.ClientApi;
 import se.jsquad.client.info.TypeApi;
 
+import java.io.IOException;
 import java.net.URI;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Testcontainers
 public class ClientInformationRestIT {
-    Gson gson = new Gson();
+    private static Gson gson = new Gson();
+
+    private final OpenApiValidationFilter validationFilter = new OpenApiValidationFilter("src/main/resources/rest" +
+            ".yaml");
 
     @Container
     private static GenericContainer container = new GenericContainer("openbank")
             .withExposedPorts(8080)
-            .withFileSystemBind("../target/jacoco-agent", "/jacoco-agent", BindMode.READ_WRITE)
-            .withFileSystemBind("../target/jacoco-it", "/jacoco-it", BindMode.READ_WRITE)
-            .withFileSystemBind("../target", "/jacoco-path", BindMode.READ_WRITE)
-            .withCopyFileToContainer(MountableFile.forClasspathResource("configuration/jboss/standalone.conf"),
-                    "/usr/wildfly/bin/standalone.conf")
             .withCommand("/usr/wildfly/bin/standalone.sh -b 0.0.0.0 -bmanagement 0.0.0.0");
 
     @BeforeAll
@@ -60,20 +58,25 @@ public class ClientInformationRestIT {
     }
 
     @AfterAll
-    static void destroyDocker() {
-        container.close();
+    static void destroyDocker() throws IOException, InterruptedException {
+        container.execInContainer("/usr/wildfly/bin/jboss-cli.sh --connect command=:shutdown");
+        container.getDockerClient().stopContainerCmd(container.getContainerId()).withTimeout(10).exec();
     }
 
     @Test
-    public void testGetClientInformation() {
+        public void testGetClientInformation() {
         // Given
         String personIdentificationNumber = "191212121212";
 
         // When
-        Response response = RestAssured.given()
+        Response response = RestAssured
+                .given()
                 .auth()
                 .basic("root", "root")
                 .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .filter(validationFilter)
+                .when()
                 .get(URI.create("/client/info/" + personIdentificationNumber)).andReturn();
 
         ClientApi clientApi = gson.fromJson(response.getBody().print(), ClientApi.class);
@@ -95,6 +98,7 @@ public class ClientInformationRestIT {
                 .getTransactionType().name());
         assertEquals("500$ in deposit", clientApi.getAccountList().get(0).getAccountTransactionList().get(0)
                 .getMessage());
+        assertEquals(0, clientApi.getPerson().getAddressList().size());
 
         assertEquals(TypeApi.REGULAR, clientApi.getClientType().getType());
         assertEquals(500, clientApi.getClientType().getRating());

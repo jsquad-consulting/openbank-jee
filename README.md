@@ -3,16 +3,62 @@ A demonstration of an simple bank application made with Java Enterprise Edition 
 backend part and with Angular 7 for the frontend part.
 
 ## Table of contents
-* [Requirements](#requirements)
-* [Java EE 7+ Stack Related To Code](#java-ee-7-stack-related-to-code)
-* [Installation](#installation)
-* [Start OpenBank](#start-openbank)
-* [Test RESTful/SOAP Contracts](#test-restfulsoap-contracts)
-* [Restful Testing](#restful-testing)
-* [SOAP Testing](#soap-testing)
-* [Start The Client](#start-the-client)
-* [Administrate The Wildfly Application Server](#administrate-wildly-application-server)
-* [Run all tests](#run-all-tests-with-coverage)
+  * [Requirements](#requirements)
+  * [Java EE 7+ Stack related to code](#java-ee-7--stack-related-to-code)
+    + [Context and Dependency Injection](#context-and-dependency-injection)
+      - [Context](#context)
+      - [Dependency injection](#dependency-injection)
+      - [Interceptor and Produces](#interceptor-and-produces)
+      - [Scopes](#scopes)
+    + [Bean Validation](#bean-validation)
+      - [Contraints and Validation](#contraints-and-validation)
+    + [Java Persistence API (JPA)](#java-persistence-api--jpa-)
+      - [Entity](#entity)
+      - [Quering entity](#quering-entity)
+      - [Perstistence Unit](#perstistence-unit)
+      - [Persistence Context](#persistence-context)
+    + [Object-Relational Mapping](#object-relational-mapping)
+      - [Attributes and Access Type Annotations](#attributes-and-access-type-annotations)
+      - [Table Annotation](#table-annotation)
+      - [Primary Key Annotation](#primary-key-annotation)
+      - [Column Annotation](#column-annotation)
+      - [Enumerated Annotation](#enumerated-annotation)
+      - [Relational Mapping](#relational-mapping)
+      - [Inheritance Mapping](#inheritance-mapping)
+    + [Managing Persistence Objects](#managing-persistence-objects)
+      - [Obtaining an EntityManager](#obtaining-an-entitymanager)
+      - [Save an Entity](#save-an-entity)
+      - [JPQL and Named Queries](#jpql-and-named-queries)
+    + [Enterprise JavaBeans](#enterprise-javabeans)
+      - [Stateless EJB](#stateless-ejb)
+    + [Transactions (Required, Supports)](#transactions--required--supports-)
+      - [Required transaction](#required-transaction)
+      - [Supported transaction](#supported-transaction)
+    + [Messaging](#messaging)
+      - [Java Messaging Service API](#java-messaging-service-api)
+      - [Message-Driven Bean as Asyncronous JMSContext Consumer](#message-driven-bean-as-asyncronous-jmscontext-consumer)
+    + [SOAP Web Service](#soap-web-service)
+    + [RESTful Web Service](#restful-web-service)
+    + [Dynamic Injection Point Interceptor](#dynamic-injection-point-interceptor)
+  * [Installation](#installation)
+    + [Without Docker](#without-docker)
+    + [Wìth Docker (Linux, MacOS & Windows)](#w-th-docker--linux--macos---windows-)
+    + [With Docker Pipeline (requires no dependicies more then Docker)](#with-docker-pipeline--requires-no-dependicies-more-then-docker-)
+- [Sometimes it is nessesary to clean up images and containers to be able to run OpenBank because](#sometimes-it-is-nessesary-to-clean-up-images-and-containers-to-be-able-to-run-openbank-because)
+- [of little memory space left and even hard disk space left, only execute this commands below if](#of-little-memory-space-left-and-even-hard-disk-space-left--only-execute-this-commands-below-if)
+- [command above gives errors.](#command-above-gives-errors)
+  * [Start OpenBank](#start-openbank)
+    + [Without Docker](#without-docker-1)
+    + [With Docker compose](#with-docker-compose)
+    + [With Docker](#with-docker)
+  * [Test RESTful/SOAP contracts](#test-restful-soap-contracts)
+    + [RESTful testing](#restful-testing)
+    + [SOAP testing](#soap-testing)
+  * [Start the client](#start-the-client)
+  * [Administrate Wildly application server](#administrate-wildly-application-server)
+  * [Run all the tests](#run-all-the-tests)
+  * [Run just the integration tests](#run-just-the-integration-tests)
+  * [Run all tests with coverage](#run-all-tests-with-coverage)
 
 ## Requirements
 To be able to compile and run the OpenBank application the following dependicies are required:
@@ -225,6 +271,7 @@ docker rmi -f $(docker images -a -q) # Clean up all images
 ````
 
 ### With Docker compose
+
 Run Docker compose instead of running 'docker run...' command below.
 ````bash
 docker-compose up
@@ -262,6 +309,22 @@ Goto http://localhost:8080/client/openbank and basic authorization is simplest t
 
 http://localhost:8080/console
 
+## Run all the tests
+
+````bash
+mvn clean install
+docker build -t openbank .
+mvn clean install -Palltests
+````
+
+## Run just the integration tests
+
+````bash
+mvn clean install
+docker build -t openbank .
+mvn clean install -Pintegrationtests
+````
+
 ## Run all tests with coverage
 
 To be able to run integration tests against Docker containers and regular tests run the following commands:
@@ -269,7 +332,7 @@ To be able to run integration tests against Docker containers and regular tests 
 ````bash
 mvn clean install
 docker build -t openbank .
-mvn clean install -Palltests
+mvn clean install -Pcoverage
 ````
 
 Be aware that the integration tests are not properly setup for jacoco coverage yet.
