@@ -24,9 +24,12 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.MountableFile;
 import se.jsquad.client.info.ClientApi;
 import se.jsquad.client.info.TypeApi;
 
@@ -45,11 +48,20 @@ public class ClientInformationRestIT {
     @Container
     private static GenericContainer container = new GenericContainer("openbank")
             .withExposedPorts(8080)
+            .waitingFor(Wait.forListeningPort())
+            .withFileSystemBind("./target/jacoco-agent", "/jacoco-agent", BindMode.READ_WRITE)
+            .withFileSystemBind("./target/jacoco-cli", "/jacoco-cli", BindMode.READ_WRITE)
+            .withFileSystemBind("./target", "/jacoco-report", BindMode.READ_WRITE)
+            .withCopyFileToContainer(MountableFile.forClasspathResource("configuration/jboss/standalone.conf"),
+                    "/usr/wildfly/bin/standalone.conf")
             .withCommand("/usr/wildfly/bin/standalone.sh -b 0.0.0.0 -bmanagement 0.0.0.0");
 
     @BeforeAll
-    static void setupDocker() {
+    static void setupDocker() throws IOException, InterruptedException {
         container.start();
+
+        org.testcontainers.containers.Container.ExecResult execResult = container.execInContainer("java", "-jar",
+                "/jacoco-cli/org.jacoco.cli-nodeps.jar", "dump", "--destfile", "/jacoco-report/jacoco-it.exec");
 
         RestAssured.baseURI = "http://" + container.getContainerIpAddress();
         RestAssured.port = container.getMappedPort(8080);
@@ -58,8 +70,7 @@ public class ClientInformationRestIT {
     }
 
     @AfterAll
-    static void destroyDocker() throws IOException, InterruptedException {
-        container.execInContainer("/usr/wildfly/bin/jboss-cli.sh --connect command=:shutdown");
+    static void destroyDocker() {
         container.getDockerClient().stopContainerCmd(container.getContainerId()).withTimeout(10).exec();
     }
 

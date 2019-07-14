@@ -47,6 +47,7 @@
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
         <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
         <sonar.jacoco.reportPaths>${project.basedir}/../target/jacoco.exec</sonar.jacoco.reportPaths>
+        <sonar.jacoco.itReportPaths>${project.basedir}/../target/jacoco-it.exec</sonar.jacoco.itReportPaths>
         <sonar.language>java</sonar.language>
         <maven.surefire.version>2.22.2</maven.surefire.version>
         <java.ee.version>8.0</java.ee.version>
@@ -218,6 +219,13 @@
                     <classifier>runtime</classifier>
                     <scope>test</scope>
                 </dependency>
+                <dependency>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>org.jacoco.cli</artifactId>
+                    <classifier>nodeps</classifier>
+                    <version>${jacoco.version}</version>
+                    <scope>test</scope>
+                </dependency>
             </dependencies>
             <id>coverage</id>
             <activation>
@@ -229,16 +237,7 @@
                         <artifactId>maven-dependency-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>copy-dependencies</id>
-                                <goals>
-                                    <goal>copy-dependencies</goal>
-                                </goals>
-                                <configuration>
-                                    <includeScope>runtime</includeScope>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>copy-jacoco</id>
+                                <id>copy-jacoco-agent</id>
                                 <goals>
                                     <goal>copy-dependencies</goal>
                                 </goals>
@@ -247,6 +246,19 @@
                                     <includeArtifactIds>org.jacoco.agent</includeArtifactIds>
                                     <includeClassifiers>runtime</includeClassifiers>
                                     <outputDirectory>${project.build.directory}/jacoco-agent</outputDirectory>
+                                    <stripVersion>true</stripVersion>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>copy-jacoco-cli</id>
+                                <goals>
+                                    <goal>copy-dependencies</goal>
+                                </goals>
+                                <phase>compile</phase>
+                                <configuration>
+                                    <includeArtifactIds>org.jacoco.cli</includeArtifactIds>
+                                    <outputDirectory>${project.build.directory}/jacoco-cli</outputDirectory>
+                                    <includeClassifiers>nodeps</includeClassifiers>
                                     <stripVersion>true</stripVersion>
                                 </configuration>
                             </execution>
@@ -288,6 +300,10 @@
                                 <goals>
                                     <goal>prepare-agent</goal>
                                 </goals>
+                                <configuration>
+                                    <destFile>${sonar.jacoco.reportPaths}</destFile>
+                                    <append>true</append>
+                                </configuration>
                             </execution>
                             <execution>
                                 <id>post-unit-test</id>
@@ -296,33 +312,27 @@
                                     <goal>report</goal>
                                 </goals>
                                 <configuration>
-                                    <dataFile>target/jacoco.exec</dataFile>
-                                    <outputDirectory>target/jacoco-ut</outputDirectory>
+                                    <dataFile>${project.build.directory}/jacoco.exec</dataFile>
+                                    <outputDirectory>${project.build.directory}/jacoco-ut</outputDirectory>
                                 </configuration>
                             </execution>
                             <execution>
-                                <id>pre-integration-test</id>
-                                <phase>pre-integration-test</phase>
-                                <goals>
-                                    <goal>prepare-agent</goal>
-                                </goals>
-                            </execution>
-                            <execution>
-                                <id>post-integration-test</id>
+                                <id>merge-all-jacoco-it-tests</id>
+                                <goals><goal>merge</goal></goals>
                                 <phase>post-integration-test</phase>
-                                <goals>
-                                    <goal>report</goal>
-                                </goals>
                                 <configuration>
-                                    <dataFile>target/jacoco.exec</dataFile>
-                                    <outputDirectory>target/jacoco-it</outputDirectory>
+                                    <destFile>${sonar.jacoco.itReportPaths}</destFile>
+                                    <fileSets>
+                                        <fileSet>
+                                            <directory>${project.build.directory}</directory>
+                                            <includes>
+                                                <include>jacoco-it.exec</include>
+                                            </includes>
+                                        </fileSet>
+                                    </fileSets>
                                 </configuration>
                             </execution>
                         </executions>
-                        <configuration>
-                            <destFile>${sonar.jacoco.reportPaths}</destFile>
-                            <append>true</append>
-                        </configuration>
                     </plugin>
                 </plugins>
             </build>

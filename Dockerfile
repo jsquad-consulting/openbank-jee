@@ -37,7 +37,6 @@ FROM openjdk:11-jre-slim
 COPY --from=build /usr/wildfly /usr/wildfly
 COPY ear/target/openbank-1.0-SNAPSHOT.ear /usr/wildfly/standalone/deployments/openbank-1.0-SNAPSHOT.ear
 
-EXPOSE 8080:8080
-EXPOSE 9990:9990
+EXPOSE 8080 9990
 
 CMD ["/usr/wildfly/bin/standalone.sh", "-b", "0.0.0.0", "-bmanagement", "0.0.0.0"]
