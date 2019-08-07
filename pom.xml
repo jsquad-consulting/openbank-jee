@@ -233,62 +233,10 @@
             </activation>
             <build>
                 <plugins>
-                    <plugin>
-                        <artifactId>maven-dependency-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>copy-jacoco-agent</id>
-                                <goals>
-                                    <goal>copy-dependencies</goal>
-                                </goals>
-                                <phase>compile</phase>
-                                <configuration>
-                                    <includeArtifactIds>org.jacoco.agent</includeArtifactIds>
-                                    <includeClassifiers>runtime</includeClassifiers>
-                                    <outputDirectory>${project.build.directory}/jacoco-agent</outputDirectory>
-                                    <stripVersion>true</stripVersion>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>copy-jacoco-cli</id>
-                                <goals>
-                                    <goal>copy-dependencies</goal>
-                                </goals>
-                                <phase>compile</phase>
-                                <configuration>
-                                    <includeArtifactIds>org.jacoco.cli</includeArtifactIds>
-                                    <outputDirectory>${project.build.directory}/jacoco-cli</outputDirectory>
-                                    <includeClassifiers>nodeps</includeClassifiers>
-                                    <stripVersion>true</stripVersion>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <!-- Run integration tests (*IT) -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-failsafe-plugin</artifactId>
-                        <version>${maven.surefire.version}</version>
-                        <executions>
-                            <execution>
-                                <id>integration-test</id>
-                                <goals>
-                                    <goal>integration-test</goal>
-                                    <goal>verify</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
-                        </configuration>
-                    </plugin>
                     <!-- JUnit 5 requires Surefire version 2.22.1 or higher -->
                     <plugin>
                         <artifactId>maven-surefire-plugin</artifactId>
                         <version>${maven.surefire.version}</version>
-                        <configuration>
-                            <skipTests>false</skipTests>
-                        </configuration>
                     </plugin>
                     <plugin>
                         <groupId>org.jacoco</groupId>
@@ -314,22 +262,6 @@
                                 <configuration>
                                     <dataFile>${project.build.directory}/jacoco.exec</dataFile>
                                     <outputDirectory>${project.build.directory}/jacoco-ut</outputDirectory>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>merge-all-jacoco-it-tests</id>
-                                <goals><goal>merge</goal></goals>
-                                <phase>post-integration-test</phase>
-                                <configuration>
-                                    <destFile>${sonar.jacoco.itReportPaths}</destFile>
-                                    <fileSets>
-                                        <fileSet>
-                                            <directory>${project.build.directory}</directory>
-                                            <includes>
-                                                <include>jacoco-it.exec</include>
-                                            </includes>
-                                        </fileSet>
-                                    </fileSets>
                                 </configuration>
                             </execution>
                         </executions>

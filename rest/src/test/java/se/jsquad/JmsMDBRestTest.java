@@ -296,7 +296,7 @@ public class JmsMDBRestTest {
     @AfterEach
     public void tearDownAfterUnitTest() throws Exception {
         EntityTransaction tx = entityManager.getTransaction();
-        tx.commit();
+        tx.rollback();
 
         entityManager.close();
         entityManagerFactory.close();

@@ -1,0 +1,34 @@
+language: java
+
+jdk:
+  - openjdk11
+
+env:
+  - NODE_VERSION="10.16.2"
+
+cache:
+  directories:
+    - .autoconf
+    - $HOME/.m2
+
+before_install:
+  - wget https://archive.apache.org/dist/maven/maven-3/3.6.1/binaries/apache-maven-3.6.1-bin.zip
+  - unzip -qq apache-maven-3.6.1-bin.zip
+  - export M2_HOME=$PWD/apache-maven-3.6.1
+  - export PATH=$M2_HOME/bin:$PATH
+  - nvm install $NODE_VERSION
+  - npm install -g @angular/cli@7.3.9
+  - cd client/src/main/openbank-app && npm rebuild node-sass
+  - cd ..
+  - cd ..
+  - cd ..
+  - cd ..
+
+jobs:
+  include:
+    - stage: build and run unit/system tests
+      script: mvn clean install
+    - stage: run integration tests
+      script:
+        - docker build -t openbank .
+        - mvn integration-test -Pintegrationtests
