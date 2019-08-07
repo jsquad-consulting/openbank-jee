@@ -21,6 +21,8 @@ import org.jboss.weld.junit5.WeldJunit5Extension;
 import org.jboss.weld.junit5.WeldSetup;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import se.jsquad.entity.Client;
 import se.jsquad.entity.SystemProperty;
 import se.jsquad.generator.DatabaseGenerator;
@@ -45,6 +47,7 @@ import java.util.function.Function;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(WeldJunit5Extension.class)
+@Execution(ExecutionMode.SAME_THREAD)
 public class SystemStartupEjbWeldTest {
     private boolean runningThreads = true;
 
