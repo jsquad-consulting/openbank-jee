@@ -43,6 +43,7 @@ backend part and with Angular 7 for the frontend part.
 - [Installation](#installation)
   * [Without Docker](#without-docker)
   * [Wìth Docker (Linux, MacOS & Windows)](#w-th-docker--linux--macos---windows-)
+  * [With Docker compose (build and run)](#with-docker-compose--build-and-run-)
   * [With Docker Pipeline (requires no dependicies more then Docker)](#with-docker-pipeline--requires-no-dependicies-more-then-docker-)
   * [Clean up Docker images and containers](#clean-up-docker-images-and-containers)
 - [Start OpenBank](#start-openbank)
@@ -244,6 +245,12 @@ cp ./ear/target/openbank-1.0-SNAPSHOT.ear $WILDFLY_HOME/wildfly/standalone/deplo
 ```bash
 mvn clean install
 docker build -t openbank .
+```
+
+### With Docker compose (build and run)
+```bash
+mvn clean install
+docker-compose up --build
 ```
 
 ### With Docker Pipeline (requires no dependicies more then Docker)

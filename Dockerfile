@@ -14,29 +14,18 @@
 # limitations under the License.
 #
 
-FROM maven:3.6.0-jdk-11 as build
+FROM jboss/wildfly:16.0.0.Final
 
-ENV WILDFLY_VERSION 16.0.0.Final
-ENV WILDFLY_HOME /usr
+ENV WILDFLY_HOME /opt/jboss/wildfly
 
-RUN rm -fr /usr/wildfly
+COPY configuration/jboss/standalone.xml $WILDFLY_HOME/standalone/configuration/.
 
-RUN cd $WILDFLY_HOME && curl https://download.jboss.org/wildfly/$WILDFLY_VERSION/wildfly-$WILDFLY_VERSION.tar.gz \
-| tar zx && mv $WILDFLY_HOME/wildfly-$WILDFLY_VERSION $WILDFLY_HOME/wildfly
+RUN $WILDFLY_HOME/bin/add-user.sh --silent admin admin1234
+RUN $WILDFLY_HOME/bin/add-user.sh -a -g admin --silent root root
+RUN $WILDFLY_HOME/bin/add-user.sh -a -g customer --silent john doe
 
-RUN /usr/wildfly/bin/add-user.sh --silent admin admin1234
-RUN /usr/wildfly/bin/add-user.sh -a -g admin --silent root root
-RUN /usr/wildfly/bin/add-user.sh -a  -g customer --silent john doe
-
-ADD . /usr/openbank
-
-RUN cp /usr/openbank/configuration/jboss/standalone.xml $WILDFLY_HOME/wildfly/standalone/configuration/.
-
-FROM openjdk:11-jre-slim
-
-COPY --from=build /usr/wildfly /usr/wildfly
-COPY ear/target/openbank-1.0-SNAPSHOT.ear /usr/wildfly/standalone/deployments/openbank-1.0-SNAPSHOT.ear
+COPY ear/target/openbank-1.0-SNAPSHOT.ear $WILDFLY_HOME/standalone/deployments/openbank-1.0-SNAPSHOT.ear
 
 EXPOSE 8080 9990
 
-CMD ["/usr/wildfly/bin/standalone.sh", "-b", "0.0.0.0", "-bmanagement", "0.0.0.0"]
+CMD ["/opt/jboss/wildfly/bin/standalone.sh", "-b", "0.0.0.0", "-bmanagement", "0.0.0.0"]

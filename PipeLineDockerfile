@@ -58,29 +58,34 @@ RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
 RUN npm install -g @angular/cli@7.3.9
 
 ENV WILDFLY_VERSION 16.0.0.Final
-ENV WILDFLY_HOME /usr
+ENV TMP_JBOSS /tmp/jboss
+ENV WILDFLY_HOME /opt/jboss/wildfly
 
-RUN rm -fr /usr/wildfly
+RUN mkdir -p $WILDFLY_HOME && mkdir -p $TMP_JBOSS
+RUN rm -fr $WILDFLY_HOME
 
-RUN cd $WILDFLY_HOME && curl https://download.jboss.org/wildfly/$WILDFLY_VERSION/wildfly-$WILDFLY_VERSION.tar.gz \
-| tar zx && mv $WILDFLY_HOME/wildfly-$WILDFLY_VERSION $WILDFLY_HOME/wildfly
+RUN cd $TMP_JBOSS && curl https://download.jboss.org/wildfly/$WILDFLY_VERSION/wildfly-$WILDFLY_VERSION.tar.gz \
+| tar zx && mv $TMP_JBOSS/wildfly-$WILDFLY_VERSION $WILDFLY_HOME
 
-RUN /usr/wildfly/bin/add-user.sh --silent admin admin1234
-RUN /usr/wildfly/bin/add-user.sh -a -g admin --silent root root
-RUN /usr/wildfly/bin/add-user.sh -a  -g customer --silent john doe
+RUN $WILDFLY_HOME/bin/add-user.sh --silent admin admin1234
+RUN $WILDFLY_HOME/bin/add-user.sh -a -g admin --silent root root
+RUN $WILDFLY_HOME/bin/add-user.sh -a  -g customer --silent john doe
 
 ADD . /usr/openbank
 
-RUN cp /usr/openbank/configuration/jboss/standalone.xml $WILDFLY_HOME/wildfly/standalone/configuration/.
+RUN cp /usr/openbank/configuration/jboss/standalone.xml $WILDFLY_HOME/standalone/configuration/.
 RUN cd /usr/openbank/client/src/main/openbank-app && npm rebuild node-sass
 RUN mvn -f /usr/openbank/pom.xml install -DskipTests
 
 FROM openjdk:11-jre-slim
 
-COPY --from=build /usr/wildfly /usr/wildfly
-COPY --from=build /usr/openbank/ear/target/openbank-1.0-SNAPSHOT.ear /usr/wildfly/standalone/deployments/openbank-1.0-SNAPSHOT.ear
+ENV WILDFLY_HOME /opt/jboss/wildfly
+
+COPY --from=build $WILDFLY_HOME $WILDFLY_HOME
+COPY --from=build /usr/openbank/ear/target/openbank-1.0-SNAPSHOT.ear \
+$WILDFLY_HOME/standalone/deployments/openbank-1.0-SNAPSHOT.ear
 
 EXPOSE 8080:8080
 EXPOSE 9990:9990
 
-CMD ["/usr/wildfly/bin/standalone.sh", "-b", "0.0.0.0", "-bmanagement", "0.0.0.0"]
+CMD ["/opt/jboss/wildfly/bin/standalone.sh", "-b", "0.0.0.0", "-bmanagement", "0.0.0.0"]
