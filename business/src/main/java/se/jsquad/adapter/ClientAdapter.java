@@ -17,14 +17,14 @@
 package se.jsquad.adapter;
 
 import se.jsquad.RoleConstants;
-import se.jsquad.client.info.AccountApi;
-import se.jsquad.client.info.AccountTransactionApi;
-import se.jsquad.client.info.AddressApi;
-import se.jsquad.client.info.ClientApi;
-import se.jsquad.client.info.ClientTypeApi;
-import se.jsquad.client.info.PersonApi;
-import se.jsquad.client.info.TransactionTypeApi;
-import se.jsquad.client.info.TypeApi;
+import se.jsquad.api.client.info.AccountApi;
+import se.jsquad.api.client.info.AccountTransactionApi;
+import se.jsquad.api.client.info.AddressApi;
+import se.jsquad.api.client.info.ClientApi;
+import se.jsquad.api.client.info.ClientTypeApi;
+import se.jsquad.api.client.info.PersonApi;
+import se.jsquad.api.client.info.TransactionTypeApi;
+import se.jsquad.api.client.info.TypeApi;
 import se.jsquad.entity.Account;
 import se.jsquad.entity.AccountTransaction;
 import se.jsquad.entity.Address;

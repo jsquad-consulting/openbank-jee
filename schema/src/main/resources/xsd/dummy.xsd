@@ -14,7 +14,8 @@
   ~ limitations under the License.
   -->
 
-<xs:schema id="Dummy" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:schema id="Dummy" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://jsquad.se/api/dummy">
     <xs:element name="Dummy">
         <xs:complexType>
             <xs:sequence>

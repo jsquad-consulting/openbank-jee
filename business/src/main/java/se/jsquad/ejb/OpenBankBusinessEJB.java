@@ -16,8 +16,8 @@
 
 package se.jsquad.ejb;
 
+import se.jsquad.api.batch.status.BatchStatus;
 import se.jsquad.batch.SlowMockBatch;
-import se.jsquad.batch.status.BatchStatus;
 import se.jsquad.qualifier.Log;
 
 import javax.ejb.AsyncResult;

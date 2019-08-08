@@ -16,7 +16,7 @@
 
 package se.jsquad;
 
-import se.jsquad.batch.status.BatchStatus;
+import se.jsquad.api.batch.status.BatchStatus;
 import se.jsquad.ejb.OpenBankBusinessEJB;
 import se.jsquad.qualifier.Log;
 

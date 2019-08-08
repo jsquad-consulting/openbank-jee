@@ -16,8 +16,8 @@
   -->
 
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-           xmlns:tns="http://jsquad.se/client/info"
-           targetNamespace="http://jsquad.se/client/info" version="1.0">
+           xmlns:tns="http://jsquad.se/api/client/info"
+           targetNamespace="http://jsquad.se/api/client/info" version="1.0">
 
     <xs:complexType name="ClientApi">
         <xs:sequence>

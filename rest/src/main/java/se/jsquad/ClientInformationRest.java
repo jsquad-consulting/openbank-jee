@@ -16,8 +16,8 @@
 
 package se.jsquad;
 
+import se.jsquad.api.client.info.ClientApi;
 import se.jsquad.authorization.Authorization;
-import se.jsquad.client.info.ClientApi;
 import se.jsquad.ejb.ClientInformationEJB;
 import se.jsquad.generator.MessageGenerator;
 import se.jsquad.qualifier.Log;

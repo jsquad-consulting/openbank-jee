@@ -16,8 +16,8 @@
   -->
 
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-           xmlns:tns="http://jsquad.se/batch/status"
-           targetNamespace="http://jsquad.se/batch/status" version="1.0">
+           xmlns:tns="http://jsquad.se/api/batch/status"
+           targetNamespace="http://jsquad.se/api/batch/status" version="1.0">
 
     <xs:complexType name="BatchStatus">
         <xs:sequence>

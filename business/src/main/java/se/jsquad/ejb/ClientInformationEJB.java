@@ -17,7 +17,7 @@
 package se.jsquad.ejb;
 
 import se.jsquad.adapter.ClientAdapter;
-import se.jsquad.client.info.ClientApi;
+import se.jsquad.api.client.info.ClientApi;
 import se.jsquad.entity.Client;
 import se.jsquad.jms.MessageSenderSessionJMS;
 import se.jsquad.qualifier.Log;

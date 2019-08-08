@@ -60,7 +60,8 @@ backend part and with Angular 7 for the frontend part.
 - [Administrate Wildly application server](#administrate-wildly-application-server)
 - [Run all the tests](#run-all-the-tests)
 - [Run just the integration tests](#run-just-the-integration-tests)
-- [Run all tests with coverage](#run-all-tests-with-coverage)
+- [Run unit and system tests with coverage](#run-unit-and-system-tests-with-coverage)
+- [Force check code coverage by number of lines for all Java classes](#force-check-code-coverage-by-number-of-lines-for-all-java-classes)
 
 ## Requirements
 To be able to compile and run the OpenBank application the following dependicies are required:
@@ -336,17 +337,19 @@ docker build -t openbank .
 mvn clean install -Pintegrationtests
 ````
 
-## Run all tests with coverage
-
-To be able to run integration tests against Docker containers and regular tests run the following commands:
+## Run unit and system tests with coverage
 
 ````bash
-mvn clean install
-docker build -t openbank .
-mvn clean install -Pcoverage
+mvn clean install -Pgenerate-coverage
 ````
 
-Be aware that the integration tests are not properly setup for jacoco coverage yet.
+## Force check code coverage by number of lines for all Java classes
+
+Code coverage by lines must be at least 50 %
+
+````bash
+mvn clean install -Pcoverage-check
+````
 
 ## Annex
 

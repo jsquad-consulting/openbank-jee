@@ -16,8 +16,8 @@
 
 package se.jsquad.batch;
 
-import se.jsquad.batch.status.BatchStatus;
-import se.jsquad.batch.status.Status;
+import se.jsquad.api.batch.status.BatchStatus;
+import se.jsquad.api.batch.status.Status;
 import se.jsquad.qualifier.Log;
 
 import javax.inject.Inject;

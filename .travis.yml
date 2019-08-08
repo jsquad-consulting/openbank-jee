@@ -44,6 +44,10 @@ jobs:
   include:
     - stage: build and run unit/system tests
       script: mvn clean install
+    - stage: code coverage by at least 50 % with unit/system tests
+      script:
+        - mvn verify -Pgenerate-coverage
+        - mvn verify -Pcoverage-check
     - stage: run integration tests
       script:
         - docker build -t openbank .
