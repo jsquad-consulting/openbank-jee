@@ -53,7 +53,7 @@ public class OpenBankRestTest {
     @BeforeEach
     void init() throws NoSuchFieldException, IllegalAccessException {
         Properties properties = new Properties();
-        properties.setProperty(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML, "META-INF/persistence.xml");
+        properties.setProperty(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML, "META-INF/persistence_test.xml");
 
         entityManagerFactory = Persistence.createEntityManagerFactory("openBankPU", properties);
         entityManager = entityManagerFactory.createEntityManager();

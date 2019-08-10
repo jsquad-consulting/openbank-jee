@@ -52,16 +52,15 @@ backend part and with Angular 7 for the frontend part.
 - [Start OpenBank](#start-openbank)
   * [Without Docker](#without-docker-1)
   * [With Docker compose](#with-docker-compose)
-  * [With Docker](#with-docker)
 - [Test RESTful/SOAP contracts](#test-restful-soap-contracts)
   * [RESTful testing](#restful-testing)
   * [SOAP testing](#soap-testing)
 - [Start the client](#start-the-client)
 - [Administrate Wildly application server](#administrate-wildly-application-server)
-- [Run all the tests](#run-all-the-tests)
 - [Run just the integration tests](#run-just-the-integration-tests)
 - [Run unit and system tests with coverage](#run-unit-and-system-tests-with-coverage)
 - [Force check code coverage by number of lines for all Java classes](#force-check-code-coverage-by-number-of-lines-for-all-java-classes)
+- [Generate encrypted property password](#generate-encrypted-property-password)
 
 ## Requirements
 To be able to compile and run the OpenBank application the following dependicies are required:
@@ -284,15 +283,10 @@ docker rmi -f $(docker images -a -q) # Clean up all images
 
 ### With Docker compose
 
-Run Docker compose instead of running 'docker run...' command below.
-````bash
-docker-compose up
-````
-
-### With Docker
+Run with Docker compose because the mysql database dependency is added, easier to deal with.
 
 ````bash
-docker run --rm -p 8080:8080 -p 9990:9990 -it --name openbank_container openbank
+docker-compose up --build
 ````
 
 ## Test RESTful/SOAP contracts
@@ -321,14 +315,6 @@ Goto http://localhost:8080/client/openbank and basic authorization is simplest t
 
 http://localhost:8080/console
 
-## Run all the tests
-
-````bash
-mvn clean install
-docker build -t openbank .
-mvn clean install -Palltests
-````
-
 ## Run just the integration tests
 
 ````bash
@@ -349,6 +335,16 @@ Code coverage by lines must be at least 50 %
 
 ````bash
 mvn clean install -Pcoverage-check
+````
+
+## Generate encrypted property password
+
+The demonstration how to generate encrypted password with help of master password, master password shall never be
+stored in the repository along with any unencrypted passwords to maintain good security.
+
+````bash
+java -cp ~/.m2/repository/org/jasypt/jasypt/1.9.3/jasypt-1.9.3.jar org.jasypt.intf.cli.JasyptPBEStringEncryptionCLI \
+input="obpassword" password=my_secret_password algorithm=PBEWithMD5AndDES
 ````
 
 ## Annex

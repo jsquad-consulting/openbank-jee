@@ -16,6 +16,7 @@
 
 package se.jsquad.ejb;
 
+import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.jboss.weld.junit5.WeldInitiator;
 import org.jboss.weld.junit5.WeldJunit5Extension;
 import org.jboss.weld.junit5.WeldSetup;
@@ -63,6 +64,7 @@ public class SystemStartupEjbWeldTest {
         DatabaseGenerator databaseGenerator = new DatabaseGenerator();
 
         Properties properties = new Properties();
+        properties.setProperty(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML, "META-INF/persistence_test.xml");
 
         EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("openBankPU",
                 properties);

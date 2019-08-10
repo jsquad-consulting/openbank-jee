@@ -20,6 +20,7 @@ import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
@@ -33,7 +34,7 @@ public class SystemProperty {
     public static final String FIND_ALL_UNIQUE_SYSTEM_PROPERTIES = "FIND_ALL_UNIQUE_SYSTEM_PROPERTIES";
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "ID")
     private Long id;
 

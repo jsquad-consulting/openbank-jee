@@ -23,6 +23,7 @@ import org.apache.activemq.artemis.junit.EmbeddedJMSResource;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
@@ -67,6 +68,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyObject;
 
 @Execution(ExecutionMode.SAME_THREAD)
+@Disabled
 public class JmsMDBRestTest {
     public EmbeddedJMSResource jmsServer;
 
@@ -126,7 +128,7 @@ public class JmsMDBRestTest {
         DatabaseGenerator databaseGenerator = new DatabaseGenerator();
 
         Properties properties = new Properties();
-        properties.setProperty(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML, "META-INF/persistence.xml");
+        properties.setProperty(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML, "META-INF/persistence_test.xml");
 
         entityManagerFactory = Persistence.createEntityManagerFactory("openBankPU", properties);
         entityManager = entityManagerFactory.createEntityManager();

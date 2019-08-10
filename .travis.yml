@@ -50,5 +50,5 @@ jobs:
         - mvn verify -Pcoverage-check
     - stage: run integration tests
       script:
-        - docker build -t openbank .
-        - mvn integration-test -Pintegrationtests
+        - docker-compose build --no-cache
+        - mvn verify -Pintegrationtests

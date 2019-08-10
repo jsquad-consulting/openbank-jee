@@ -14,11 +14,26 @@
 # limitations under the License.
 #
 
+FROM debian:stretch-slim as module
+
+RUN  apt-get update \
+  && apt-get install -y wget unzip
+RUN cd / && wget https://cdn.mysql.com//Downloads/Connector-J/mysql-connector-java-8.0.17.tar.gz && \
+tar xvzf mysql-connector-java-8.0.17.tar.gz && rm mysql-connector-java-8.0.17.tar.gz && \
+wget http://ftp.fau.de/eclipse/rt/eclipselink/releases/2.7.4/eclipselink-2.7.4.v20190115-ad5b7c6b2a.zip && \
+unzip eclipselink-2.7.4.v20190115-ad5b7c6b2a.zip -d .
+
 FROM jboss/wildfly:16.0.0.Final
 
 ENV WILDFLY_HOME /opt/jboss/wildfly
 
 COPY configuration/jboss/standalone.xml $WILDFLY_HOME/standalone/configuration/.
+COPY configuration/jboss/module/mysql $WILDFLY_HOME/modules/system/layers/base/com/mysql
+COPY configuration/jboss/module/eclipselink $WILDFLY_HOME/modules/system/layers/base/org/eclipse/persistence/
+COPY --from=module /mysql-connector-java-8.0.17/mysql-connector-java-8.0.17.jar \
+$WILDFLY_HOME/modules/system/layers/base/com/mysql/main/.
+COPY --from=module /eclipselink/jlib/eclipselink.jar \
+$WILDFLY_HOME/modules/system/layers/base/org/eclipse/persistence/main/.
 
 RUN $WILDFLY_HOME/bin/add-user.sh --silent admin admin1234
 RUN $WILDFLY_HOME/bin/add-user.sh -a -g admin --silent root root
