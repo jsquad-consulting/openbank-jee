@@ -39,6 +39,8 @@ before_install:
   - unzip -qq apache-maven-3.6.1-bin.zip
   - export M2_HOME=$PWD/apache-maven-3.6.1
   - export PATH=$M2_HOME/bin:$PATH
+  - mvn compile -U
+  - source openbank_setup.sh
   - nvm install $NODE_VERSION
   - npm install -g @angular/cli@7.3.9
   - cd client/src/main/openbank-app && npm rebuild node-sass

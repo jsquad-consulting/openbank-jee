@@ -173,8 +173,8 @@
           <connection-url>jdbc:mysql://openbankdb:3306/mysql?useSSL=false&amp;useUnicode=yes&amp;characterEncoding=UTF-8&amp;useJDBCCompliantTimezoneShift=true&amp;useLegacyDatetimeCode=false&amp;serverTimezone=UTC&amp;allowPublicKeyRetrieval=true</connection-url>
           <driver>mysql8</driver>
           <security>
-            <user-name>root</user-name>
-            <password>secret_password</password>
+            <user-name>hidden</user-name>
+            <password>hidden</password>
           </security>
           <validation>
             <valid-connection-checker class-name="org.jboss.jca.adapters.jdbc.extensions.mysql.MySQLValidConnectionChecker"/>

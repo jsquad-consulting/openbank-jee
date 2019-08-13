@@ -54,9 +54,9 @@ public class ClientInformationRestIT {
 
     private static GenericContainer openbankDbContainer = new GenericContainer("mysql:8.0.17")
             .withEnv("MYSQL_DATABASE", "openbankdb")
-            .withEnv("MYSQL_USER", "obuser")
-            .withEnv("MYSQL_PASSWORD", "obpassword")
-            .withEnv("MYSQL_ROOT_PASSWORD", "secret_password")
+            .withEnv("MYSQL_USER", System.getenv("OB_USER"))
+            .withEnv("MYSQL_PASSWORD", System.getenv("OB_PASSWORD"))
+            .withEnv("MYSQL_ROOT_PASSWORD", System.getenv("ROOT_PASSWORD"))
             .withNetwork(network)
             .withNetworkAliases("openbankdb")
             .withExposedPorts(3306)

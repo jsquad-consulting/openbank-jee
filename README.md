@@ -44,14 +44,12 @@ backend part and with Angular 7 for the frontend part.
   * [RESTful Web Service](#restful-web-service)
   * [Dynamic Injection Point Interceptor](#dynamic-injection-point-interceptor)
 - [Installation](#installation)
-  * [Without Docker](#without-docker)
-  * [Wìth Docker (Linux, MacOS & Windows)](#w-th-docker--linux--macos---windows-)
-  * [With Docker compose (build and run)](#with-docker-compose--build-and-run-)
-  * [With Docker Pipeline (requires no dependicies more then Docker)](#with-docker-pipeline--requires-no-dependicies-more-then-docker-)
+  * [Prepare the environment](#prepare-the-environment)
+  * [With Docker compose](#with-docker-compose)
+  * [With Docker Compose Pipeline (requires no dependicies more then Docker)](#with-docker-compose-pipeline--requires-no-dependicies-more-then-docker-)
   * [Clean up Docker images and containers](#clean-up-docker-images-and-containers)
 - [Start OpenBank](#start-openbank)
-  * [Without Docker](#without-docker-1)
-  * [With Docker compose](#with-docker-compose)
+  * [With Docker compose](#with-docker-compose-1)
 - [Test RESTful/SOAP contracts](#test-restful-soap-contracts)
   * [RESTful testing](#restful-testing)
   * [SOAP testing](#soap-testing)
@@ -217,49 +215,26 @@ To be able to dynamically add Interceptor annotation to all Java CDI beans not i
 
 ## Installation
 
-### Without Docker
-Be sure you have at least Maven version 3.6.0, JDK 11, NodeJS version 10.15.3, Angular CLI version 7.3.6 and Wildfly 
-version 16.0.0 installed.
+### Prepare the environment
 
-Execute the following commands in Bash (Linux & MacOS platforms):
+Before installing the application in a Docker environment, you will need to source the openbank_setup.sh file
+so the encrypted property values are decrypted and properly set when building the image. (Windows users needs Cyqwin
+to be able to execute the bash script.)
+
 ```bash
-npm rebuild node-sass # Be sure to rebind the node-sass package to right platform (MacOS, Windows or 
-# Linux library dependicies
-mvn clean install # For packaging the ear file
-
-# Execute these wildfly commands for the first time only
-$WILDFLY_HOME/bin/add-user.sh --silent admin admin1234 # setup admin super user for testing purpose
-$WILDFLY_HOME/bin/add-user.sh -a -g admin --silent root root # setup admin group user with user 
-# root and password root
-
-$WILDFLY_HOME/bin/add-user.sh -a  -g customer --silent john doe # setup customer group user john 
-# and password doe
-
-# Copy the ./configuration/jboss/standalone.xml to the proper wildfly directory
-cp ./configuration/jboss/standalone.xml $WILDFLY_HOME/wildfly/standalone/configuration/.
-
-# Either deploy the ear file with your favourite IDE and configured Wildfly or deploy the ear file 
-# and start the Wildfly application with the following commands:
-cp ./ear/target/openbank-1.0-SNAPSHOT.ear $WILDFLY_HOME/wildfly/standalone/deployments/.
+source openbank_setup.sh
 ```
 
-### Wìth Docker (Linux, MacOS & Windows)
-
+### With Docker compose
 ```bash
 mvn clean install
-docker build -t openbank .
+docker-compose build --no-cache
 ```
 
-### With Docker compose (build and run)
-```bash
-mvn clean install
-docker-compose up --build
-```
-
-### With Docker Pipeline (requires no dependicies more then Docker)
+### With Docker Compose Pipeline (requires no dependicies more then Docker)
 
 ````bash
-docker build -f PipeLineDockerfile -t openbank .
+docker-compose -f docker-compose-pipeline.yaml build --no-cache
 ````
 
 ### Clean up Docker images and containers
@@ -275,18 +250,10 @@ docker rmi -f $(docker images -a -q) # Clean up all images
 
 ## Start OpenBank
 
-### Without Docker
-
-````bash
-./$WILDFLY_HOME/usr/wildfly/bin/standalone.sh" -b 0.0.0.0 -bmanagement 0.0.0.0
-````
-
 ### With Docker compose
 
-Run with Docker compose because the mysql database dependency is added, easier to deal with.
-
 ````bash
-docker-compose up --build
+docker-compose up
 ````
 
 ## Test RESTful/SOAP contracts

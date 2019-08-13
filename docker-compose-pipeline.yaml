@@ -20,22 +20,22 @@ services:
     image: mysql:8.0.17
     environment:
       MYSQL_DATABASE: 'openbankdb'
-      MYSQL_USER: 'obuser'
-      MYSQL_PASSWORD: 'obpassword'
-      MYSQL_ROOT_PASSWORD: 'secret_password'
+      MYSQL_USER: ${OB_USER}
+      MYSQL_PASSWORD: ${OB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${ROOT_PASSWORD}
     expose:
       - 3306
     cap_add:
       - SYS_NICE
     healthcheck:
-      test: ["CMD", "mysql", "--user=root", "--password=secret_password", "-e", "'SHOW DATABASES;'"]
+      test: ["CMD", "mysql", "--user=${ROOT_USER}", "--password=${ROOT_PASSWORD}", "-e", "'SHOW DATABASES;'"]
       timeout: 5s
       retries: 5
   openbank:
     image: openbank
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: PipeLineDockerfile
     ports:
       - 8080:8080
       - 9990:9990
