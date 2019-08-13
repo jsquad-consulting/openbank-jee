@@ -17,7 +17,6 @@
 version: "3.7"
 services:
   openbankdb:
-    container_name: openbank_database
     image: mysql:8.0.17
     environment:
       MYSQL_DATABASE: 'openbankdb'
@@ -34,7 +33,6 @@ services:
       retries: 5
   openbank:
     image: openbank
-    container_name: openbank_application
     build:
       context: .
       dockerfile: Dockerfile

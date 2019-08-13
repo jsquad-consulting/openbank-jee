@@ -14,6 +14,11 @@
 # limitations under the License.
 #
 
+dist: bionic
+
+services:
+  - docker
+
 language: java
 
 jdk:
@@ -28,6 +33,8 @@ cache:
     - $HOME/.m2
 
 before_install:
+  - sudo curl -L https://github.com/docker/compose/releases/download/1.24.1/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
+  - sudo chmod +x /usr/local/bin/docker-compose
   - wget https://archive.apache.org/dist/maven/maven-3/3.6.1/binaries/apache-maven-3.6.1-bin.zip
   - unzip -qq apache-maven-3.6.1-bin.zip
   - export M2_HOME=$PWD/apache-maven-3.6.1

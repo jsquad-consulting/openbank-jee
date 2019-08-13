@@ -26,57 +26,43 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
-import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.Network;
-import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.containers.DockerComposeContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import se.jsquad.api.client.info.ClientApi;
 import se.jsquad.api.client.info.TypeApi;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Testcontainers
 @Execution(ExecutionMode.SAME_THREAD)
-public class ClientInformationRestIT {
+public class ClientInformationRestDockerComposeIT {
     private static Gson gson = new Gson();
 
     private final OpenApiValidationFilter validationFilter = new OpenApiValidationFilter("src/main/resources/rest" +
             ".yaml");
 
-    private static Network network = Network.newNetwork();
-
-    private static GenericContainer openbankContainer = new GenericContainer("openbank:latest")
-            .withNetwork(network)
-            .withExposedPorts(8080)
-            .waitingFor(Wait.forListeningPort());
-
-    private static GenericContainer openbankDbContainer = new GenericContainer("mysql:8.0.17")
-            .withEnv("MYSQL_DATABASE", "openbankdb")
-            .withEnv("MYSQL_USER", "obuser")
-            .withEnv("MYSQL_PASSWORD", "obpassword")
-            .withEnv("MYSQL_ROOT_PASSWORD", "secret_password")
-            .withNetwork(network)
-            .withNetworkAliases("openbankdb")
-            .withExposedPorts(3306)
-            .waitingFor(Wait.forListeningPort());
+    private static DockerComposeContainer dockerComposeContainer = new DockerComposeContainer(
+            new File("../docker-compose.yaml"))
+            .withExposedService("openbank_1", 8080)
+            .withLocalCompose(true);
 
     @BeforeAll
-    static void setupDocker() {
-        openbankDbContainer.start();
-        openbankContainer.start();
+    static void setupDocker() throws IOException, InterruptedException {
+        dockerComposeContainer.start();
 
-        RestAssured.baseURI = "http://" + openbankContainer.getContainerIpAddress();
-        RestAssured.port = openbankContainer.getMappedPort(8080);
+        RestAssured.baseURI = "http://" + dockerComposeContainer.getServiceHost("openbank_1", 8080);
+        RestAssured.port = dockerComposeContainer.getServicePort("openbank_1", 8080);
         RestAssured.basePath = "/restful-webservice/api";
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
     }
 
     @AfterAll
     static void destroyDocker() {
-        openbankContainer.stop();
-        openbankDbContainer.stop();
+        dockerComposeContainer.stop();
     }
 
     @Test
