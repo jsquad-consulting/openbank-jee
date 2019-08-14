@@ -1,3 +1,6 @@
+# Ignore the generated standalone.xml Wildfly file
+configuration/jboss/standalone.xml
+
 # Created by .ignore support plugin (hsz.mobi)
 ### Eclipse template
 

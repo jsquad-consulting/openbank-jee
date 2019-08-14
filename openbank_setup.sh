@@ -2,6 +2,8 @@
 
 export MASTER_KEY=SECRET_JSQUAD_AB_KEY # For demo purpose only, normally only stored at the CI/hidden environment
 
+cp ./configuration/jboss/template/standalone.xml ./configuration/jboss/standalone.xml
+
 . ./configuration/properties.properties
 
 export ROOT_USER=$(java -cp ~/.m2/repository/org/jasypt/jasypt/1.9.3/jasypt-1.9.3.jar \
