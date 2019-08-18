@@ -152,7 +152,7 @@ public class ClientInformationRestWeldTest {
         Mockito.when(httpServletRequest.authenticate(anyObject())).thenReturn(true);
         Mockito.when(authorizationSpy.isAuthorized()).thenReturn(true);
         Mockito.when(authorizationSpy.isUserInRole(anyObject())).thenReturn(true);
-        Response response = clientInformationRest.getClientInformtion(personIdentificationNumber);
+        Response response = clientInformationRest.getClientInformation(personIdentificationNumber);
 
         // Then
         assertEquals(Response.Status.OK, Response.Status.fromStatusCode(response.getStatus()));

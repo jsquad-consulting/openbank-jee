@@ -32,7 +32,6 @@ import se.jsquad.api.client.info.ClientApi;
 import se.jsquad.api.client.info.TypeApi;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URI;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -42,8 +41,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class ClientInformationRestDockerComposeIT {
     private static Gson gson = new Gson();
 
-    private final OpenApiValidationFilter validationFilter = new OpenApiValidationFilter("src/main/resources/rest" +
-            ".yaml");
+    private final OpenApiValidationFilter validationFilter = new OpenApiValidationFilter("target/openbankAPI.yaml");
 
     private static DockerComposeContainer dockerComposeContainer = new DockerComposeContainer(
             new File("../docker-compose.yaml"))
@@ -51,7 +49,7 @@ public class ClientInformationRestDockerComposeIT {
             .withLocalCompose(true);
 
     @BeforeAll
-    static void setupDocker() throws IOException, InterruptedException {
+    static void setupDocker() {
         dockerComposeContainer.start();
 
         RestAssured.baseURI = "http://" + dockerComposeContainer.getServiceHost("openbank_1", 8080);

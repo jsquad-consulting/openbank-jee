@@ -316,7 +316,7 @@ public class JmsMDBRestTest {
         assertEquals(0, queueConsumer.getMessageCount());
 
         // When
-        Response response = clientInformationRest.getClientInformtion(personIdentification);
+        Response response = clientInformationRest.getClientInformation(personIdentification);
         jmsContextProducer.commit();
         entityManager.flush();
 
@@ -374,7 +374,7 @@ public class JmsMDBRestTest {
         assertEquals(0, queueConsumer.getMessageCount());
 
         // When
-        Response response = clientInformationRest.getClientInformtion(personIdentification);
+        Response response = clientInformationRest.getClientInformation(personIdentification);
         jmsContextProducer.rollback();
         entityManager.flush();
 

@@ -16,6 +16,11 @@
 
 package se.jsquad;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import se.jsquad.authorization.Authorization;
 import se.jsquad.ejb.AccountTransactionEJB;
 import se.jsquad.qualifier.Log;
@@ -47,10 +52,29 @@ public class AccountTransferRest {
     @PUT
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     @Path("/account/transfer/{value}/{fromAccountNumber}/{toAccountNumber}")
+    @Operation(summary = "Transfer money from one account to another account",
+            responses = {
+                    @ApiResponse(responseCode = "200",
+                            description = "Ok message for successful transaction", content = @Content(mediaType =
+                            MediaType.TEXT_PLAIN,
+                            schema = @Schema(example = "Successful transaction."))),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized transaction.", content =
+                    @Content(mediaType =
+                            MediaType.TEXT_PLAIN, schema = @Schema(example = "Unauthorized transaction."))),
+                    @ApiResponse(responseCode = "500", description = "Severe system failure has occured!",
+                            content =
+                            @Content(mediaType = MediaType.TEXT_PLAIN,
+                                    schema = @Schema(example = "Severe system failure has occured!")))})
     @Produces(MediaType.APPLICATION_JSON)
-    public Response transferValueFromAccountToAccount(@PathParam("value") long value,
-                                                      @PathParam("fromAccountNumber") String fromAccountNumber,
-                                                      @PathParam("toAccountNumber") String toAccountNumber) {
+    public Response transferValueFromAccountToAccount(@Parameter(description = "Amount of money to transfer",
+            required = true) @PathParam("value") long value,
+                                                      @Parameter(description = "Account number to withdrawal from",
+                                                              required = true) @PathParam(
+                                                              "fromAccountNumber") String fromAccountNumber,
+                                                      @Parameter(description = "The account number to deposit to",
+                                                              required = true)
+                                                      @PathParam(
+                                                              "toAccountNumber") String toAccountNumber) {
         try {
             if (!authorization.isAuthorized()) {
                 return Response.status(Response.Status.UNAUTHORIZED).entity("Unauthorized request.").type(

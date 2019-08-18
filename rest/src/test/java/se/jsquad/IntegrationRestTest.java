@@ -348,9 +348,9 @@ public class IntegrationRestTest {
 
         tx.commit();
 
-        ClientApi fromClientApi = (ClientApi) clientInformationRest.getClientInformtion(
+        ClientApi fromClientApi = (ClientApi) clientInformationRest.getClientInformation(
                 "191212121220").getEntity();
-        ClientApi toClientApi = (ClientApi) clientInformationRest.getClientInformtion("191212121221").getEntity();
+        ClientApi toClientApi = (ClientApi) clientInformationRest.getClientInformation("191212121221").getEntity();
 
 
         // Then
@@ -378,7 +378,7 @@ public class IntegrationRestTest {
         String personIdentification = "191212121213";
 
         // When
-        Response response = clientInformationRest.getClientInformtion(personIdentification);
+        Response response = clientInformationRest.getClientInformation(personIdentification);
 
         // Then
         assertEquals(Response.Status.OK, Response.Status.fromStatusCode(response.getStatus()));
@@ -447,7 +447,7 @@ public class IntegrationRestTest {
         assertEquals("Client created successfully.", response.getEntity());
 
         // When
-        response = clientInformationRest.getClientInformtion(personIdentification);
+        response = clientInformationRest.getClientInformation(personIdentification);
 
         // Then
         assertEquals(Response.Status.OK, Response.Status.fromStatusCode(response.getStatus()));
@@ -507,7 +507,7 @@ public class IntegrationRestTest {
         EntityTransaction tx = entityManager.getTransaction();
         tx.begin();
 
-        response = clientInformationRest.getClientInformtion(personIdentification);
+        response = clientInformationRest.getClientInformation(personIdentification);
         tx.commit();
 
         assertEquals(Response.Status.OK, Response.Status.fromStatusCode(response.getStatus()));
@@ -578,7 +578,7 @@ public class IntegrationRestTest {
         assertEquals(CLIENT_CREATED_SUCCESSFULLY, response.getEntity());
 
         // When
-        response = clientInformationRest.getClientInformtion(personIdentification);
+        response = clientInformationRest.getClientInformation(personIdentification);
 
         assertEquals(Response.Status.OK, Response.Status.fromStatusCode(response.getStatus()));
 
@@ -601,7 +601,7 @@ public class IntegrationRestTest {
 
         // When
         Mockito.when(sessionContext.isCallerInRole(RoleConstants.ADMIN)).thenReturn(false);
-        Response response = clientInformationRest.getClientInformtion(personIdentification);
+        Response response = clientInformationRest.getClientInformation(personIdentification);
 
         // Then
         assertEquals(Response.Status.OK, Response.Status.fromStatusCode(response.getStatus()));
@@ -624,7 +624,7 @@ public class IntegrationRestTest {
         String personIdentification = PERSON_IDENTIFICATION;
 
         // When
-        Response response = clientInformationRest.getClientInformtion(personIdentification);
+        Response response = clientInformationRest.getClientInformation(personIdentification);
 
         // Then
         assertEquals(Response.Status.OK, Response.Status.fromStatusCode(response.getStatus()));
@@ -658,7 +658,7 @@ public class IntegrationRestTest {
         // When
         Mockito.when(clientInformationEJB.getClient(personIdentification)).thenThrow(new RuntimeException(
                 "Severe system failure has occured!"));
-        Response response = clientInformationRest.getClientInformtion(personIdentification);
+        Response response = clientInformationRest.getClientInformation(personIdentification);
 
         // Then
         assertEquals(Response.Status.INTERNAL_SERVER_ERROR, Response.Status.fromStatusCode(response.getStatus()));
@@ -672,7 +672,7 @@ public class IntegrationRestTest {
 
         // When
         Mockito.when(sessionContext.isCallerInRole(RoleConstants.ADMIN)).thenReturn(true);
-        Response response = clientInformationRest.getClientInformtion(personIdentification);
+        Response response = clientInformationRest.getClientInformation(personIdentification);
 
         // Then
         assertEquals(Response.Status.OK, Response.Status.fromStatusCode(response.getStatus()));

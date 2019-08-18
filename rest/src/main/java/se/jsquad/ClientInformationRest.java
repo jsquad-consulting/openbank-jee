@@ -16,6 +16,11 @@
 
 package se.jsquad;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import se.jsquad.api.client.info.ClientApi;
 import se.jsquad.authorization.Authorization;
 import se.jsquad.ejb.ClientInformationEJB;
@@ -90,7 +95,19 @@ public class ClientInformationRest {
     @TransactionAttribute(TransactionAttributeType.SUPPORTS)
     @Path("info/{personIdentification}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getClientInformtion(@PathParam("personIdentification") String personIdentification) {
+    @Operation(summary = "Get client by person identification number",
+            responses = {
+                    @ApiResponse(responseCode = "200",
+                            description = "The client", content = @Content(mediaType =
+                            MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ClientApi.class))),
+                    @ApiResponse(responseCode = "404", description = "Client not found.", content = @Content(mediaType =
+                            MediaType.TEXT_PLAIN, schema = @Schema(example = "Client not found."))),
+                    @ApiResponse(responseCode = "500", description = "Severe system failure has occured!", content =
+                    @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(example = "Severe system failure has occured!")))})
+    public Response getClientInformation(@Parameter(description = "The person identification number",
+            example = "191212121212", required = true) @PathParam(
+            "personIdentification") String personIdentification) {
         try {
             if (!authorization.isAuthorized()) {
                 return Response.status(Response.Status.UNAUTHORIZED).entity("Unauthorized request.").type(MediaType
@@ -110,7 +127,7 @@ public class ClientInformationRest {
                     .build();
 
         } catch (Exception e) {
-            return Response.serverError().entity("Severe system failure has occured!").type(MediaType.APPLICATION_JSON)
+            return Response.serverError().entity("Severe system failure has occured!").type(MediaType.TEXT_PLAIN)
                     .build();
         }
     }
@@ -137,7 +154,7 @@ public class ClientInformationRest {
             String message = messageGenerator.generateClientValidationMessage(e.getConstraintViolations());
             return Response.status(Response.Status.BAD_REQUEST).entity(message).type(MediaType.TEXT_PLAIN).build();
         } catch (BadRequestException e) {
-            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).type(MediaType.APPLICATION_JSON)
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).type(MediaType.TEXT_PLAIN)
                     .build();
         } catch (Exception e) {
             return Response.serverError().entity("Severe system failure has occured!").type(MediaType.TEXT_PLAIN)

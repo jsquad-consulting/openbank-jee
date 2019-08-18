@@ -260,8 +260,8 @@ docker-compose up
 
 ### RESTful testing
 
-Load the [rest.yaml](schema/src/main/resources/rest.yaml) file with the http://editor.swagger.io/
-editor to easily test the RESTful contracts. Be sure to use basic authorization with 
+Load the generated [openbankAPI.yaml](rest/target/openbankAPI.yaml) file with the http://editor.swagger.io/ 
+editor to easily test the RESTful contracts after successful installation. Be sure to use basic authorization with 
 --user <user:pass> flag to use the RESTful operations successfully.
 
 Example:

@@ -42,8 +42,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class ClientInformationRestIT {
     private static Gson gson = new Gson();
 
-    private final OpenApiValidationFilter validationFilter = new OpenApiValidationFilter("src/main/resources/rest" +
-            ".yaml");
+    private final OpenApiValidationFilter validationFilter = new OpenApiValidationFilter("target/openbankAPI.yaml");
 
     private static Network network = Network.newNetwork();
 
