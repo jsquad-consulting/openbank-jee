@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
+import org.mockito.Mockito;
 import se.jsquad.entity.Client;
 import se.jsquad.entity.SystemProperty;
 import se.jsquad.generator.DatabaseGenerator;
@@ -55,6 +56,8 @@ public class SystemStartupEjbWeldTest {
     @WeldSetup
     private WeldInitiator weldInitiator = WeldInitiator.from(SystemStartupEjb.class, DatabaseGenerator.class,
             ClientRepository.class, SystemPropertyRepository.class, LoggerProducer.class, EntityManagerProducer.class)
+            .setEjbFactory(getFlywayDatabaseMigration())
+            .inject(this)
             .setPersistenceContextFactory(getPersistenceContextFactory()).build();
 
     @Inject
@@ -88,9 +91,14 @@ public class SystemStartupEjbWeldTest {
         return functionPointer -> entityManager;
     }
 
+    private static Function<InjectionPoint, Object> getFlywayDatabaseMigration() {
+        FlywayDatabaseMigration flywayDatabaseMigration = Mockito.mock(FlywayDatabaseMigration.class);
+
+        return functionPointer -> flywayDatabaseMigration;
+    }
+
     @Test
     public void testConcurrentRefreshTheSecondaryLevelCache() {
-
         List<Integer> numberOfLockList = new ArrayList<>();
         var executorService = Executors.newFixedThreadPool(1001);
 

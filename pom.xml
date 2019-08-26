@@ -108,11 +108,17 @@
             <scope>provided</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+            <version>6.0.0</version>
+        </dependency>
+
         <!-- Test dependicies -->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <version>1.4.198</version>
+            <version>1.4.199</version>
             <scope>test</scope>
         </dependency>
         <dependency>

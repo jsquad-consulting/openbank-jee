@@ -24,6 +24,7 @@ import se.jsquad.repository.SystemPropertyRepository;
 import se.jsquad.thread.NumberOfLocks;
 
 import javax.annotation.PostConstruct;
+import javax.ejb.EJB;
 import javax.ejb.Schedule;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
@@ -47,6 +48,9 @@ public class SystemStartupEjb {
     @Inject
     private DatabaseGenerator databaseGenerator;
 
+    @EJB
+    private FlywayDatabaseMigration flywayDatabaseMigration;
+
     public SystemStartupEjb() {
         // No SONAR
     }
@@ -65,7 +69,12 @@ public class SystemStartupEjb {
     }
 
     @PostConstruct
-    public void populateDatabase() {
+    public void migrateAndPopulateDatabase() {
+        flywayDatabaseMigration.migrateToDatabase();
+        populateDatabase();
+    }
+
+    private void populateDatabase() {
         if (clientRepository != null && clientRepository.getEntityManager() != null && clientRepository
                 .getClientByPersonIdentification("191212121212") == null) {
             for (Client client : databaseGenerator.populateDatabase()) {

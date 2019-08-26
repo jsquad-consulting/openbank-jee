@@ -37,7 +37,6 @@
         <properties>
             <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/>
             <property name="javax.persistence.jdbc.url" value="jdbc:mysql://openbankdb:3306/openbankdb"/>
-            <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>
 
             <property name="eclipselink.logging.level" value="INFO"/>
             <property name="eclipselink.logging.level.sql" value="FINE"/>
