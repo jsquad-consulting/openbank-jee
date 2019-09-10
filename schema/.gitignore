@@ -1,2 +1,4 @@
 # Schema module only contains generated POJO(S)
 src/main/java
+target
+
