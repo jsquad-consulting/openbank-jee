@@ -134,7 +134,7 @@ public class ClientInformationRestWeldTest {
         field.setAccessible(true);
         field.set(clientInformationEJB, messageSenderSessionJMS);
 
-        field = ClientInformationRest.class.getDeclaredField("clientInformationEJB");
+        field = ClientInformationRest.class.getDeclaredField("clientInformationEjbLocal");
         field.setAccessible(true);
         field.set(clientInformationRest, clientInformationEJB);
 

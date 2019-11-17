@@ -37,6 +37,11 @@
                     <modules>
                         <webModule>
                             <groupId>se.jsquad</groupId>
+                            <artifactId>spring</artifactId>
+                            <contextRoot>/restful-spring</contextRoot>
+                        </webModule>
+                        <webModule>
+                            <groupId>se.jsquad</groupId>
                             <artifactId>rest</artifactId>
                             <contextRoot>/restful-webservice</contextRoot>
                         </webModule>
@@ -74,6 +79,12 @@
         <dependency>
             <groupId>se.jsquad</groupId>
             <artifactId>rest</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>se.jsquad</groupId>
+            <artifactId>spring</artifactId>
             <version>1.0-SNAPSHOT</version>
             <type>war</type>
         </dependency>

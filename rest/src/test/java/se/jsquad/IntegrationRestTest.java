@@ -118,7 +118,7 @@ public class IntegrationRestTest {
 
         Mockito.when(sessionContext.isCallerInRole(RoleConstants.ADMIN)).thenReturn(true);
 
-        Field field = ClientInformationRest.class.getDeclaredField("clientInformationEJB");
+        Field field = ClientInformationRest.class.getDeclaredField("clientInformationEjbLocal");
         field.setAccessible(true);
 
         // Set value

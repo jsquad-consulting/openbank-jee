@@ -23,7 +23,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import se.jsquad.api.client.info.ClientApi;
 import se.jsquad.authorization.Authorization;
-import se.jsquad.ejb.ClientInformationEJB;
+import se.jsquad.ejb.ClientInformationEjbLocal;
 import se.jsquad.generator.MessageGenerator;
 import se.jsquad.qualifier.Log;
 
@@ -51,7 +51,7 @@ public class ClientInformationRest {
     private static final String AUTHORIZATION_FAILED = "Authorization failed.";
 
     @EJB
-    private ClientInformationEJB clientInformationEJB;
+    private ClientInformationEjbLocal clientInformationEjbLocal;
 
     @Inject
     private MessageGenerator messageGenerator;
@@ -114,7 +114,7 @@ public class ClientInformationRest {
                         .TEXT_PLAIN).build();
             }
 
-            ClientApi clientApi = clientInformationEJB.getClient(personIdentification);
+            ClientApi clientApi = clientInformationEjbLocal.getClient(personIdentification);
 
             if (clientApi != null) {
                 return Response.ok().entity(clientApi).build();
@@ -148,7 +148,7 @@ public class ClientInformationRest {
                         .TEXT_PLAIN).build();
             }
 
-            clientInformationEJB.createClient(clientApi);
+            clientInformationEjbLocal.createClient(clientApi);
             return Response.ok().entity("Client created successfully.").type(MediaType.TEXT_PLAIN).build();
         } catch (ConstraintViolationException e) {
             String message = messageGenerator.generateClientValidationMessage(e.getConstraintViolations());

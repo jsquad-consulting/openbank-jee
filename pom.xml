@@ -36,7 +36,8 @@
         <module>common</module>
         <module>soap</module>
         <module>client</module>
-    </modules>
+		<module>spring</module>
+	</modules>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

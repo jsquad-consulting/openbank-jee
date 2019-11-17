@@ -34,7 +34,7 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 @Stateless
-public class ClientInformationEJB {
+public class ClientInformationEJB implements ClientInformationEjbLocal {
     @Inject @Log
     private Logger logger;
 
@@ -50,6 +50,7 @@ public class ClientInformationEJB {
     @Inject
     private MessageSenderSessionJMS messageSenderSessionJMS;
 
+    @Override
     public ClientApi getClient(String personIdentification) throws JMSException {
         messageSenderSessionJMS.sendMessage("Client information request with hidden person " +
                 "identification acquired.");
@@ -63,6 +64,7 @@ public class ClientInformationEJB {
         return clientAdapter.translateClientToClientApi(client);
     }
 
+    @Override
     public void createClient(ClientApi clientApi) {
         if (clientRepository.getClientByPersonIdentification(clientApi.getPerson().getPersonIdentification())
                 != null) {
