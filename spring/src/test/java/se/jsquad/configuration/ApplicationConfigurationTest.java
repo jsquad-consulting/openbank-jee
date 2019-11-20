@@ -20,11 +20,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.ejb.access.LocalStatelessSessionProxyFactoryBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.AnnotationConfigWebContextLoader;
@@ -36,7 +31,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.yaml.snakeyaml.Yaml;
-import se.jsquad.ejb.ClientInformationEjbLocal;
 
 import java.io.ByteArrayInputStream;
 import java.nio.file.Files;
@@ -51,20 +45,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @EnableWebMvc
 @ContextConfiguration(classes = ApplicationConfiguration.class, loader = AnnotationConfigWebContextLoader.class)
 public class ApplicationConfigurationTest {
-    @Configuration
-    @Import(ApplicationConfiguration.class)
-    public static class TestConfig {
-        @Bean
-        @Lazy
-        public LocalStatelessSessionProxyFactoryBean getClientInformationEjbLocal(){
-            LocalStatelessSessionProxyFactoryBean factory = new LocalStatelessSessionProxyFactoryBean();
-            factory.setLookupHomeOnStartup(false);
-            factory.setBusinessInterface(ClientInformationEjbLocal.class);
-            factory.setJndiName("java:app/spring-1.0-SNAPSHOT/ClientInformationEJB!se.jsquad.ejb.ClientInformationEjbLocal");
-            return factory;
-        }
-    }
-
     @Autowired
     private WebApplicationContext context;
 

@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import se.jsquad.ejb.ClientInformationEjbLocal;
 
-@RestController("getClientInformationRestController")
+@RestController
 @RequestMapping(path = "/api")
 public class GetClientInformationRestController {
     private Logger logger;

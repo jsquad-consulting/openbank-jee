@@ -23,6 +23,7 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.ejb.access.LocalStatelessSessionProxyFactoryBean;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -49,10 +50,13 @@ public class ApplicationConfiguration {
     }
 
     @Bean
+    @Lazy
     public LocalStatelessSessionProxyFactoryBean getClientInformationEjbLocal(){
         LocalStatelessSessionProxyFactoryBean factory = new LocalStatelessSessionProxyFactoryBean();
+        factory.setLookupHomeOnStartup(false);
         factory.setBusinessInterface(ClientInformationEjbLocal.class);
-        factory.setJndiName("java:app/spring-1.0-SNAPSHOT/ClientInformationEJB!se.jsquad.ejb.ClientInformationEjbLocal");
+        factory.setJndiName("java:app/spring-1.0-SNAPSHOT/ClientInformationEJB" +
+                "!se.jsquad.ejb.ClientInformationEjbLocal");
         return factory;
     }
 
