@@ -270,6 +270,9 @@ curl --user john:doe -X GET "http://localhost:8080/restful-webservice/api/client
 -H  "accept: application/json"
 ````
 
+For the Spring war package the following OpenApi v2 json file gets generated at
+[OpenBankAPIv1.json](spring/target/test-classes/se/jsquad/configuration/OpenBankAPIv1.json)
+
 ### SOAP testing
 SOAP contracts (Service) is tested through http://localhost:8080/soap-webservice endpoint with SoapUI 
 utility ![GetClient][A1]

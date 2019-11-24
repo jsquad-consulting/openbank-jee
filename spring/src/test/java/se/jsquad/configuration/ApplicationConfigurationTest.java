@@ -72,8 +72,9 @@ public class ApplicationConfigurationTest {
 
         assertTrue(((Map) yamlMap.get("paths")).containsKey("/api/client/info/{personIdentification}"));
 
+        String path = ApplicationConfiguration.class.getResource("").getPath();
 
-        Files.write(Paths.get("src/main/resources/OpenBankAPIv1" +
+        Files.write(Paths.get(path + "/" + "OpenBankAPIv1" +
                 ".json"), mvcResult.getResponse().getContentAsByteArray());
     }
 }
