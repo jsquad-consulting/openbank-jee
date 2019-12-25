@@ -170,7 +170,7 @@
     <subsystem xmlns="urn:jboss:domain:datasources:5.0">
       <datasources>
         <datasource jndi-name="java:jboss/datasources/OpenBankDS" pool-name="OpenBankDS">
-          <connection-url>jdbc:mysql://openbankdb:3306/mysql?useSSL=false&amp;useUnicode=yes&amp;characterEncoding=UTF-8&amp;useJDBCCompliantTimezoneShift=true&amp;useLegacyDatetimeCode=false&amp;serverTimezone=UTC&amp;allowPublicKeyRetrieval=true</connection-url>
+          <connection-url>jdbc:mysql://openbankdb:3306/openbankdb?useSSL=false&amp;useUnicode=yes&amp;characterEncoding=UTF-8&amp;useJDBCCompliantTimezoneShift=true&amp;useLegacyDatetimeCode=false&amp;serverTimezone=UTC&amp;allowPublicKeyRetrieval=true</connection-url>
           <driver>mysql8</driver>
           <security>
             <user-name>hidden</user-name>
