@@ -1,4 +1,4 @@
-# OpenBank
+# OpenBank - Jakarta EE 8
 
 A demonstration of an simple bank application made with Jakarta Enterprise Edition 8 platform (Java EE) for the 
 backend part and with Angular 7 for the frontend part.
@@ -59,6 +59,8 @@ backend part and with Angular 7 for the frontend part.
 - [Run unit and system tests with coverage](#run-unit-and-system-tests-with-coverage)
 - [Force check code coverage by number of lines for all Java classes](#force-check-code-coverage-by-number-of-lines-for-all-java-classes)
 - [Generate encrypted property password](#generate-encrypted-property-password)
+- [Deliver new OpenBank Jakarta EE image](#deliver-new-openbank-jakarta-ee-image)
+- [Annex](#annex)
 
 ## Requirements
 To be able to compile and run the OpenBank application the following dependicies are required:
@@ -316,6 +318,16 @@ stored in the repository along with any unencrypted passwords to maintain good s
 java -cp ~/.m2/repository/org/jasypt/jasypt/1.9.3/jasypt-1.9.3.jar org.jasypt.intf.cli.JasyptPBEStringEncryptionCLI \
 input="obpassword" password=my_secret_password algorithm=PBEWithMD5AndDES
 ````
+
+## Deliver new OpenBank Jakarta EE image
+
+```bash
+# Make sure you are logged in to the DockerHub before releasing a new latest image tag
+
+docker build -f PipeLineDockerfile -t openbank-jee .
+docker tag openbank-jee:latest jsquadab/openbank-jee:latest
+docker push jsquadab/openbank-jee:latest
+```
 
 ## Annex
 
