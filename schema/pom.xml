@@ -29,14 +29,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.glassfish.jaxb</groupId>
-            <artifactId>jaxb-runtime</artifactId>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
             <version>2.3.2</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.activation</groupId>
-            <artifactId>jakarta.activation</artifactId>
-            <version>1.2.1</version>
         </dependency>
     </dependencies>
 
@@ -45,7 +40,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>jaxb2-maven-plugin</artifactId>
-                <version>2.4</version>
+                <version>2.5.0</version>
                 <executions>
                     <execution>
                         <id>xjc</id>
@@ -65,14 +60,9 @@
                 </configuration>
                 <dependencies>
                     <dependency>
-                        <groupId>org.glassfish.jaxb</groupId>
-                        <artifactId>jaxb-xjc</artifactId>
+                        <groupId>jakarta.xml.bind</groupId>
+                        <artifactId>jakarta.xml.bind-api</artifactId>
                         <version>2.3.2</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>com.sun.activation</groupId>
-                        <artifactId>jakarta.activation</artifactId>
-                        <version>1.2.1</version>
                     </dependency>
                 </dependencies>
             </plugin>
