@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 JSquad AB
+ * Copyright 2020 JSquad AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,32 @@
 
 package se.jsquad;
 
+import javax.ejb.SessionContext;
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Produces;
+import javax.enterprise.inject.spi.InjectionPoint;
+import javax.inject.Inject;
+import javax.jms.JMSContext;
+import javax.jms.JMSException;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
+import javax.persistence.Persistence;
+import javax.servlet.ServletException;
+import javax.transaction.TransactionScoped;
+import javax.ws.rs.core.Response;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.jboss.weld.junit.MockBean;
+import org.jboss.weld.junit5.WeldInitiator;
+import org.jboss.weld.junit5.WeldJunit5Extension;
+import org.jboss.weld.junit5.WeldSetup;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import se.jsquad.adapter.ClientAdapter;
 import se.jsquad.api.client.info.AccountApi;
 import se.jsquad.api.client.info.AccountTransactionApi;
@@ -33,251 +51,157 @@ import se.jsquad.api.client.info.PersonApi;
 import se.jsquad.api.client.info.TransactionTypeApi;
 import se.jsquad.api.client.info.TypeApi;
 import se.jsquad.authorization.Authorization;
+import se.jsquad.batch.SlowMockBatch;
 import se.jsquad.ejb.AccountTransactionEJB;
 import se.jsquad.ejb.ClientInformationEJB;
 import se.jsquad.ejb.OpenBankBusinessEJB;
+import se.jsquad.ejb.SystemStartupEjb;
 import se.jsquad.entity.Client;
 import se.jsquad.entity.Person;
 import se.jsquad.entity.SystemProperty;
 import se.jsquad.generator.DatabaseGenerator;
 import se.jsquad.generator.MessageGenerator;
 import se.jsquad.jms.MessageSenderSessionJMS;
+import se.jsquad.producer.LoggerProducer;
 import se.jsquad.repository.ClientRepository;
 import se.jsquad.repository.EntityManagerProducer;
+import se.jsquad.repository.SystemPropertyRepository;
 import se.jsquad.validator.ClientValidator;
 
-import javax.ejb.SessionContext;
-import javax.jms.JMSException;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.Persistence;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Properties;
-import java.util.Set;
-import java.util.logging.Logger;
+import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyObject;
+import static org.mockito.ArgumentMatchers.anyString;
 
 @Execution(ExecutionMode.SAME_THREAD)
+@ExtendWith(WeldJunit5Extension.class)
 public class IntegrationRestTest {
-    public static final String LOGGER = "logger";
     public static final String PERSON_IDENTIFICATION = "191212121212";
     public static final String JOHN_DOE_TEST_SE = "john.doe@test.se";
     public static final String CLIENT_CREATED_SUCCESSFULLY = "Client created successfully.";
     public static final String DEPOSIT_500_$ = "Deposit 500$";
-    private EntityManager entityManager;
-    private EntityManagerFactory entityManagerFactory;
 
-    private OpenBankRest openBankRest;
+    @WeldSetup
+    private WeldInitiator weldInitiator = WeldInitiator.from(ClientInformationRest.class, AccountTransferRest.class,
+            OpenBankRest.class, ClientValidator.class, ClientAdapter.class,
+            SystemStartupEjb.class,
+            ClientInformationEJB.class,
+            AccountTransactionEJB.class,
+            OpenBankBusinessEJB.class,
+            SlowMockBatch.class,
+            DatabaseGenerator.class,
+            ClientRepository.class, SystemPropertyRepository.class,
+            LoggerProducer.class,
+            Mockito.mock(JMSContext.class).getClass(),
+            TestClassProducer.class,
+            MessageGenerator.class, EntityManagerProducer.class)
+            .addBeans(MockBean.of(Mockito.mock(Authorization.class), Authorization.class))
+            .addBeans(MockBean.of(Mockito.mock(SessionContext.class), SessionContext.class))
+            .activate(TransactionScoped.class)
+            .setPersistenceContextFactory(getPersistenceContextFactory()).build();
+
+
+    @Inject
+    private Authorization authorization;
+
+    @Inject
     private ClientInformationRest clientInformationRest;
+
+    @Inject
     private AccountTransferRest accountTransferRest;
+
+    @Inject
+    private AccountTransactionEJB accountTransactionEJB;
+
+    @Inject
+    private OpenBankRest openBankRest;
+
+    @Inject
     private ClientInformationEJB clientInformationEJB;
+
+    @Inject
+    private OpenBankBusinessEJB openBankBusinessEJB;
+
+    @Inject
+    private MessageSenderSessionJMS messageSenderSessionJMS;
+
+    @Inject
     private SessionContext sessionContext;
 
+    @Inject
+    private ClientAdapter clientAdapter;
+
+    private static EntityManager entityManager;
+
     @BeforeEach
-    void init() throws NoSuchFieldException, IllegalAccessException, IOException, ServletException {
-        Properties properties = new Properties();
-        properties.setProperty(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML, "META-INF/persistence_test.xml");
+    public void init() throws IOException, ServletException, IllegalAccessException, NoSuchFieldException {
+        EntityTransaction entityTransaction = entityManager.getTransaction();
+        entityTransaction.begin();
 
-        entityManagerFactory = Persistence.createEntityManagerFactory("openBankPU", properties);
-        entityManager = entityManagerFactory.createEntityManager();
-
-        clientInformationEJB = Mockito.spy(new ClientInformationEJB());
-        AccountTransactionEJB accountTransactionEJB = Mockito.spy(new AccountTransactionEJB());
-        ClientAdapter clientAdapter = Mockito.spy(new ClientAdapter());
-        ClientRepository clientRepository = Mockito.spy(new ClientRepository());
-        clientInformationRest = Mockito.spy(new ClientInformationRest());
-        accountTransferRest = Mockito.spy(new AccountTransferRest());
-        ClientValidator clientValidator = Mockito.spy(new ClientValidator());
-        MessageGenerator messageGenerator = Mockito.spy(new MessageGenerator());
-        MessageSenderSessionJMS messageSenderSessionJMS = Mockito.mock(MessageSenderSessionJMS.class);
-        sessionContext = Mockito.mock(SessionContext.class);
-        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-        Mockito.when(request.authenticate(null)).thenReturn(true);
-        Mockito.when(request.isUserInRole(anyObject())).thenReturn(true);
-        Authorization authorization = Mockito.spy(new Authorization());
-        Logger loggerClientInformationRest = Logger.getLogger(ClientInformationRest.class.getName());
-        Logger loggerAuthorization = Logger.getLogger(Authorization.class.getName());
-        Logger loggerClientInformationEJB = Logger.getLogger(ClientInformationEJB.class.getName());
-        Logger loggerClientRepository = Logger.getLogger(ClientRepository.class.getName());
-        Logger loggerClientAdapter = Logger.getLogger(ClientAdapter.class.getName());
-        Logger loggerClientValidator = Logger.getLogger(ClientValidator.class.getName());
-        Logger loggerMessageGenerator = Logger.getLogger(MessageGenerator.class.getName());
-        Logger loggerOpenBankRest = Logger.getLogger(OpenBankRest.class.getName());
-        Logger loggerOpenBankBusinessEJB = Logger.getLogger(OpenBankBusinessEJB.class.getName());
-        Logger loggerAccountTransactionRest = Logger.getLogger(AccountTransferRest.class.getName());
-        Logger loggerAccountTransactionEJB = Logger.getLogger(AccountTransactionEJB.class.getName());
-        DatabaseGenerator databaseGenerator = new DatabaseGenerator();
-
-        Mockito.when(sessionContext.isCallerInRole(RoleConstants.ADMIN)).thenReturn(true);
+        Mockito.when(authorization.isAuthorized()).thenReturn(true);
+        Mockito.when(authorization.isUserInRole(anyString())).thenReturn(true);
+        Mockito.doReturn(true).when(sessionContext).isCallerInRole(anyString());
 
         Field field = ClientInformationRest.class.getDeclaredField("clientInformationEjbLocal");
         field.setAccessible(true);
-
-        // Set value
         field.set(clientInformationRest, clientInformationEJB);
-
-        field = AccountTransferRest.class.getDeclaredField(LOGGER);
-        field.setAccessible(true);
-
-        // Set value
-        field.set(accountTransferRest, loggerAccountTransactionRest);
-
-        field = AccountTransferRest.class.getDeclaredField("authorization");
-        field.setAccessible(true);
-
-        // Set value
-        field.set(accountTransferRest, authorization);
-
-        field = AccountTransferRest.class.getDeclaredField("accountTransactionEJB");
-        field.setAccessible(true);
-
-        // Set value
-        field.set(accountTransferRest, accountTransactionEJB);
-
-        field = AccountTransactionEJB.class.getDeclaredField(LOGGER);
-        field.setAccessible(true);
-
-        // Set value
-        field.set(accountTransactionEJB, loggerAccountTransactionEJB);
-
-        field = AccountTransactionEJB.class.getDeclaredField("clientRepository");
-        field.setAccessible(true);
-
-        // Set value
-        field.set(accountTransactionEJB, clientRepository);
-
-        field = ClientInformationRest.class.getDeclaredField(LOGGER);
-        field.setAccessible(true);
-
-        // Set value
-        field.set(clientInformationRest, loggerClientInformationRest);
-
-        field = ClientInformationRest.class.getDeclaredField("messageGenerator");
-        field.setAccessible(true);
-
-        // Set value
-        field.set(clientInformationRest, messageGenerator);
-
-        field = MessageGenerator.class.getDeclaredField(LOGGER);
-        field.setAccessible(true);
-
-        // Set value
-        field.set(messageGenerator, loggerMessageGenerator);
-
-        field = ClientInformationRest.class.getDeclaredField("authorization");
-        field.setAccessible(true);
-
-        // Set value
-        field.set(clientInformationRest, authorization);
-
-        field = Authorization.class.getDeclaredField("request");
-        field.setAccessible(true);
-
-        // Set value
-        field.set(authorization, request);
-
-        field = Authorization.class.getDeclaredField(LOGGER);
-        field.setAccessible(true);
-
-        // Set value
-        field.set(authorization, loggerAuthorization);
-
-        field = ClientInformationEJB.class.getDeclaredField("clientAdapter");
-        field.setAccessible(true);
-
-        // Set value
-        field.set(clientInformationEJB, clientAdapter);
-
-        field = ClientInformationEJB.class.getDeclaredField(LOGGER);
-        field.setAccessible(true);
-
-        // Set value
-        field.set(clientInformationEJB, loggerClientInformationEJB);
-
-        field = ClientAdapter.class.getDeclaredField("sessionContext");
-        field.setAccessible(true);
-
-        // Set value
-        field.set(clientAdapter, sessionContext);
-
-        field = ClientAdapter.class.getDeclaredField(LOGGER);
-        field.setAccessible(true);
-
-        // Set value
-        field.set(clientAdapter, loggerClientAdapter);
 
         field = ClientInformationEJB.class.getDeclaredField("messageSenderSessionJMS");
         field.setAccessible(true);
-
-        // Set value
         field.set(clientInformationEJB, messageSenderSessionJMS);
 
-        field = ClientInformationEJB.class.getDeclaredField("clientValidator");
+        field = ClientAdapter.class.getDeclaredField("sessionContext");
         field.setAccessible(true);
+        field.set(clientAdapter, sessionContext);
 
-        // Set value
-        field.set(clientInformationEJB, clientValidator);
-
-        field = ClientValidator.class.getDeclaredField(LOGGER);
+        field = ClientInformationEJB.class.getDeclaredField("clientAdapter");
         field.setAccessible(true);
+        field.set(clientInformationEJB, clientAdapter);
 
-        // Set value
-        field.set(clientValidator, loggerClientValidator);
-
-        field = ClientInformationEJB.class.getDeclaredField("clientRepository");
+        field = AccountTransferRest.class.getDeclaredField("accountTransactionEJB");
         field.setAccessible(true);
-
-        // Set value
-        field.set(clientInformationEJB, clientRepository);
-
-        field = EntityManagerProducer.class.getDeclaredField("entityManager");
-        field.setAccessible(true);
-
-        // Set value
-        field.set(clientRepository, entityManager);
-
-        field = ClientRepository.class.getDeclaredField(LOGGER);
-        field.setAccessible(true);
-
-        // Set value
-        field.set(clientRepository, loggerClientRepository);
-
-        openBankRest = Mockito.spy(new OpenBankRest());
-        OpenBankBusinessEJB openBankBusinessEJB = Mockito.spy(new OpenBankBusinessEJB());
+        field.set(accountTransferRest, accountTransactionEJB);
 
         field = OpenBankRest.class.getDeclaredField("openBankBusinessEJB");
         field.setAccessible(true);
-
-        // Set value
         field.set(openBankRest, openBankBusinessEJB);
+    }
 
-        field = OpenBankBusinessEJB.class.getDeclaredField(LOGGER);
-        field.setAccessible(true);
+    @AfterEach
+    public void tearDownAfterUnitTest() {
+        EntityTransaction entityTransaction = entityManager.getTransaction();
+        entityTransaction.commit();
 
-        // Set value
-        field.set(openBankBusinessEJB, loggerOpenBankBusinessEJB);
+        entityManager.close();
+    }
 
-        field = OpenBankRest.class.getDeclaredField(LOGGER);
-        field.setAccessible(true);
+    private static class TestClassProducer {
+        @ApplicationScoped
+        @Produces
+        MessageSenderSessionJMS produceMessageSenderSessionJMS() {
+            return Mockito.mock(MessageSenderSessionJMS.class);
+        }
+    }
 
-        // Set value
-        field.set(openBankRest, loggerOpenBankRest);
+    private static Function<InjectionPoint, Object> getPersistenceContextFactory() {
+        DatabaseGenerator databaseGenerator = new DatabaseGenerator();
+
+        Properties properties = new Properties();
+        properties.setProperty(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML, "META-INF/persistence_test.xml");
+
+        EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("openBankPU",
+                properties);
+        entityManager = entityManagerFactory.createEntityManager();
 
         EntityTransaction entityTransaction = entityManager.getTransaction();
         entityTransaction.begin();
 
-        Set<Client> clientSet = databaseGenerator.populateDatabase();
-
-        for (Client client : clientSet) {
-            clientRepository.createClient(client);
+        for (Client client : databaseGenerator.populateDatabase()) {
+            entityManager.persist(client);
         }
 
         SystemProperty systemProperty = new SystemProperty();
@@ -285,16 +209,9 @@ public class IntegrationRestTest {
         systemProperty.setValue("1.0.1");
 
         entityManager.persist(systemProperty);
-
         entityTransaction.commit();
 
-        MockitoAnnotations.initMocks(this);
-    }
-
-    @AfterEach
-    public void tearDownAfterUnitTest() {
-        entityManager.close();
-        entityManagerFactory.close();
+        return functionPointer -> entityManager;
     }
 
     @Test
@@ -340,13 +257,8 @@ public class IntegrationRestTest {
         String toAccountNumber = "1051";
 
         // When
-        EntityTransaction tx = entityManager.getTransaction();
-        tx.begin();
-
         Response response = accountTransferRest.transferValueFromAccountToAccount(value, fromAccountNumber,
                 toAccountNumber);
-
-        tx.commit();
 
         ClientApi fromClientApi = (ClientApi) clientInformationRest.getClientInformation(
                 "191212121220").getEntity();
@@ -435,12 +347,7 @@ public class IntegrationRestTest {
         clientApi.getClientType().setRating(500);
 
         // When
-        EntityTransaction tx = entityManager.getTransaction();
-        tx.begin();
-
         Response response = clientInformationRest.createClientInformation(clientApi);
-
-        tx.commit();
 
         // Then
         assertEquals(Response.Status.OK, Response.Status.fromStatusCode(response.getStatus()));
@@ -494,21 +401,14 @@ public class IntegrationRestTest {
         clientApi.getAccountList().add(accountApi);
 
         // When
-        EntityTransaction entityTransaction = entityManager.getTransaction();
-        entityTransaction.begin();
         Response response = clientInformationRest.createClientInformation(clientApi);
-        entityTransaction.commit();
 
         // Then
         assertEquals(Response.Status.OK, Response.Status.fromStatusCode(response.getStatus()));
         assertEquals("Client created successfully.", response.getEntity());
 
         // When
-        EntityTransaction tx = entityManager.getTransaction();
-        tx.begin();
-
         response = clientInformationRest.getClientInformation(personIdentification);
-        tx.commit();
 
         assertEquals(Response.Status.OK, Response.Status.fromStatusCode(response.getStatus()));
 
@@ -566,12 +466,7 @@ public class IntegrationRestTest {
         clientApi.getAccountList().add(accountApi);
 
         // When
-        EntityTransaction tx = entityManager.getTransaction();
-        tx.begin();
-
         Response response = clientInformationRest.createClientInformation(clientApi);
-
-        tx.commit();
 
         // Then
         assertEquals(Response.Status.OK, Response.Status.fromStatusCode(response.getStatus()));
