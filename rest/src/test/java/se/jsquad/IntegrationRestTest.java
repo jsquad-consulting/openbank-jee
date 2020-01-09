@@ -53,6 +53,7 @@ import se.jsquad.api.client.info.TypeApi;
 import se.jsquad.authorization.Authorization;
 import se.jsquad.batch.SlowMockBatch;
 import se.jsquad.ejb.AccountTransactionEJB;
+import se.jsquad.ejb.AccountTransactionEjbLocal;
 import se.jsquad.ejb.ClientInformationEJB;
 import se.jsquad.ejb.OpenBankBusinessEJB;
 import se.jsquad.ejb.SystemStartupEjb;
@@ -115,7 +116,7 @@ public class IntegrationRestTest {
     private AccountTransferRest accountTransferRest;
 
     @Inject
-    private AccountTransactionEJB accountTransactionEJB;
+    private AccountTransactionEjbLocal accountTransactionEjbLocal;
 
     @Inject
     private OpenBankRest openBankRest;
@@ -162,9 +163,9 @@ public class IntegrationRestTest {
         field.setAccessible(true);
         field.set(clientInformationEJB, clientAdapter);
 
-        field = AccountTransferRest.class.getDeclaredField("accountTransactionEJB");
+        field = AccountTransferRest.class.getDeclaredField("accountTransactionEjbLocal");
         field.setAccessible(true);
-        field.set(accountTransferRest, accountTransactionEJB);
+        field.set(accountTransferRest, accountTransactionEjbLocal);
 
         field = OpenBankRest.class.getDeclaredField("openBankBusinessEJB");
         field.setAccessible(true);

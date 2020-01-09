@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 JSquad AB
+ * Copyright 2020 JSquad AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.ejb.access.LocalStatelessSessionProxyFactoryBean;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import se.jsquad.ejb.AccountTransactionEjbLocal;
 import se.jsquad.ejb.ClientInformationEjbLocal;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -57,6 +58,17 @@ public class ApplicationConfiguration {
         factory.setBusinessInterface(ClientInformationEjbLocal.class);
         factory.setJndiName("java:app/spring-1.0-SNAPSHOT/ClientInformationEJB" +
                 "!se.jsquad.ejb.ClientInformationEjbLocal");
+        return factory;
+    }
+
+    @Bean
+    @Lazy
+    public LocalStatelessSessionProxyFactoryBean getAccountTransactionEjb(){
+        LocalStatelessSessionProxyFactoryBean factory = new LocalStatelessSessionProxyFactoryBean();
+        factory.setLookupHomeOnStartup(false);
+        factory.setBusinessInterface(AccountTransactionEjbLocal.class);
+        factory.setJndiName("java:app/spring-1.0-SNAPSHOT/AccountTransactionEJB" +
+                "!se.jsquad.ejb.AccountTransactionEjbLocal");
         return factory;
     }
 
