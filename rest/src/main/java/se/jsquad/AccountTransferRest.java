@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 JSquad AB
+ * Copyright 2020 JSquad AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,10 +21,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import se.jsquad.authorization.Authorization;
-import se.jsquad.ejb.AccountTransactionEJB;
-import se.jsquad.qualifier.Log;
-
 import javax.ejb.EJB;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
@@ -35,6 +31,10 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import se.jsquad.authorization.Authorization;
+import se.jsquad.ejb.AccountTransactionEjbLocal;
+import se.jsquad.qualifier.Log;
+
 import java.util.logging.Logger;
 
 @Path("/client")
@@ -44,7 +44,7 @@ public class AccountTransferRest {
     private Logger logger;
 
     @EJB
-    private AccountTransactionEJB accountTransactionEJB;
+    private AccountTransactionEjbLocal accountTransactionEjbLocal;
 
     @Inject
     private Authorization authorization;
@@ -81,7 +81,7 @@ public class AccountTransferRest {
                         MediaType.TEXT_PLAIN).build();
             }
 
-            accountTransactionEJB.transferValueFromAccountToAccount(value, fromAccountNumber,
+            accountTransactionEjbLocal.transferValueFromAccountToAccount(value, fromAccountNumber,
                     toAccountNumber);
             return Response.ok().entity("Transaction successful.").type(MediaType.TEXT_PLAIN).build();
         } catch (Exception e) {

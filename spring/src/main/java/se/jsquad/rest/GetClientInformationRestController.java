@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 JSquad AB
+ * Copyright 2020 JSquad AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,12 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import se.jsquad.api.client.info.AccountTransactionRequest;
+import se.jsquad.ejb.AccountTransactionEjbLocal;
 import se.jsquad.ejb.ClientInformationEjbLocal;
 
 @RestController
@@ -32,11 +36,14 @@ import se.jsquad.ejb.ClientInformationEjbLocal;
 public class GetClientInformationRestController {
     private Logger logger;
     private ClientInformationEjbLocal clientInformationEjbLocal;
+    private AccountTransactionEjbLocal accountTransactionEjbLocal;
 
     @Autowired
-    private GetClientInformationRestController(Logger logger, ClientInformationEjbLocal clientInformationEjbLocal) {
+    private GetClientInformationRestController(Logger logger, ClientInformationEjbLocal clientInformationEjbLocal,
+                                               AccountTransactionEjbLocal accountTransactionEjbLocal) {
         this.logger = logger;
         this.clientInformationEjbLocal = clientInformationEjbLocal;
+        this.accountTransactionEjbLocal = accountTransactionEjbLocal;
     }
 
     @GetMapping(value = "/client/info/{personIdentification}", produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -48,5 +55,16 @@ public class GetClientInformationRestController {
             return  ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.TEXT_PLAIN)
                     .body("Internal server error.");
         }
+    }
+
+    @PostMapping(value = "/account/transfer", consumes = {MediaType.APPLICATION_JSON_VALUE},
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<Void> postAccountTransfer(@RequestBody AccountTransactionRequest accountTransactionRequest) {
+        this.accountTransactionEjbLocal.transferValueFromAccountToAccount(Integer.valueOf(accountTransactionRequest
+                .getCreateAccountTransaction().getValue()), accountTransactionRequest
+                .getCreateAccountTransaction().getFromAccountNumber(), accountTransactionRequest
+                .getCreateAccountTransaction().getToAccountNumber());
+
+        return ResponseEntity.ok().build();
     }
 }

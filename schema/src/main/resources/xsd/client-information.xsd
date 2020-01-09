@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <!--
-  ~ Copyright 2019 JSquad AB
+  ~ Copyright 2020 JSquad AB
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -86,4 +86,18 @@
             <xs:enumeration value="WITHDRAWAL"/>
         </xs:restriction>
     </xs:simpleType>
+
+    <xs:complexType name="AccountTransactionRequest">
+        <xs:sequence>
+            <xs:element name="createAccountTransaction" type="tns:CreateAccountTransaction"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="CreateAccountTransaction">
+        <xs:sequence>
+            <xs:element name="value" type="xs:string"/>
+            <xs:element name="fromAccountNumber" type="xs:string"/>
+            <xs:element name="toAccountNumber" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
 </xs:schema>

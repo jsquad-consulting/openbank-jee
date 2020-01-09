@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 JSquad AB
+ * Copyright 2020 JSquad AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,25 +16,26 @@
 
 package se.jsquad.ejb;
 
+import javax.ejb.Stateless;
+import javax.inject.Inject;
+import javax.persistence.RollbackException;
 import se.jsquad.entity.Account;
 import se.jsquad.entity.AccountTransaction;
 import se.jsquad.entity.TransactionType;
 import se.jsquad.qualifier.Log;
 import se.jsquad.repository.ClientRepository;
 
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.persistence.RollbackException;
 import java.util.logging.Logger;
 
 @Stateless
-public class AccountTransactionEJB {
+public class AccountTransactionEJB implements AccountTransactionEjbLocal {
     @Inject @Log
     private Logger logger;
 
     @Inject
     private ClientRepository clientRepository;
 
+    @Override
     public void transferValueFromAccountToAccount(long value, String fromAccountNumber, String toAccountNumber) {
         Account fromAccount = clientRepository.getAccountByNumber(fromAccountNumber);
         Account toAccount = clientRepository.getAccountByNumber(toAccountNumber);
