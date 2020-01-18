@@ -1,5 +1,5 @@
 #
-# Copyright 2019 JSquad AB
+# Copyright 2020 JSquad AB
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,33 +14,32 @@
 # limitations under the License.
 #
 
-FROM debian:stretch-slim as module
+FROM debian:stretch as module
 
 RUN  apt-get update \
-  && apt-get install -y wget unzip
+  && apt-get install -y wget unzip maven
 RUN cd / && wget https://cdn.mysql.com//Downloads/Connector-J/mysql-connector-java-8.0.17.tar.gz && \
 tar xvzf mysql-connector-java-8.0.17.tar.gz && rm mysql-connector-java-8.0.17.tar.gz && \
 wget http://ftp.fau.de/eclipse/rt/eclipselink/releases/2.7.4/eclipselink-2.7.4.v20190115-ad5b7c6b2a.zip && \
 unzip eclipselink-2.7.4.v20190115-ad5b7c6b2a.zip -d .
+RUN mvn -DgroupId=org.jasypt -DartifactId=jasypt -Dversion=1.9.3 dependency:get
 
-FROM jboss/wildfly:16.0.0.Final
+FROM jboss/wildfly:18.0.1.Final
 
 ENV WILDFLY_HOME /opt/jboss/wildfly
 
-COPY configuration/jboss/standalone.xml $WILDFLY_HOME/standalone/configuration/.
+RUN mkdir -p $WILDFLY_HOME/scripts
+COPY configuration/jboss/template/standalone.xml $WILDFLY_HOME/scripts/standalone.xml
 COPY configuration/jboss/module/mysql $WILDFLY_HOME/modules/system/layers/base/com/mysql
 COPY configuration/jboss/module/eclipselink $WILDFLY_HOME/modules/system/layers/base/org/eclipse/persistence/
 COPY --from=module /mysql-connector-java-8.0.17/mysql-connector-java-8.0.17.jar \
 $WILDFLY_HOME/modules/system/layers/base/com/mysql/main/.
 COPY --from=module /eclipselink/jlib/eclipselink.jar \
 $WILDFLY_HOME/modules/system/layers/base/org/eclipse/persistence/main/.
-
-RUN $WILDFLY_HOME/bin/add-user.sh --silent admin admin1234
-RUN $WILDFLY_HOME/bin/add-user.sh -a -g admin --silent root root
-RUN $WILDFLY_HOME/bin/add-user.sh -a -g customer --silent john doe
+COPY --from=module /root/.m2/repository/org/jasypt $WILDFLY_HOME/scripts/repository/org/jasypt
 
 COPY ear/target/openbank-1.0-SNAPSHOT.ear $WILDFLY_HOME/standalone/deployments/openbank-1.0-SNAPSHOT.ear
 
 EXPOSE 8080 9990
 
-CMD ["/opt/jboss/wildfly/bin/standalone.sh", "-b", "0.0.0.0", "-bmanagement", "0.0.0.0"]
+CMD ["/bin/bash", "-c", "/opt/jboss/wildfly/scripts/openbank_setup.sh && /opt/jboss/wildfly/bin/standalone.sh -b 0.0.0.0 -bmanagement 0.0.0.0"]

@@ -46,7 +46,6 @@ backend part and with Angular 7 for the frontend part.
 - [Installation](#installation)
   * [Prepare the environment](#prepare-the-environment)
   * [With Docker compose](#with-docker-compose)
-  * [With Docker Compose Pipeline (requires no dependicies more then Docker)](#with-docker-compose-pipeline--requires-no-dependicies-more-then-docker-)
   * [Clean up Docker images and containers](#clean-up-docker-images-and-containers)
 - [Start OpenBank](#start-openbank)
   * [With Docker compose](#with-docker-compose-1)
@@ -59,8 +58,9 @@ backend part and with Angular 7 for the frontend part.
 - [Run unit and system tests with coverage](#run-unit-and-system-tests-with-coverage)
 - [Force check code coverage by number of lines for all Java classes](#force-check-code-coverage-by-number-of-lines-for-all-java-classes)
 - [Generate encrypted property password](#generate-encrypted-property-password)
+- [Run the OpenBank with plain text passwords or with encrypted passwords locally](#run-the-openbank-with-plain-text-passwords-or-with-encrypted-passwords-locally)
 - [Deliver new OpenBank Jakarta EE image](#deliver-new-openbank-jakarta-ee-image)
-- [Annex](#annex)
+- [Generate encrypted TRAVIS CI environment variables](#generate-encrypted-travis-ci-environment-variables)
 
 ## Requirements
 To be able to compile and run the OpenBank application the following dependicies are required:
@@ -233,12 +233,6 @@ mvn clean install
 docker-compose build --no-cache
 ```
 
-### With Docker Compose Pipeline (requires no dependicies more then Docker)
-
-````bash
-docker-compose -f docker-compose-pipeline.yaml build --no-cache
-````
-
 ### Clean up Docker images and containers
 
 Sometimes it is nessesary to clean up images and containers to be able to run OpenBank because 
@@ -319,14 +313,30 @@ java -cp ~/.m2/repository/org/jasypt/jasypt/1.9.3/jasypt-1.9.3.jar org.jasypt.in
 input="obpassword" password=my_secret_password algorithm=PBEWithMD5AndDES
 ````
 
+## Run the OpenBank with plain text passwords or with encrypted passwords locally
+
+```bash
+# Execute the OpenBank with plain text passwords
+mvn clean install -T 1C -DskipTests && source openbank_setup_local.sh && docker-compose -f docker-compose_local.yaml up --build --force-recreate
+
+# Execute the OpenBank with encrypted password, MASTER_KEY environment variable must be set
+mvn clean install -T 1C -DskipTests && source openbank_setup_prod.sh && docker-compose -f docker-compose_prod.yaml up --build --force-recreate
+```
+
 ## Deliver new OpenBank Jakarta EE image
 
 ```bash
 # Make sure you are logged in to the DockerHub before releasing a new latest image tag
 
-docker build -f PipeLineDockerfile -t openbank-jee .
+docker build -f Dockerfile -t openbank-jee .
 docker tag openbank-jee:latest jsquadab/openbank-jee:latest
 docker push jsquadab/openbank-jee:latest
+```
+
+## Generate encrypted TRAVIS CI environment variables
+
+```bash
+travis encrypt VARIABLE_A=VALUE_1 MASTER_SECRET=VALUE_2 --add
 ```
 
 ## Annex

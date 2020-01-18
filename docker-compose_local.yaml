@@ -35,7 +35,7 @@ services:
     image: openbank
     build:
       context: .
-      dockerfile: PipeLineDockerfile
+      dockerfile: Dockerfile
     ports:
       - 8080:8080
       - 9990:9990
@@ -44,3 +44,6 @@ services:
     depends_on:
       - openbankdb
     restart: on-failure
+    volumes:
+    - ./openbank_setup_local.sh:/opt/jboss/wildfly/scripts/openbank_setup.sh
+    - ./configuration/properties_local.properties:/opt/jboss/wildfly/scripts/properties.properties

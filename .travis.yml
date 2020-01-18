@@ -1,5 +1,5 @@
 #
-# Copyright 2019 JSquad AB
+# Copyright 2020 JSquad AB
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,9 +24,6 @@ language: java
 jdk:
   - openjdk11
 
-env:
-  - NODE_VERSION="10.16.2"
-
 cache:
   directories:
     - .autoconf
@@ -39,7 +36,7 @@ before_install:
   - unzip -qq apache-maven-3.6.1-bin.zip
   - export M2_HOME=$PWD/apache-maven-3.6.1
   - export PATH=$M2_HOME/bin:$PATH
-  - nvm install $NODE_VERSION
+  - nvm install 10.16.2
   - npm install -g @angular/cli@7.3.9
   - cd client/src/main/openbank-app && npm rebuild node-sass
   - cd ..
@@ -47,7 +44,7 @@ before_install:
   - cd ..
   - cd ..
   - mvn clean compile -U
-  - source openbank_setup.sh
+  - source openbank_setup_local.sh
 
 jobs:
   include:
@@ -55,5 +52,17 @@ jobs:
       script: mvn clean install -Pgenerate-coverage && mvn verify -Pcoverage-check
     - stage: run integration tests
       script:
-        - docker-compose build --force
+        - docker system prune -af --volumes
+        - docker-compose -f docker-compose_local.yaml build --force
         - mvn verify -Pintegrationtests
+    - stage: push OpenBank to dockerhub on master branch after an merge
+      if: branch = master
+      script:
+        - docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+        - docker build -f Dockerfile --no-cache -t openbank-jee .
+        - docker tag openbank-jee:latest jsquadab/openbank-jee:latest
+        - docker push jsquadab/openbank-jee:latest
+
+env:
+  global:
+    secure: nf7ynmtTK1ii00CmPP6Hc4MbsHX7Epk9mUpBLKLf4r5o46m1hIeMxxPSWwXOLhigkzMaww3LYAjJa22hvXXTH0RNcOMX4zeZPR0/xpIzJobGWkbJtdMdzO226hVQRXEk26FIcjcwwjJvbcu6Y8NKj5fa2bahlhAVD2TlPOYR6tYIGSYhREq2ThtX3YgRCiuAECDDVoTBcmoCtZFSUp3J02cS5QXjtdwnTr02dJ6NhsQElThQKU11Fe/PWsjQVm6EKtk+GFq1tuWyt6vwBN4g3Y9In+W6syq8h8ij5jrUovY7FIERzVbIwwhzkJ1T61Fb1cDcuToZ6wpc8knxk6P+dqnRpTrbVjTPHXVafbQi2Ypf7IasBzMwGKsNUzGLMLTfOBZdThH5iVCnZl/v8nTaNR/do5UEXV/42BbqpoajcKsqBjhmOBr44RaSKXg8tGEltkmdpnY5a1P2it0vu5UYLpHIWS906aRJCn/KXJy0apdGxVtG9k/NdwNS6S993g6oF7sOxzooJfsuS15hLstMGmxVvpxKamNsl6dsDTu9JXHhwA/MePMqPRoiji7XMXqU2ITIL0Sa8EOXhlJ2EqJLoc7vjJlWzahkko4gVvNClwFp34Rc0GcZfGNVqnfTqkz7fAEF1VSwgWdYI5S/nehG1tbFGh/CTYJQNss50+hKIUY=
