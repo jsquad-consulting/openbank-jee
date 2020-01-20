@@ -44,7 +44,7 @@ public class ClientInformationRestDockerComposeIT {
     private final OpenApiValidationFilter validationFilter = new OpenApiValidationFilter("target/openbankAPI.yaml");
 
     private static DockerComposeContainer dockerComposeContainer = new DockerComposeContainer(
-            new File("../docker-compose.yaml"))
+            new File("../docker-compose_local.yaml"))
             .withExposedService("openbank_1", 8080)
             .withLocalCompose(true);
 
