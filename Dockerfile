@@ -19,10 +19,9 @@ FROM debian:stretch as module
 RUN  apt-get update \
   && apt-get install -y wget unzip maven
 RUN cd / && wget https://cdn.mysql.com//Downloads/Connector-J/mysql-connector-java-8.0.17.tar.gz && \
-tar xvzf mysql-connector-java-8.0.17.tar.gz && rm mysql-connector-java-8.0.17.tar.gz && \
-wget http://ftp.fau.de/eclipse/rt/eclipselink/releases/2.7.4/eclipselink-2.7.4.v20190115-ad5b7c6b2a.zip && \
-unzip eclipselink-2.7.4.v20190115-ad5b7c6b2a.zip -d .
+tar xvzf mysql-connector-java-8.0.17.tar.gz && rm mysql-connector-java-8.0.17.tar.gz
 RUN mvn -DgroupId=org.jasypt -DartifactId=jasypt -Dversion=1.9.3 dependency:get
+RUN mvn -DgroupId=org.eclipse.persistence -DartifactId=eclipselink -Dversion=2.7.4 dependency:get
 
 FROM jboss/wildfly:18.0.1.Final
 
@@ -34,8 +33,8 @@ COPY configuration/jboss/module/mysql $WILDFLY_HOME/modules/system/layers/base/c
 COPY configuration/jboss/module/eclipselink $WILDFLY_HOME/modules/system/layers/base/org/eclipse/persistence/
 COPY --from=module /mysql-connector-java-8.0.17/mysql-connector-java-8.0.17.jar \
 $WILDFLY_HOME/modules/system/layers/base/com/mysql/main/.
-COPY --from=module /eclipselink/jlib/eclipselink.jar \
-$WILDFLY_HOME/modules/system/layers/base/org/eclipse/persistence/main/.
+COPY --from=module /root/.m2/repository/org/eclipse/persistence/eclipselink/2.7.4/eclipselink-2.7.4.jar \
+$WILDFLY_HOME/modules/system/layers/base/org/eclipse/persistence/main/eclipselink.jar
 COPY --from=module /root/.m2/repository/org/jasypt $WILDFLY_HOME/scripts/repository/org/jasypt
 
 COPY ear/target/openbank-1.0-SNAPSHOT.ear $WILDFLY_HOME/standalone/deployments/openbank-1.0-SNAPSHOT.ear
