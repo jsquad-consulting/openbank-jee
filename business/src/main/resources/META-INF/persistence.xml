@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright 2019 JSquad AB
+  ~ Copyright 2020 JSquad AB
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@
         <shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
         <properties>
             <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/>
-            <property name="javax.persistence.jdbc.url" value="jdbc:mysql://openbankdb:3306/openbankdb"/>
+            <property name="javax.persistence.jdbc.url" value="jdbc:mysql://openbankdb:3306/openbank"/>
 
             <property name="eclipselink.logging.level" value="INFO"/>
             <property name="eclipselink.logging.level.sql" value="FINE"/>

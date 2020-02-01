@@ -1,5 +1,5 @@
 #
-# Copyright 2019 JSquad AB
+# Copyright 2020 JSquad AB
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ services:
   openbankdb:
     image: mysql:8.0.17
     environment:
-      MYSQL_DATABASE: 'openbankdb'
+      MYSQL_DATABASE: 'openbank'
       MYSQL_USER: ${OB_USER}
       MYSQL_PASSWORD: ${OB_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${ROOT_PASSWORD}
@@ -38,6 +38,7 @@ services:
       dockerfile: Dockerfile
     ports:
       - 8080:8080
+      - 8081:8081
       - 9990:9990
     links:
       - openbankdb
