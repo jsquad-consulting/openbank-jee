@@ -38,6 +38,6 @@ COPY --from=module /root/.m2/repository/org/jasypt $WILDFLY_HOME/scripts/reposit
 
 COPY ear/target/openbank-1.0-SNAPSHOT.ear $WILDFLY_HOME/standalone/deployments/openbank-1.0-SNAPSHOT.ear
 
-EXPOSE 8080 9990
+EXPOSE 8080 9990 8081
 
-CMD ["/bin/bash", "-c", "/opt/jboss/wildfly/scripts/openbank_setup.sh && /opt/jboss/wildfly/bin/standalone.sh -b 0.0.0.0 -bmanagement 0.0.0.0"]
+CMD ["/bin/bash", "-c", "source /opt/jboss/wildfly/scripts/openbank_setup.sh && /opt/jboss/wildfly/bin/standalone.sh -b 0.0.0.0 -bmanagement 0.0.0.0"]
