@@ -58,6 +58,7 @@ jobs:
     - stage: push OpenBank to dockerhub on master branch after an merge
       if: branch = master
       script:
+        - mvn clean install -DskipTests
         - docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
         - docker build -f Dockerfile --no-cache -t openbank-jee .
         - docker tag openbank-jee:latest jsquadab/openbank-jee:latest
