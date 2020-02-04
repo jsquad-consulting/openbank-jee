@@ -1,4 +1,4 @@
-# OpenBank - Jakarta EE 8
+# OpenBank - Jakarta EE 8 (Spring 5 and Spring Boot 2 integration included)
 
 A demonstration of an simple bank application made with Jakarta Enterprise Edition 8 platform (Java EE) for the 
 backend part and with Angular 7 for the frontend part.
