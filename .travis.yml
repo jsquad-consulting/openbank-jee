@@ -52,13 +52,12 @@ jobs:
       script: mvn clean install -Pgenerate-coverage && mvn verify -Pcoverage-check
     - stage: run integration tests
       script:
-        - docker system prune -af --volumes
+        - mvn clean install -DskipTests
         - docker-compose -f docker-compose_local.yaml build --force
         - mvn verify -Pintegrationtests
     - stage: push OpenBank to dockerhub on master branch after an merge
       if: branch = master
       script:
-        - mvn clean install -DskipTests
         - docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
         - docker build -f Dockerfile --no-cache -t openbank-jee .
         - docker tag openbank-jee:latest jsquadab/openbank-jee:latest

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright 2019 JSquad AB
+  ~ Copyright 2020 JSquad AB
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -90,7 +90,7 @@
                                 <argument>-extension</argument>
                                 <argument>-Xnocompile</argument>
                                 <argument>-wsdllocation</argument>
-                                <argument>/GetClient.wsdl</argument>
+                                <argument>/wsdl/client/GetClient.wsdl</argument>
                                 <argument>-s</argument>
                                 <argument>target/generated-sources/wsimport</argument>
                                 <argument>src/main/resources/wsdl/client/GetClient.wsdl</argument>
