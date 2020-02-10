@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 JSquad AB
+ * Copyright 2020 JSquad AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package se.jsquad;
 
-import com.atlassian.oai.validator.restassured.OpenApiValidationFilter;
 import com.google.gson.Gson;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -41,11 +40,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class ClientInformationRestDockerComposeIT {
     private static Gson gson = new Gson();
 
-    private final OpenApiValidationFilter validationFilter = new OpenApiValidationFilter("target/openbankAPI.yaml");
-
     private static DockerComposeContainer dockerComposeContainer = new DockerComposeContainer(
             new File("../docker-compose_local.yaml"))
             .withExposedService("openbank_1", 8080)
+            .withTailChildContainers(true)
             .withLocalCompose(true);
 
     @BeforeAll
@@ -75,7 +73,6 @@ public class ClientInformationRestDockerComposeIT {
                 .basic("root", "root")
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
-                .filter(validationFilter)
                 .when()
                 .get(URI.create("/client/info/" + personIdentificationNumber)).andReturn();
 
