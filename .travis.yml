@@ -30,6 +30,11 @@ cache:
     - $HOME/.m2
 
 before_install:
+  - curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+  - sudo apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
+  - sudo apt-get update
+  - sudo apt-get install kubectl=1.15.0-00
+  - kubectl version | true
   - sudo curl -L https://github.com/docker/compose/releases/download/1.24.1/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
   - sudo chmod +x /usr/local/bin/docker-compose
   - wget https://archive.apache.org/dist/maven/maven-3/3.6.1/binaries/apache-maven-3.6.1-bin.zip
@@ -49,7 +54,8 @@ before_install:
 jobs:
   include:
     - stage: build and run unit/system tests and coverage tests
-      script: mvn clean install -Pgenerate-coverage && mvn verify -Pcoverage-check
+      script:
+        - mvn clean install -Pgenerate-coverage && mvn verify -Pcoverage-check
     - stage: run integration tests
       script:
         - mvn clean install -DskipTests
