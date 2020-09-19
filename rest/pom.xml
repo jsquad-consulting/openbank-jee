@@ -31,12 +31,12 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>3.2.2</version>
+                <version>${maven.war.plugin.version}</version>
             </plugin>
             <plugin>
                 <groupId>io.swagger.core.v3</groupId>
                 <artifactId>swagger-maven-plugin</artifactId>
-                <version>2.0.8</version>
+                <version>${swagger.openapi3.version}</version>
                 <configuration>
                     <outputFileName>openbankAPI</outputFileName>
                     <outputPath>${project.build.directory}</outputPath>
@@ -72,7 +72,7 @@
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
             <artifactId>swagger-jaxrs2</artifactId>
-            <version>2.0.8</version>
+            <version>${swagger.openapi3.version}</version>
         </dependency>
     </dependencies>
 </project>
