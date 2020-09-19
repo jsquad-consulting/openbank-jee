@@ -16,20 +16,6 @@
 
 package se.jsquad;
 
-import javax.ejb.SessionContext;
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Produces;
-import javax.enterprise.inject.spi.InjectionPoint;
-import javax.inject.Inject;
-import javax.jms.JMSContext;
-import javax.jms.JMSException;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.Persistence;
-import javax.servlet.ServletException;
-import javax.transaction.TransactionScoped;
-import javax.ws.rs.core.Response;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.jboss.weld.junit.MockBean;
 import org.jboss.weld.junit5.WeldInitiator;
@@ -69,6 +55,20 @@ import se.jsquad.repository.EntityManagerProducer;
 import se.jsquad.repository.SystemPropertyRepository;
 import se.jsquad.validator.ClientValidator;
 
+import javax.ejb.SessionContext;
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Produces;
+import javax.enterprise.inject.spi.InjectionPoint;
+import javax.inject.Inject;
+import javax.jms.JMSContext;
+import javax.jms.JMSException;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
+import javax.persistence.Persistence;
+import javax.servlet.ServletException;
+import javax.transaction.TransactionScoped;
+import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Properties;
@@ -234,7 +234,7 @@ public class IntegrationRestTest {
 
         clientApi.setClientType(new ClientTypeApi());
         clientApi.getClientType().setType(TypeApi.REGULAR);
-        clientApi.getClientType().setRating(Long.valueOf(500));
+        clientApi.getClientType().setRating(500L);
 
         // When
         Response response = clientInformationRest.createClientInformation(clientApi);

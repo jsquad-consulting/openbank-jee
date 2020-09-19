@@ -16,6 +16,8 @@
 
 package se.jsquad;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -39,6 +41,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @Execution(ExecutionMode.SAME_THREAD)
 public class ClientInformationRestDockerComposeIT {
     private static Gson gson = new Gson();
+    private static ObjectMapper objectMapper = new ObjectMapper();
 
     private static DockerComposeContainer dockerComposeContainer = new DockerComposeContainer(
             new File("../docker-compose_local.yaml"))
@@ -62,7 +65,7 @@ public class ClientInformationRestDockerComposeIT {
     }
 
     @Test
-    public void testGetClientInformation() {
+    public void testGetClientInformationGson() {
         // Given
         String personIdentificationNumber = "191212121212";
 
@@ -97,6 +100,46 @@ public class ClientInformationRestDockerComposeIT {
                 .getMessage());
         assertEquals(0, clientApi.getPerson().getAddressList().size());
 
+        assertEquals(TypeApi.REGULAR, clientApi.getClientType().getType());
+        assertEquals(500, clientApi.getClientType().getRating());
+    }
+    
+    @Test
+    public void testGetClientInformationJackson() throws JsonProcessingException {
+        // Given
+        String personIdentificationNumber = "191212121212";
+        
+        // When
+        Response response = RestAssured
+                .given()
+                .auth()
+                .basic("root", "root")
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .when()
+                .get(URI.create("/client/info/" + personIdentificationNumber)).andReturn();
+        
+        ClientApi clientApi = objectMapper.reader().forType(ClientApi.class).readValue(response.getBody().print());
+        
+        // Then
+        assertEquals(200, response.getStatusCode());
+        
+        assertEquals(personIdentificationNumber, clientApi.getPerson().getPersonIdentification());
+        assertEquals("John", clientApi.getPerson().getFirstName());
+        assertEquals("Doe", clientApi.getPerson().getLastName());
+        assertEquals(personIdentificationNumber, clientApi.getPerson().getPersonIdentification());
+        assertEquals("john.doe@test.se", clientApi.getPerson().getMail());
+        
+        assertEquals(1, clientApi.getAccountList().size());
+        assertEquals(500.0, clientApi.getAccountList().get(0).getBalance());
+        
+        assertEquals(1, clientApi.getAccountList().get(0).getAccountTransactionList().size());
+        assertEquals("DEPOSIT", clientApi.getAccountList().get(0).getAccountTransactionList().get(0)
+                .getTransactionType().name());
+        assertEquals("500$ in deposit", clientApi.getAccountList().get(0).getAccountTransactionList().get(0)
+                .getMessage());
+        assertEquals(0, clientApi.getPerson().getAddressList().size());
+        
         assertEquals(TypeApi.REGULAR, clientApi.getClientType().getType());
         assertEquals(500, clientApi.getClientType().getRating());
     }

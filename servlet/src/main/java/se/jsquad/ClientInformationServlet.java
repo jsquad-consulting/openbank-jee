@@ -16,7 +16,10 @@
 
 package se.jsquad;
 
-import com.google.gson.Gson;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import se.jsquad.ejb.ClientInformationEjbLocal;
+import se.jsquad.qualifier.Log;
+
 import javax.ejb.EJB;
 import javax.inject.Inject;
 import javax.jms.JMSException;
@@ -26,19 +29,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import se.jsquad.ejb.ClientInformationEjbLocal;
-import se.jsquad.qualifier.Log;
-
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @WebServlet("/ClientInformationServlet")
 public class ClientInformationServlet extends HttpServlet {
-    private Gson gson;
+    private ObjectMapper objectMapper;
 
     public ClientInformationServlet() {
-        gson = new Gson();
+        objectMapper = new ObjectMapper();
     }
 
     @Inject @Log
@@ -63,7 +63,7 @@ public class ClientInformationServlet extends HttpServlet {
         httpServletResponse.setStatus(200);
         httpServletResponse.setContentType(MediaType.APPLICATION_JSON);
         try {
-            httpServletResponse.getWriter().print(gson.toJson(clientInformationEjbLocal
+            httpServletResponse.getWriter().print(objectMapper.writeValueAsString(clientInformationEjbLocal
                     .getClient(personalIdentificationNumber)));
         } catch (JMSException e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
