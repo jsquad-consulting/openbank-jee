@@ -28,14 +28,6 @@
 	<artifactId>spring</artifactId>
 	<packaging>war</packaging>
 
-
-	<properties>
-		<swagger.annotations.version>1.5.21</swagger.annotations.version>
-		<springdoc.openapi.version>1.1.44</springdoc.openapi.version>
-		<spring.version>5.2.4.RELEASE</spring.version>
-		<log4j.version>2.12.1</log4j.version>
-	</properties>
-
 	<build>
 		<plugins>
 			<!-- JUnit 5 requires Surefire version 2.22.1 or higher -->
@@ -45,9 +37,9 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-war-plugin</artifactId>
-				<version>3.2.2</version>
+				<version>${maven.war.plugin.version}</version>
 				<configuration>
-					<failOnMissingWebXml>false</failOnMissingWebXml>
+					<failOnMissingWebXml>${failOnMissingWebXml}</failOnMissingWebXml>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -86,20 +78,20 @@
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
-			<version>4.0.1</version>
+			<version>${javax.servlet.version}</version>
 			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.reactivestreams</groupId>
 			<artifactId>reactive-streams</artifactId>
-			<version>1.0.1</version>
+			<version>${reactive.streams.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>jstl</artifactId>
-			<version>1.2</version>
+			<version>${jstl.version}</version>
 		</dependency>
 
 		<!-- Log4j dependicies -->
@@ -133,7 +125,7 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>1.7.26</version>
+			<version>${slf4j.api.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
@@ -157,25 +149,25 @@
 		<dependency>
 			<groupId>javax.inject</groupId>
 			<artifactId>javax.inject</artifactId>
-			<version>1</version>
+			<version>${javax.inject.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-validator</artifactId>
-			<version>6.0.17.Final</version>
+			<version>${hibernate.validator.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>io.springfox</groupId>
 			<artifactId>springfox-swagger2</artifactId>
-			<version>2.9.2</version>
+			<version>${springfox.swagger2.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.yaml</groupId>
 			<artifactId>snakeyaml</artifactId>
-			<version>1.25</version>
+			<version>${snakeyaml.version}</version>
 		</dependency>
 
 		<dependency>

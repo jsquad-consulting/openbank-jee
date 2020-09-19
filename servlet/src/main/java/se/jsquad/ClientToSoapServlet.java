@@ -16,7 +16,13 @@
 
 package se.jsquad;
 
-import com.google.gson.Gson;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import se.jsquad.getclientservice.ClientType;
+import se.jsquad.getclientservice.GetClientRequest;
+import se.jsquad.getclientservice.GetClientResponse;
+import se.jsquad.getclientservice.GetClientServicePort;
+import se.jsquad.qualifier.Log;
+
 import javax.inject.Inject;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -27,12 +33,6 @@ import javax.ws.rs.core.Response;
 import javax.xml.namespace.QName;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.Service;
-import se.jsquad.getclientservice.ClientType;
-import se.jsquad.getclientservice.GetClientRequest;
-import se.jsquad.getclientservice.GetClientResponse;
-import se.jsquad.getclientservice.GetClientServicePort;
-import se.jsquad.qualifier.Log;
-
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -41,10 +41,10 @@ import java.util.logging.Logger;
 
 @WebServlet("/ClientToSoapServlet")
 public class ClientToSoapServlet extends HttpServlet {
-    private Gson gson;
+    private ObjectMapper objectMapper;
 
     public ClientToSoapServlet() throws MalformedURLException {
-        gson = new Gson();
+        objectMapper = new ObjectMapper();
 
         Service service = Service.create(URI.create(System.getenv("WEBSERVICE_WSDL_URL")).toURL(),
                 new QName(System.getenv("WEBSERVICE_QURL"), System.getenv("WEBSERVICE_QSERVICE")));
@@ -84,7 +84,8 @@ public class ClientToSoapServlet extends HttpServlet {
             getClientRequest.setPersonIdentification(personalIdentificationNumber);
             GetClientResponse clientResponse = getClientServicePort.getClient(getClientRequest);
 
-            httpServletResponse.getWriter().print(gson.toJson(clientResponse.getClient(), ClientType.class));
+            httpServletResponse.getWriter().print(objectMapper.writer().forType(ClientType.class)
+                    .writeValueAsString(clientResponse.getClient()));
         } catch (Exception e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
             httpServletResponse.setStatus(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
