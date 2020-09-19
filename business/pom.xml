@@ -34,7 +34,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-ejb-plugin</artifactId>
-                <version>3.0.1</version>
+                <version>${maven.ejb.plugin.version}</version>
                 <configuration>
                     <archive>
                         <manifest>
