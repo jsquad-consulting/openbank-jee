@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 JSquad AB
+ * Copyright 2020 JSquad AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,7 +64,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyObject;
 
 @Execution(ExecutionMode.SAME_THREAD)
