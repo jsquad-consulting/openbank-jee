@@ -55,9 +55,11 @@ jobs:
   include:
     - stage: build and run unit/system tests and coverage tests
       script:
+        - source openbank_setup_local.sh
         - mvn clean install -Pgenerate-coverage && mvn verify -Pcoverage-check
     - stage: run integration tests
       script:
+        - source openbank_setup_local.sh
         - mvn clean install -DskipTests
         - docker-compose -f docker-compose_local.yaml build --force
         - mvn verify -Pintegrationtests

@@ -54,9 +54,8 @@ public class ApplicationConfiguration {
         DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
         dataSourceBuilder.driverClassName(openBankDatabaseConfiguration.getDriverclassname());
         dataSourceBuilder.url(openBankDatabaseConfiguration.getUrl());
-
-        dataSourceBuilder.username(System.getenv("OB_USER"));
-        dataSourceBuilder.password(System.getenv("OB_PASSWORD"));
+        dataSourceBuilder.username(openBankDatabaseConfiguration.getUsername());
+        dataSourceBuilder.password(openBankDatabaseConfiguration.getPassword());
 
         return new JdbcTemplate(dataSourceBuilder.build(), true);
     }
