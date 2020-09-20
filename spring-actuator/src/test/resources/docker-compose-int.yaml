@@ -24,7 +24,7 @@ services:
       MYSQL_PASSWORD: ${OB_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${ROOT_PASSWORD}
     expose:
-      - "3306"
+      - 3306
     healthcheck:
       test: ["CMD-SHELL", "sh -c 'echo ready || exit 1'"]
       interval: 10s
@@ -36,8 +36,9 @@ services:
       context: ../../../../
       dockerfile: Dockerfile
     expose:
-      - "8080"
-      - "8081"
+      - 8080
+      - 8081
+      - 9990
     links:
       - openbankdb
     depends_on:
