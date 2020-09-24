@@ -59,8 +59,8 @@ jobs:
         - mvn clean install -Pgenerate-coverage && mvn verify -Pcoverage-check
     - stage: run integration tests
       script:
-        - source openbank_setup_local.sh
         - mvn clean install -DskipTests
+        - docker-compose -f spring-actuator/src/test/resources/docker-compose-int.yaml build --force
         - docker-compose -f docker-compose_local.yaml build --force
         - mvn verify -Pintegrationtests
     - stage: push OpenBank to dockerhub on master branch after an merge
