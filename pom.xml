@@ -112,8 +112,7 @@
                 <artifactId>urm-maven-plugin</artifactId>
                 <version>${urm.version}</version>
                 <configuration>
-                    <!-- if outputDirectory is not set explicitly it will default to your build dir -->
-                    <outputDirectory>${project.basedir}/../diagrams</outputDirectory>
+                    <outputDirectory>${project.basedir}/diagrams</outputDirectory>
                     <packages>
                         <param>se.jsquad</param>
                     </packages>
