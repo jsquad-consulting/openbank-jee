@@ -1,5 +1,5 @@
 #
-# Copyright 2020 JSquad AB
+# Copyright 2021 JSquad AB
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -35,8 +35,10 @@ before_install:
   - sudo apt-get update
   - sudo apt-get install kubectl=1.15.0-00
   - kubectl version | true
-  - sudo curl -L "https://github.com/docker/compose/releases/download/1.27.3/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+  - docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+  - sudo curl -L https://github.com/docker/compose/releases/download/1.27.4/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
   - sudo chmod +x /usr/local/bin/docker-compose
+  - sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
   - wget https://archive.apache.org/dist/maven/maven-3/3.6.1/binaries/apache-maven-3.6.1-bin.zip
   - unzip -qq apache-maven-3.6.1-bin.zip
   - export M2_HOME=$PWD/apache-maven-3.6.1
@@ -66,7 +68,6 @@ jobs:
     - stage: push OpenBank to dockerhub on master branch after an merge
       if: branch = master
       script:
-        - docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
         - docker build -f Dockerfile --no-cache -t openbank-jee .
         - docker tag openbank-jee:latest jsquadab/openbank-jee:latest
         - docker push jsquadab/openbank-jee:latest
