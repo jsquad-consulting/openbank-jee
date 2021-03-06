@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 JSquad AB
+ * Copyright 2021 JSquad AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,18 +39,18 @@ public class MonitorPrometheusUpStatusIT {
     private static int servicePort = 8081;
 
     private static DockerComposeContainer dockerComposeContainer = new DockerComposeContainer(
-            new File("src/test/resources/docker-compose-int.yaml"))
-            .withExposedService("openbank_1", servicePort)
+            new File("../docker-compose-int.yaml"))
+            .withExposedService("openbank", servicePort)
             .withPull(false)
-            .withTailChildContainers(true)
+            .withTailChildContainers(false)
             .withLocalCompose(true);
 
     @BeforeAll
     static void setupDocker() {
         dockerComposeContainer.start();
 
-        RestAssured.baseURI = "http://" + dockerComposeContainer.getServiceHost("openbank_1", servicePort);
-        RestAssured.port = dockerComposeContainer.getServicePort("openbank_1", servicePort);
+        RestAssured.baseURI = "http://" + dockerComposeContainer.getServiceHost("openbank", servicePort);
+        RestAssured.port = dockerComposeContainer.getServicePort("openbank", servicePort);
         RestAssured.basePath = "/management/actuator";
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 JSquad AB
+ * Copyright 2021 JSquad AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,17 +57,17 @@ public class ClientInformationServletIT {
     private static String basePath = "/servlet";
 
     private static DockerComposeContainer dockerComposeContainer = new DockerComposeContainer(
-            new File("../docker-compose_local.yaml"))
-            .withExposedService("openbank_1", 8080)
-            .withTailChildContainers(true)
+            new File("../docker-compose-int.yaml"))
+            .withExposedService("openbank", 8080)
+            .withTailChildContainers(false)
             .withLocalCompose(true);
 
     @BeforeAll
     static void setupDocker() {
         dockerComposeContainer.start();
 
-        baseUrl = "http://" + dockerComposeContainer.getServiceHost("openbank_1", 8080);
-        port = Integer.toString(dockerComposeContainer.getServicePort("openbank_1", 8080));
+        baseUrl = "http://" + dockerComposeContainer.getServiceHost("openbank", 8080);
+        port = Integer.toString(dockerComposeContainer.getServicePort("openbank", 8080));
     }
 
     @AfterAll

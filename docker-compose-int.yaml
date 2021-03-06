@@ -1,5 +1,5 @@
 #
-# Copyright 2020 JSquad AB
+# Copyright 2021 JSquad AB
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -29,11 +29,10 @@ services:
       test: ["CMD-SHELL", "sh -c 'echo ready || exit 1'"]
       interval: 10s
       timeout: 10s
-      retries: 5
+      retries: 60
   openbank:
-    image: openbank
     build:
-      context: ../../../../
+      context: .
       dockerfile: Dockerfile
     expose:
       - 8080
@@ -47,10 +46,10 @@ services:
     environment:
       MASTER_KEY: "test"
     volumes:
-      - ../../../../openbank_setup_local.sh:/opt/jboss/wildfly/scripts/openbank_setup.sh
-      - ../../../../configuration/properties_local.properties:/opt/jboss/wildfly/scripts/properties.properties
+    - ./openbank_setup_local.sh:/opt/jboss/wildfly/scripts/openbank_setup.sh
+    - ./configuration/properties_local.properties:/opt/jboss/wildfly/scripts/properties.properties
     healthcheck:
       test: ["CMD-SHELL", "sh -c 'echo ready || exit 1'"]
       interval: 10s
       timeout: 10s
-      retries: 5
+      retries: 60

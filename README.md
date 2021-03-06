@@ -3,7 +3,7 @@
 A demonstration of an simple bank application made with Jakarta Enterprise Edition 8 platform (Java EE) for the 
 backend part and with Angular 7 for the frontend part.
 
-[![Build Status](https://travis-ci.org/jsquad-consulting/openbank-jee.svg?branch=master)](https://travis-ci.org/jsquad-consulting/openbank-jee)
+[![Build Status](https://travis-ci.com/andyholst/openbank-jee.svg?branch=master)](https://travis-ci.com/andyholst/openbank-jee)
 
 ## Table of contents
 - [Requirements](#requirements)
