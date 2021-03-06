@@ -14,15 +14,10 @@
 # limitations under the License.
 #
 
-dist: bionic
+dist: focal
 
 services:
   - docker
-
-language: java
-
-jdk:
-  - openjdk11
 
 cache:
   directories:
@@ -30,11 +25,14 @@ cache:
     - $HOME/.m2
 
 before_install:
-  - curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
-  - sudo apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
-  - sudo apt-get update
-  - sudo apt-get install kubectl=1.15.0-00
-  - kubectl version | true
+  - echo $JAVA_HOME
+  - which java
+  - sudo rm -rf /usr/local/lib/jvm/
+  - sudo apt-get install -y openjdk-11-jdk-headless
+  - export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64/
+  - which java
+  - java -version
+  - $JAVA_HOME/bin/java -version
   - docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
   - sudo curl -L https://github.com/docker/compose/releases/download/1.27.4/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
   - sudo chmod +x /usr/local/bin/docker-compose
@@ -52,26 +50,41 @@ before_install:
   - cd ..
   - mvn clean compile -U
   - source openbank_setup_local.sh
+  - curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+  - sudo apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
+  - sudo apt-get update
+  - sudo apt-get install kubectl=1.20.1-00 -y
+  - curl https://baltocdn.com/helm/signing.asc | sudo apt-key add -
+  - sudo apt-get install apt-transport-https --yes
+  - echo "deb https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
+  - sudo apt-get update
+  - sudo apt-get install helm -y
+  - sudo apt-get install apt-transport-https ca-certificates curl gnupg-agent software-properties-common wget -y
+  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+  - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+  - sudo apt-get update
+  - sudo apt-get install docker-ce docker-ce-cli containerd.io -y
+  - docker --version
+  - docker run hello-world
 
 jobs:
   include:
     - stage: build and run unit/system tests and coverage tests
       script:
         - source openbank_setup_local.sh
-        - mvn clean install -Pgenerate-coverage && mvn verify -Pcoverage-check
+        - travis_wait 60 mvn clean install -Pgenerate-coverage && mvn verify -Pcoverage-check
     - stage: run integration tests
       script:
         - mvn clean install -DskipTests
-        - docker-compose -f spring-actuator/src/test/resources/docker-compose-int.yaml build --force
-        - docker-compose -f docker-compose_local.yaml build --force
-        - mvn verify -Pintegrationtests
+        - docker-compose -f docker-compose-int.yaml build --force
+        - travis_wait 60 mvn verify -Pintegrationtests
     - stage: push OpenBank to dockerhub on master branch after an merge
       if: branch = master
       script:
         - docker build -f Dockerfile --no-cache -t openbank-jee .
         - docker tag openbank-jee:latest jsquadab/openbank-jee:latest
         - docker push jsquadab/openbank-jee:latest
-
 env:
   global:
-    secure: nf7ynmtTK1ii00CmPP6Hc4MbsHX7Epk9mUpBLKLf4r5o46m1hIeMxxPSWwXOLhigkzMaww3LYAjJa22hvXXTH0RNcOMX4zeZPR0/xpIzJobGWkbJtdMdzO226hVQRXEk26FIcjcwwjJvbcu6Y8NKj5fa2bahlhAVD2TlPOYR6tYIGSYhREq2ThtX3YgRCiuAECDDVoTBcmoCtZFSUp3J02cS5QXjtdwnTr02dJ6NhsQElThQKU11Fe/PWsjQVm6EKtk+GFq1tuWyt6vwBN4g3Y9In+W6syq8h8ij5jrUovY7FIERzVbIwwhzkJ1T61Fb1cDcuToZ6wpc8knxk6P+dqnRpTrbVjTPHXVafbQi2Ypf7IasBzMwGKsNUzGLMLTfOBZdThH5iVCnZl/v8nTaNR/do5UEXV/42BbqpoajcKsqBjhmOBr44RaSKXg8tGEltkmdpnY5a1P2it0vu5UYLpHIWS906aRJCn/KXJy0apdGxVtG9k/NdwNS6S993g6oF7sOxzooJfsuS15hLstMGmxVvpxKamNsl6dsDTu9JXHhwA/MePMqPRoiji7XMXqU2ITIL0Sa8EOXhlJ2EqJLoc7vjJlWzahkko4gVvNClwFp34Rc0GcZfGNVqnfTqkz7fAEF1VSwgWdYI5S/nehG1tbFGh/CTYJQNss50+hKIUY=
+    - SH=bash
+    - secure: jMHzoYwhSj/9PyvpmkBEe7XIkzGoIg2OdTKk612NQFZaLHTgEpL0V/T4w3QubHXXUuqSnWm5kTmSChoFI2hVrjbGi2vl3BdsIzwDCdAOO9/OhYyyCLE3XmC2dAqhd+0zXBWRQbZ3MZri4QlL/oGv+Xhlg2cScun5TXJV520tT6t3Cr5+TZc3mvQgH8rCNab3LWaZMLJIhZLm/OajnclsmxGQ1ahcOb+4H8SMck8tPS6DGU2yi4Y/WaP6BPKc2vmpuIs1fp6SsMmqi30gvA6QQZAwNyDEL3U2q5C5JpiKoweQWSDY2KzZieTb3e2uPtBkBoI6RXgwqrvD2IgBvWKUlj/ExN7LIKUgPmjuN3sTrENlOJayhDyyIslRg2uJrXULSwW/C4WUFXmXcQAfbO2PWoBExdlaieHj+/IpNVCkyPomMHRVxcLY1sdY3p7aqxLJmJFouvnbsgWG9eWjN1InSgfUteA+dxvVCWnau/OBnHKd5q/nHk+ak5TFGDa2rA4tgXgUf6+J8g5nWmWqGBFLhDyfYwyigx1KtFf+IDcqU+HHq8an5cJ6d8BSBh5Al0NEOVvuCCUHCdpdbm1NVYPE38z7ByF9Y5ZP1XJR2HAOyyFIk5eCy5pbblfIDdquRCL0VraeclMUIqV4NvaoSnrc7tUgLFSGbSbKV2NwMvbk1Mw=

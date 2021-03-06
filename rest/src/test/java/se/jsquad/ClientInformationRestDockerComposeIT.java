@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 JSquad AB
+ * Copyright 2021 JSquad AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,17 +44,17 @@ public class ClientInformationRestDockerComposeIT {
     private static ObjectMapper objectMapper = new ObjectMapper();
 
     private static DockerComposeContainer dockerComposeContainer = new DockerComposeContainer(
-            new File("../docker-compose_local.yaml"))
-            .withExposedService("openbank_1", 8080)
-            .withTailChildContainers(true)
+            new File("../docker-compose-int.yaml"))
+            .withExposedService("openbank", 8080)
+            .withTailChildContainers(false)
             .withLocalCompose(true);
 
     @BeforeAll
     static void setupDocker() {
         dockerComposeContainer.start();
 
-        RestAssured.baseURI = "http://" + dockerComposeContainer.getServiceHost("openbank_1", 8080);
-        RestAssured.port = dockerComposeContainer.getServicePort("openbank_1", 8080);
+        RestAssured.baseURI = "http://" + dockerComposeContainer.getServiceHost("openbank", 8080);
+        RestAssured.port = dockerComposeContainer.getServicePort("openbank", 8080);
         RestAssured.basePath = "/restful-webservice/api";
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
     }
