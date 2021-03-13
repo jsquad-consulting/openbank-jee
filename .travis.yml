@@ -72,15 +72,16 @@ jobs:
     - stage: build and run unit/system tests and coverage tests
       script:
         - source openbank_setup_local.sh
-        - travis_wait 60 mvn clean install -Pgenerate-coverage && mvn verify -Pcoverage-check
+        - travis_wait 60 mvn clean install -Pgenerate-coverage && mvn verify -Pcoverage-check -T 1C
     - stage: run integration tests
       script:
-        - mvn clean install -DskipTests
+        - mvn clean install -DskipTests -T 1C
         - docker-compose -f docker-compose-int.yaml build --force
-        - travis_wait 60 mvn verify -Pintegrationtests
+        - travis_wait 60 mvn verify -Pintegrationtests -T 1C
     - stage: push OpenBank to dockerhub on master branch after an merge
       if: branch = master
       script:
+        - mvn clean install -DskipTests -T 1C
         - docker build -f Dockerfile --no-cache -t openbank-jee .
         - docker tag openbank-jee:latest jsquadab/openbank-jee:latest
         - docker push jsquadab/openbank-jee:latest
