@@ -73,7 +73,7 @@
         <jstl.version>1.2</jstl.version>
         <junit.jupiter.version>5.5.2</junit.jupiter.version>
         <log4j.version>2.12.1</log4j.version>
-        <logback.classic.version>1.2.3</logback.classic.version>
+        <logback.classic.version>1.2.13</logback.classic.version>
         <maven.antrun.version>1.8</maven.antrun.version>
         <maven.compiler.version>3.8.0</maven.compiler.version>
         <maven.ejb.plugin.version>3.1.0</maven.ejb.plugin.version>
